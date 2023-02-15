@@ -4,6 +4,7 @@
 !*.py
 !*.md
 !*.ini
+!nbs/
 !dia_info.json
 !ensembles/*.json
 !*.toml
@@ -15,4 +16,5 @@ HighResAnalysis/config/main.ini
 HighResAnalysis/config/client_secret.json
 venv/
 .ipynb_checkpoints/
-HighResAnalysis/.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+*/*/.ipynb_checkpoints/
