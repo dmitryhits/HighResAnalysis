@@ -11,5 +11,8 @@
 !Makefile
 !*.dat
 
-config/main.ini
+HighResAnalysis/config/main.ini
+HighResAnalysis/config/client_secret.json
 venv/
+.ipynb_checkpoints/
+HighResAnalysis/.ipynb_checkpoints/
