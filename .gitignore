@@ -1,5 +1,3 @@
-*
-*/
 !*.py
 !*.md
 !*.ini
@@ -14,10 +12,10 @@
 HighResAnalysis/config/main.ini
 HighResAnalysis/config/client_secret.json
 venv/
-.ipynb_checkpoints/
-*/.ipynb_checkpoints/
-*/*/.ipynb_checkpoints/
-nbs/.ipynb_checkpoints/
+#.ipynb_checkpoints/
+#*/.ipynb_checkpoints/
+#*/*/.ipynb_checkpoints/
+#nbs/.ipynb_checkpoints/
 _docs/
 _proc/
 
