@@ -13,5 +13,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - run: echo "starting my own workflow"
-        - run: conda install root 
+        - run: mamba install root 
         - uses: fastai/workflows/quarto-ghp@master
