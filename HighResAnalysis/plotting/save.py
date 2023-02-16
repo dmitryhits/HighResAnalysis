@@ -7,9 +7,6 @@ __all__ = ['SaveDraw', 'main']
 #!/usr/bin/env python
 
 # %% ../../nbs/02_plotting.save.ipynb 3
-# created on September 25th 2020 by M. Reichmann (remichae@phys.ethz.ch)
-# --------------------------------------------------------
-
 from ROOT import TFile
 from fastcore.script import *
 from . import html
