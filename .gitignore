@@ -11,6 +11,7 @@
 
 HighResAnalysis/config/main.ini
 HighResAnalysis/config/client_secret.json
+HighResAnalysis/plotting/dummy.root
 venv/
 #.ipynb_checkpoints/
 #*/.ipynb_checkpoints/
