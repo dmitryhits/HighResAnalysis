@@ -13,5 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - run: echo "starting my own workflow"
-        - run: mamba install root 
+        - run: conda config --set channel_priority strict
+        - run: conda create -c conda-forge --name github root
+        - run: conda activate github
         - uses: fastai/workflows/quarto-ghp@master
