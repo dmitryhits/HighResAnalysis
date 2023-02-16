@@ -13,6 +13,7 @@ import toml
 from numpy import array, arange
 from ..plotting.utils import info, warning, choose, remove_file, critical
 from ..utility.utils import print_banner, GREEN, print_elapsed_time, wraps, remove_letters, byte2str
+from .analysis import Analysis, Dir
 from subprocess import check_call, CalledProcessError
 from shutil import copytree
 from copy import deepcopy

@@ -11,4 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps: [uses: fastai/workflows/quarto-ghp@master]
+    steps:
+        run: echo "starting my own workflow"
+        run: conda install root 
+        [uses: fastai/workflows/quarto-ghp@master]
