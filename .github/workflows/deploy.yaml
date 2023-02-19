@@ -13,5 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - run: echo "starting my own workflow"
-        - run: conda install -c conda-forge root
+        - run: conda install mamba -n base -c conda-forge
+        - run: mamba install root
         - uses: fastai/workflows/quarto-ghp@master
