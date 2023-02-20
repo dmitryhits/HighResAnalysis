@@ -17,6 +17,7 @@ jobs:
         - uses: actions/checkout@v3
         - run: 'ls -a ../HighResAnalysis'
         - run: 'ls -a '
+        - run: conda init bash
         - run: conda config --set channel_priority strict
         - run: conda create -c conda-forge --name test root
         - run: conda activate test
