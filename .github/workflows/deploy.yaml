@@ -15,8 +15,7 @@ jobs:
         - run: echo "starting my own workflow"
         - run: pwd
         - uses: actions/checkout@v3
-        - run: 'ls -a ../..'
-        - run: 'ls -a ../../..'
+        - run: 'ls -a ../HighResAnalysis'
+        - run: 'ls -a '
         - uses: mamba-org/provision-with-micromamba@main
-        - run: micromamba install root
         - uses: fastai/workflows/quarto-ghp@master
