@@ -18,4 +18,5 @@ jobs:
         - run: 'ls -a ../HighResAnalysis'
         - run: 'ls -a '
         - uses: mamba-org/provision-with-micromamba@main
+        - run: 'which root'
         - uses: fastai/workflows/quarto-ghp@master
