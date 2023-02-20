@@ -21,6 +21,7 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: mamba-org/provision-with-micromamba@e2b397b12d0a38069451664382b769c9456e3d6d
         - uses: mamba-org/provision-with-micromamba@v15
+        - run: micromamba activate testenv
         - run: 'which root'
         - run: 'python -c import ROOT'
         - uses: fastai/workflows/quarto-ghp@master
