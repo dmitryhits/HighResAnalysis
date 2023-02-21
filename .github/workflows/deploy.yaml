@@ -31,4 +31,4 @@ jobs:
         - name: publish with quarto
           uses: fastai/workflows/quarto-ghp@master
           with:
-            version: 3.10
+            version: '3.10'
