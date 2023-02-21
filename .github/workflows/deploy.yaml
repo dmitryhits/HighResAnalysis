@@ -20,7 +20,11 @@ jobs:
         #- name: provision-with-micromamba
         # You may pin to the exact commit or the version.
         # uses: mamba-org/provision-with-micromamba@e2b397b12d0a38069451664382b769c9456e3d6d
-        - uses: mamba-org/provision-with-micromamba@v15
+        - name: Install Conda environment from environment.yml
+          uses: mamba-org/provision-with-micromamba@main
+        - name: Check Import ROOT
+          run: python -c "import ROOT"
+          shell: bash
         - run: micromamba shell init -s bash -p ~/micromamba
         - run: source ~/.bashrc
         - run: micromamba activate testenv
