@@ -7,21 +7,17 @@ __all__ = ['Converter', 'batch_converter']
 #!/usr/bin/env python
 
 # %% ../../nbs/37_src.converter.ipynb 3
-# created on August 30th 2018 by M. Reichmann (remichae@phys.ethz.ch)
-# --------------------------------------------------------
-
 import uproot
 from numpy import all, ones, count_nonzero  # noqa
 from uproot import ReadOnlyDirectory
 from uproot.models import TTree
 from pathlib import Path
+import awkward as aw  
 
 from .proteus import Proteus
 from .run import Run, Analysis, init_batch, DUT, Batch
 from .analysis import BeamTest
 from ..utility.utils import *
-from ..plotting.utils import download_file, remove_file, warning
-from fastcore.script import *
 
 # %% ../../nbs/37_src.converter.ipynb 4
 class Converter:
