@@ -27,5 +27,5 @@ jobs:
           uses: mamba-org/provision-with-micromamba@main
         - run: micromamba activate testenv
         - run: 'which root'
-        - run: 'python -c import ROOT'
+        - run: python -c 'import ROOT'
         - uses: fastai/workflows/quarto-ghp@master
