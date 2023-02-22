@@ -1,0 +1,12 @@
+---
+title: High Resolution Analysis Blog
+subtitle: News, tips, and commentary about the development of the software and analysis of the data from CERN and DESY beam tests. 
+listing:
+  sort: "date desc"
+  contents: "posts"
+  sort-ui: false
+  filter-ui: false
+  categories: true
+  feed: true
+page-layout: full
+---
