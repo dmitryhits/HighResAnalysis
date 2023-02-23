@@ -1,7 +1,0 @@
----
-title: "Conversion to NbDev"
-description: "A short history of a conversion of HighResAnalysis project to NbDev"
-author: "Dmitry Hits"
-date: "22-02-2023"
-date-modified: "22-02-2023"
----
