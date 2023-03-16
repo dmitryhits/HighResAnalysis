@@ -40,12 +40,11 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
          batch:str=None, #batch name
          run_plan:str=None, # create new runplan.json for beam test <YYYYMM>
         ):
-    print('test campaign 1:', test_campaign, type(test_campaign), run, dut, 'Is it Test?', test)
+    # ToDo: Check why sometimes it is 'False' could be name conflict test and test_campaign
     if test_campaign == 'False':
         test_campaign = Analysis.find_testcampaign() 
-        print('test campaign 2:', test_campaign)
+        print('test campaign was == "False":', test_campaign)
     
-    # print('test campaign', Analysis.find_testcampaign(), type(Analysis.find_testcampaign()))
     if run_plan is not None:
         make(run_plan)
         exit(2)
@@ -60,13 +59,12 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
 
         ana = Analysis(test_campaign)
         runs = load_nrs(ana.BeamTest.Path)
-        print(f'Runs: {runs}')
         is_batch = not (run in runs and batch is None)
         dut_ana = partial(BatchAnalysis, choose(batch, run)) if is_batch else partial(DUTAnalysis, run)
         dut_ana = partial(dut_ana, dut, test_campaign)
 
         if is_batch:
-            print('batch')
+            print('Doing batch')
             bc = convert.BatchConvert(dut_ana.args[0], dut_ana.args[-1], verbose=False, force=False)
             if convert:
                 remove_file(bc.Batch.FileName)
@@ -75,16 +73,15 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
                 bc.run()
 
         if remove_meta:
-            print('Remove Meta')
+            print('Removing Meta')
             z = dut_ana(verbose=False, test=True)
             z.remove_metadata()
 
         if convert and not is_batch:
-            print('Convert not batch')
+            print('Convert but not batch')
             z = dut_ana(verbose=True, test=True)
             z.remove_file()
             z.Converter.remove_aux_files()
-        print(verbose, test)
 
         z = dut_ana(verbose=verbose, test=test)
 
@@ -95,45 +92,31 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
         #     z = DUTAnalysis(run, dut, test_campaign=test_campaign, single_mode=single_mode, verbose=verbose, test=test)
 
         z.add_info(t_start, 'Init time:', prnt=True)
-        print('Type z:', type(z))
         cut = z.Cut
 
     # aliases
     try:
         d = z.Draw
-        print('Draw')
         dut = z.DUT
-        print('DUT')
         pl = dut.Plane
-        print('Plane')
         b = z.BeamTest
-        print('BeamTest')
         r = z.Run
-        print('Run')
         c = z.Converter
-        print('Converter')
         raw = c.Raw
-        print('Raw')
         p = z.Proteus
-        print('Proteus')
         if 'CERN' in str(c):
             al = c.EventAlignment
             adc = c.Adc2Vcal
         cal = z.Calibration
-        print('Calibration')
         cut = z.Cut
-        print('Cut')
         res = z.Residuals
         tel = z.Tel
         ref = z.REF
         t = z.Tracks
         e = z.Efficiency
         re = ref.Efficiency
-        print('Efficiency')
         rsl = z.Resolution
-        print('Resolution')
         cur = z.Currents 
-        print('Current')
         print("Everything is available and ready for analysis!")
     except:
-        print('not everything is available')
+        print('Not everything is available :-(')

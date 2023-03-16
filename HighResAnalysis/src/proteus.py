@@ -19,7 +19,7 @@ from shutil import copytree
 from copy import deepcopy
 from fastcore.script import *
 
-# %% ../../nbs/36_src.proteus.ipynb 7
+# %% ../../nbs/36_src.proteus.ipynb 4
 def init_toml(name):
     def inner(func):
         @wraps(func)
@@ -36,7 +36,7 @@ def init_toml(name):
         return wrapper
     return inner
 
-# %% ../../nbs/36_src.proteus.ipynb 8
+# %% ../../nbs/36_src.proteus.ipynb 5
 class Proteus:
     """ Alignment and tracking of telescope data.
         STEP 1: noisescan
@@ -271,7 +271,7 @@ class Proteus:
     # endregion RUN
     # ----------------------------------------
 
-# %% ../../nbs/36_src.proteus.ipynb 9
+# %% ../../nbs/36_src.proteus.ipynb 6
 @call_parse
 def main():
     a = Analysis()
