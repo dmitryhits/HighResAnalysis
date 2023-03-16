@@ -12,8 +12,9 @@ __all__ = ['CERNConverter', 'main']
 from subprocess import check_call
 import uproot
 from fastcore.script import *
+from numpy import array
 
-from ..plotting.utils import array, info as pinfo
+from ..plotting.utils import info as pinfo
 from ..src.converter import Converter, DUT
 from ..plotting.utils import download_file, remove_file, warning
 from ..src.analysis import Analysis

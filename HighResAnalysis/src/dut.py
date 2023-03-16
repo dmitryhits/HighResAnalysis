@@ -4,8 +4,11 @@
 __all__ = ['Device', 'REF', 'DUT', 'Plane']
 
 # %% ../../nbs/33_src.dut.ipynb 2
-from ..utility.utils import critical, ufloat, array, Dir
-from ..plotting.draw import Draw, arange, prep_kw, add_perr, Config
+from ..utility.utils import Dir
+from uncertainties import ufloat
+from numpy import array, arange
+from ..plotting.utils import prep_kw, add_perr, Config, critical
+from ..plotting.draw import Draw
 from .analysis import Analysis
 
 # %% ../../nbs/33_src.dut.ipynb 3

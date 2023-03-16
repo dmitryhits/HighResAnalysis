@@ -13,8 +13,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 from json import dump
 from time import mktime
-from ..utility.utils import Dir, array
-from numpy import where
+from ..utility.utils import Dir
+from numpy import where, array
 
 # %% ../../nbs/31_src.spreadsheet.ipynb 4
 def login_to_google():
@@ -116,7 +116,8 @@ def make_cern_run_log(tc='2018-10'):
 
 # %% ../../nbs/31_src.spreadsheet.ipynb 12
 def make(bt):
-    from .analysis import Analysis, critical, info, remove_file
+    from HighResAnalysis.src.analysis import Analysis
+    from HighResAnalysis.plotting.utils import critical, info, remove_file
     b = Analysis(bt).BeamTest
     if b.Location == 'DESY':
         make_desy_run_log()

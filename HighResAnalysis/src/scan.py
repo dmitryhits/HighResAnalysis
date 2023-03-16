@@ -8,16 +8,19 @@ __all__ = ['Scan', 'VScan', 'TScan']
 
 # %% ../../nbs/39_src.scan.ipynb 3
 from fastcore.script import *
+from numpy import array
 from datetime import datetime
-from .run import Ensemble, Dir
+from pathlib import Path
+
+from .run import Ensemble
 from .batch_analysis import DUTAnalysis, BatchAnalysis, Batch
 from ..mod.dut_cuts import DUTCut
-from numpy import array
-from ..plotting.save import SaveDraw, Path, Draw
+from ..plotting.draw import Draw
+from ..plotting.save import SaveDraw
 from ..plotting.utils import prep_kw, rm_key, choose
-from ..utility.utils import bias2rootstr
+from ..utility.utils import bias2rootstr, Dir
 
-# %% ../../nbs/39_src.scan.ipynb 4
+# %% ../../nbs/39_src.scan.ipynb 5
 class Scan(Ensemble):
     """Base class defining actions on several runs or batches"""
 
@@ -109,7 +112,7 @@ class Scan(Ensemble):
         h = [ana.draw_signal_around_cols(r0, r1, save=False, **rm_key(dkw, 'save')) for ana in self.Anas]
         return self.Draw.stack(h, 'PHDistsCols', self.x2str(), **prep_kw(dkw, scale=True, file_name='PhDistsCols'))
 
-# %% ../../nbs/39_src.scan.ipynb 5
+# %% ../../nbs/39_src.scan.ipynb 6
 class VScan(Scan):
 
     XArgs = {'x_tit': 'Bias [V]'}
@@ -123,7 +126,7 @@ class VScan(Scan):
     def x2str(self):
         return bias2rootstr(*self.x()).tolist()
 
-# %% ../../nbs/39_src.scan.ipynb 6
+# %% ../../nbs/39_src.scan.ipynb 7
 class TScan(Scan):
 
     XArgs = {'x_tit': 'Trim [vcal]'}

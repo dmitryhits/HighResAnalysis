@@ -9,11 +9,13 @@ __all__ = ['save_cut', 'DUTCut']
 # %% ../../nbs/19_mod.dut_cuts.ipynb 3
 from numpy import array, invert, all, zeros, quantile, max, inf, sqrt, where, ndarray, any, append, ones, isnan, arange
 
-from ..plotting.draw import make_box_args, Draw, prep_kw, TCutG, Config, cart2pol
+from ..plotting.draw import make_box_args, Draw
+from ..plotting.utils import prep_kw, Config, cart2pol
 from ..src.cut import Cuts
 from ..utility.utils import critical, save_hdf5, parallel, make_list, choose, save_pickle, uarr2n
 from ..utility.affine_transformations import transform
 from warnings import catch_warnings, simplefilter
+from ROOT import TCutG
 
 # %% ../../nbs/19_mod.dut_cuts.ipynb 4
 def save_cut(*pargs, suf_args='[]', field=None, verbose=False, cfg=None, cfield=None, **pkwargs):

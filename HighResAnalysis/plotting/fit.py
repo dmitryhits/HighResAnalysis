@@ -7,13 +7,14 @@ __all__ = ['Fit', 'make_fit', 'PoissonI', 'Expo', 'Gauss', 'Landau', 'Erf', 'Cry
 # %% ../../nbs/04_plotting.fit.ipynb 2
 #!/usr/bin/env python
 from ROOT import TF1, Math, TMath
-from numpy import exp
+from numpy import exp, array, mean, sqrt, where, sign
 from scipy.special import erf
 from os.path import join
 from functools import partial
 from fastcore.script import *
 from .draw import *
-from .utils import BaseDir, choose
+from .utils import BaseDir, choose, prep_kw
+from uncertainties import ufloat
 
 # %% ../../nbs/04_plotting.fit.ipynb 3
 class Fit(object):

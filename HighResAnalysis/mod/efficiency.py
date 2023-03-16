@@ -7,10 +7,11 @@ __all__ = ['eff_analysis']
 #!/usr/bin/env python
 
 # %% ../../nbs/16_mod.efficiency.ipynb 3
-from ..src.dut_analysis import DUTAnalysis, prep_kw, bins
-from ..plotting.utils import calc_eff, mean
+import HighResAnalysis.src.bins as bins
+from ..src.dut_analysis import DUTAnalysis
+from ..plotting.utils import calc_eff, prep_kw
 from ..plotting.draw import hist_values_2d, ax_range
-from numpy import rad2deg
+from numpy import rad2deg, mean
 from functools import partial
 
 # %% ../../nbs/16_mod.efficiency.ipynb 4

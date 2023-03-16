@@ -7,7 +7,8 @@ __all__ = ['ResCut']
 #!/usr/bin/env python
 
 # %% ../../nbs/22_mod.reso_cuts.ipynb 3
-from .dut_cuts import DUTCut, array
+from .dut_cuts import DUTCut
+from numpy import array
 from copy import deepcopy
 
 # %% ../../nbs/22_mod.reso_cuts.ipynb 4

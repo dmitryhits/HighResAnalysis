@@ -27,20 +27,21 @@ import pickle
 from copy import deepcopy
 from inspect import signature
 from functools import wraps
-from ..plotting.utils import info, critical, add_to_info, get_kw, time, remove_file
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 from multiprocessing import Pool, cpu_count
 from hashlib import md5, sha256
 from pathlib import Path
+
+from ..plotting.utils import info, critical, add_to_info, get_kw, remove_file
 
 # %% ../../nbs/28_utility.utils.ipynb 3
 ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT overwriting the help settings...
 
 # %% ../../nbs/28_utility.utils.ipynb 4
 try:
-    Dir = Path(__file__).resolve().parent.parent
+    Dir = Path(__file__).resolve().parent.parent.parent
 except NameError:
-    Dir = Path().resolve().parent/"HighResAnalysis"
+    Dir = Path().resolve().parent
 
 # %% ../../nbs/28_utility.utils.ipynb 5
 type_dict = {'int32': 'I',

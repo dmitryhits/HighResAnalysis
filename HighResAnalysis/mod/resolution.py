@@ -7,9 +7,13 @@ __all__ = ['reso_analysis']
 #!/usr/bin/env python
 
 # %% ../../nbs/25_mod.resolution.ipynb 3
-from ..src.dut_analysis import DUTAnalysis, bins, update_pbar, save_pickle
-from ..plotting.draw import mean_sigma, prep_kw, set_statbox
-from ..utility.utils import PBAR
+import HighResAnalysis.src.bins as bins
+
+from ..src.dut_analysis import DUTAnalysis
+from ..plotting.draw import set_statbox
+from ..utility.utils import PBAR, save_pickle, update_pbar
+from ..plotting.utils import prep_kw, mean_sigma
+
 from .reso_cuts import ResCut
 from .residuals import res_analysis
 
@@ -17,7 +21,7 @@ from uncertainties.umath import sqrt as usqrt # noqa
 from uncertainties import ufloat
 from numpy import linspace, array, tile
 
-# %% ../../nbs/25_mod.resolution.ipynb 4
+# %% ../../nbs/25_mod.resolution.ipynb 5
 def reso_analysis(cls):
     class Resolution(cls):
 

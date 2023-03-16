@@ -19,7 +19,7 @@ from shutil import copytree
 from copy import deepcopy
 from fastcore.script import *
 
-# %% ../../nbs/36_src.proteus.ipynb 4
+# %% ../../nbs/36_src.proteus.ipynb 7
 def init_toml(name):
     def inner(func):
         @wraps(func)
@@ -36,7 +36,7 @@ def init_toml(name):
         return wrapper
     return inner
 
-# %% ../../nbs/36_src.proteus.ipynb 5
+# %% ../../nbs/36_src.proteus.ipynb 8
 class Proteus:
     """ Alignment and tracking of telescope data.
         STEP 1: noisescan
@@ -86,7 +86,7 @@ class Proteus:
         return f'Proteus interface for run {self.RunNumber} ({self.RawFilePath.name})'
 
     def __del__(self):
-        remove_file(*self.ConfigDir.glob(f'tmp-*-{self.RunNumber}.toml'), warn=False)  # remove tmp files
+        remove_file(*self.ConfigDir.glob(f'tmp-*-{self.RunNumber}.toml'), warn=True)  # remove tmp files
 
     # ----------------------------------------
     # region INIT
@@ -271,7 +271,7 @@ class Proteus:
     # endregion RUN
     # ----------------------------------------
 
-# %% ../../nbs/36_src.proteus.ipynb 6
+# %% ../../nbs/36_src.proteus.ipynb 9
 @call_parse
 def main():
     a = Analysis()

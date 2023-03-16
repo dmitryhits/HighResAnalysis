@@ -11,10 +11,13 @@ from numpy import arctan, sqrt, array, quantile, mean, polyfit, identity, arange
 from functools import partial
 from uncertainties import ufloat
 
-from ..src.dut_analysis import DUTAnalysis, bins, prep_kw, save_pickle, no_trans
+import HighResAnalysis.src.bins as bins
+
+from ..src.dut_analysis import DUTAnalysis, no_trans
+from ..plotting.utils import choose, prep_kw
 from ..plotting.fit import Gauss, FitRes
-from ..plotting.draw import np_profile, choose, set_x_range, ax_range
-from ..utility.utils import PBAR, uarr2n
+from ..plotting.draw import np_profile, set_x_range, ax_range
+from ..utility.utils import PBAR, uarr2n, save_pickle
 from ..utility.affine_transformations import transform, m_transform, matrix, scale_matrix, inv
 
 # %% ../../nbs/21_mod.residuals.ipynb 4

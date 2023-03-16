@@ -20,6 +20,9 @@ from .src.batch_analysis import BatchAnalysis
 from .src.run import load_nrs
 from .src.scan import Ensemble, Scan, VScan, TScan
 from .utility.utils import *  # noqa
+from .src.spreadsheet import make
+from .plotting.utils import load_json
+
 from fastcore.script import *
 
 # %% ../nbs/00_analyse.ipynb 4
@@ -27,18 +30,23 @@ t_start = time()
 
 # %% ../nbs/00_analyse.ipynb 7
 @call_parse
-def main(verbose:Param('verbosity level', action='store_false'),
-         test:Param('test run, nothing is converted, just initialize the classes', action='store_true'),
-         remove_meta:Param('removes ', action='store_true'),
-         convert:Param('removes current analysis files and reconverts from the raw files', action='store_true'),
+def main(test:Param('test run, nothing is converted, just initialize the classes', action='store_false'),
+         verbose:Param('verbosity level', action='store_false'),
+         remove_meta:Param('removes meta files', action='store_false'),
+         convert:Param('removes current analysis files and reconverts from the raw files', action='store_false'),
+         test_campaign:Param('test campaign in the YYYYMM format, for example 201912', default=Analysis.find_testcampaign()),
          run:str=Analysis.Config.get_value('data', 'default run'), # run number or batch id or scan id
          dut:int=Analysis.Config.get_value('data', 'default dut', default=0), # DUT number in the telescope
          batch:str=None, #batch name
-         test_campaign:str=Analysis.find_testcampaign(), # test campaign in the YYYYMM format, for example 201912
-         run_plan:bool=False, # create new runplan.json for beam test <YYYYMM>
+         run_plan:str=None, # create new runplan.json for beam test <YYYYMM>
         ):
+    print('test campaign 1:', test_campaign, type(test_campaign), run, dut, 'Is it Test?', test)
+    if test_campaign == 'False':
+        test_campaign = Analysis.find_testcampaign() 
+        print('test campaign 2:', test_campaign)
+    
+    # print('test campaign', Analysis.find_testcampaign(), type(Analysis.find_testcampaign()))
     if run_plan is not None:
-        from src.spreadsheet import make
         make(run_plan)
         exit(2)
     
@@ -52,11 +60,13 @@ def main(verbose:Param('verbosity level', action='store_false'),
 
         ana = Analysis(test_campaign)
         runs = load_nrs(ana.BeamTest.Path)
+        print(f'Runs: {runs}')
         is_batch = not (run in runs and batch is None)
         dut_ana = partial(BatchAnalysis, choose(batch, run)) if is_batch else partial(DUTAnalysis, run)
         dut_ana = partial(dut_ana, dut, test_campaign)
 
         if is_batch:
+            print('batch')
             bc = convert.BatchConvert(dut_ana.args[0], dut_ana.args[-1], verbose=False, force=False)
             if convert:
                 remove_file(bc.Batch.FileName)
@@ -65,13 +75,16 @@ def main(verbose:Param('verbosity level', action='store_false'),
                 bc.run()
 
         if remove_meta:
+            print('Remove Meta')
             z = dut_ana(verbose=False, test=True)
             z.remove_metadata()
 
         if convert and not is_batch:
-            z = dut_ana(verbose=False, test=True)
+            print('Convert not batch')
+            z = dut_ana(verbose=True, test=True)
             z.remove_file()
             z.Converter.remove_aux_files()
+        print(verbose, test)
 
         z = dut_ana(verbose=verbose, test=test)
 
@@ -82,29 +95,45 @@ def main(verbose:Param('verbosity level', action='store_false'),
         #     z = DUTAnalysis(run, dut, test_campaign=test_campaign, single_mode=single_mode, verbose=verbose, test=test)
 
         z.add_info(t_start, 'Init time:', prnt=True)
+        print('Type z:', type(z))
+        cut = z.Cut
 
     # aliases
     try:
         d = z.Draw
+        print('Draw')
         dut = z.DUT
+        print('DUT')
         pl = dut.Plane
+        print('Plane')
         b = z.BeamTest
+        print('BeamTest')
         r = z.Run
+        print('Run')
         c = z.Converter
+        print('Converter')
         raw = c.Raw
+        print('Raw')
         p = z.Proteus
+        print('Proteus')
         if 'CERN' in str(c):
             al = c.EventAlignment
             adc = c.Adc2Vcal
         cal = z.Calibration
+        print('Calibration')
         cut = z.Cut
+        print('Cut')
         res = z.Residuals
         tel = z.Tel
         ref = z.REF
         t = z.Tracks
         e = z.Efficiency
         re = ref.Efficiency
+        print('Efficiency')
         rsl = z.Resolution
-        cur = z.Currents     
+        print('Resolution')
+        cur = z.Currents 
+        print('Current')
+        print("Everything is available and ready for analysis!")
     except:
         print('not everything is available')

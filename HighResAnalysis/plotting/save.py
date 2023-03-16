@@ -9,9 +9,10 @@ __all__ = ['SaveDraw', 'main']
 # %% ../../nbs/02_plotting.save.ipynb 3
 from ROOT import TFile
 from fastcore.script import *
+from os.path import join
 from . import html
 from .draw import *
-from .utils import BaseDir
+from .utils import BaseDir, remove_file, ensure_dir, choose, prep_kw
 from pathlib import Path
 
 # %% ../../nbs/02_plotting.save.ipynb 4

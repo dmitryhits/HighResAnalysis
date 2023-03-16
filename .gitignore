@@ -9,11 +9,12 @@
 !Makefile
 !*.dat
 
+metadata/
 node_modules/
 package.json
 package-lock.json
-HighResAnalysis/config/main.ini
-HighResAnalysis/config/client_secret.json
+config/main.ini
+config/client_secret.json
 HighResAnalysis/plotting/dummy.root
 venv/
 #.ipynb_checkpoints/

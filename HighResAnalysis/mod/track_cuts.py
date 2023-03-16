@@ -7,8 +7,10 @@ __all__ = ['TrackCut']
 #!/usr/bin/env python
 
 # %% ../../nbs/17_mod.track_cuts.ipynb 3
-from .dut_cuts import DUTCut, zeros, save_cut, choose, all, invert, array
+from .dut_cuts import DUTCut, save_cut
 from ..src.dut_analysis import no_trans
+from ..utility.utils import choose
+from numpy import array, zeros, all, invert
 
 # %% ../../nbs/17_mod.track_cuts.ipynb 4
 class TrackCut(DUTCut):

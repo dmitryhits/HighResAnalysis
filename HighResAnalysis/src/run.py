@@ -7,20 +7,21 @@ __all__ = ['load_runlog', 'load_nrs', 'init_batch', 'load_batches', 'Batch', 'DU
 #!/usr/bin/env python
 
 # %% ../../nbs/30_src.run.ipynb 3
-from numpy import where, roll, split
+from numpy import where, roll, split, array
+from pathlib import Path
 from fastcore.script import *
-from ..utility.utils import print_table, datetime, ev2str, remove_letters, Dir, array, small_banner, isint, do_pickle, file_hash
+from ..utility.utils import print_table, datetime, ev2str, remove_letters, Dir, small_banner, isint, do_pickle, file_hash
 from ..plotting.utils import load_json, warning, critical
-from .analysis import Analysis, Path, BeamTest
+from .analysis import Analysis, BeamTest
 from ..utility.utils import choose
 from .dut import DUT
+from .spreadsheet import make
 
 # %% ../../nbs/30_src.run.ipynb 4
 def load_runlog(p: Path):
     f = p.joinpath(Analysis.Config.get('data', 'runlog file'))
     if not f.exists():
         warning('runlog file does not exist! -> creating new one!')
-        from src.spreadsheet import make
         make(p.stem.replace('-', ''))
     return load_json(f)
 

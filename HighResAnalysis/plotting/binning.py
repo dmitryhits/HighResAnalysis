@@ -5,9 +5,10 @@ __all__ = ['freedman_diaconis', 'width', 'n', 'increase_range', 'entries', 'sing
            'from_vec', 'from_p', 'make', 'make2d', 'find_range', 'find', 'find_2d', 'hn', 'from_hist', 'hx', 'hy',
            'h2d', 'h2dgrid', 'set_2d_values', 'set_2d_entries']
 
-# %% ../../nbs/03_plotting.binning.ipynb 2
+# %% ../../nbs/03_plotting.binning.ipynb 1
 from numpy import array, append, arange, linspace, diff, isfinite, quantile, ceil, all
-from .utils import choose, ufloat, is_iter, mean_sigma
+from .utils import choose, is_iter, mean_sigma
+from uncertainties import ufloat
 
 # %% ../../nbs/03_plotting.binning.ipynb 3
 def freedman_diaconis(x):

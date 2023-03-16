@@ -20,6 +20,7 @@ from multiprocessing import cpu_count, Pool
 from numpy import where, diff, array, concatenate, cumsum, append, mean
 from functools import partial
 from fastcore.script import *
+from subprocess import check_call
 
 # %% ../nbs/01_convert.ipynb 4
 class AutoConvert:

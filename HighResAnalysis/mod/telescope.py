@@ -11,6 +11,8 @@ from ..src.dut_analysis import DUTAnalysis
 from ..src.analysis import *
 from .tel_cuts import TelCut
 from .residuals import res_analysis
+from ..plotting.utils import prep_kw
+from numpy import array
 
 # %% ../../nbs/24_mod.telescope.ipynb 4
 def tel_analysis(cls):

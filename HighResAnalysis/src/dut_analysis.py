@@ -7,20 +7,31 @@ __all__ = ['no_trans', 'DUTAnalysis']
 #!/usr/bin/env python
 
 # %% ../../nbs/29_src.dut_analysis.ipynb 3
+import h5py
 from typing import Any
 from pathlib import Path
+from datetime import timedelta, time, datetime
+from numpy import zeros, array, mean, sqrt
+
 import HighResAnalysis.cern.converter
-import HighResAnalysis.plotting.latex as tex
 import HighResAnalysis.src.converter
+
+import HighResAnalysis.plotting.latex as tex
+import HighResAnalysis.src.bins as bins
+
 from ..mod.dut_cuts import DUTCut
+
 from ..plotting.fit import *
+from ..plotting.utils import remove_file, critical
+
 from .analysis import *
 from .currents import Currents
 from .dut import Plane
 from .run import Run
+
 from ..utility.affine_transformations import transform, m_transform
 from ..utility.utils import *
-import HighResAnalysis.src.bins as bins
+
 
 # %% ../../nbs/29_src.dut_analysis.ipynb 4
 def no_trans(f):
@@ -136,7 +147,7 @@ class DUTAnalysis(Analysis):
 
     @property
     def converter(self):
-        return cern.converter.CERNConverter if self.BeamTest.Location == 'CERN' else src.converter.Converter
+        return cern.converter.CERNConverter if self.BeamTest.Location == 'CERN' else HighResAnalysis.src.converter.Converter
 
     def init_planes(self):
         n_tel, n_dut = self.Converter.NTelPlanes, self.Converter.NDUTPlanes
@@ -149,29 +160,29 @@ class DUTAnalysis(Analysis):
         return pl + [Plane(len(pl) + i, typ='DUT', rotated=rot[len(pl) + i]) for i in range(n_dut)]
 
     def init_residuals(self):
-        from mod.residuals import res_analysis
+        from HighResAnalysis.mod.residuals import res_analysis
         return res_analysis(self.__class__)(self)
 
     def init_ref(self):
         if self.Run.NDUTs > 1 or self.Proteus.NRefPlanes:
-            from mod.reference import ref_analysis
+            from HighResAnalysis.mod.reference import ref_analysis
             return ref_analysis(self.__class__)(self)
 
     def init_tracks(self):
-        from mod.tracks import track_analysis
+        from HighResAnalysis.mod.tracks import track_analysis
         return track_analysis(self.__class__)(self)
 
     def init_eff(self):
-        from mod.efficiency import eff_analysis
+        from HighResAnalysis.mod.efficiency import eff_analysis
         return eff_analysis(self.__class__)(self)
 
     def init_tel(self):
-        from mod.telescope import tel_analysis
+        from HighResAnalysis.mod.telescope import tel_analysis
         return tel_analysis(self.__class__)(self)
 
     def init_resolution(self):
+        from HighResAnalysis.mod.resolution import reso_analysis
         if self.REF is not None:
-            from mod.resolution import reso_analysis
             return reso_analysis(self.__class__)(self.REF)
 
     @property

@@ -1,0 +1,34 @@
+[align.0-tel_coarse]  # coarse alignment using cluster correlation
+method = "correlations"
+sensor_ids = [0,1,2,3,4,5]
+align_ids = [1,2,3,4,5]  # keep first plane fixed
+estimate_beam_parameters = true
+
+[align.1-tel_coarse_inner]  # coarse alignment for inner planes
+method = "correlations"
+sensor_ids = [0,1,2,3,4,5]
+align_ids = [1,2,3,4]  # keep first and last plane fixed
+estimate_beam_parameters = true
+
+[align.2-tel_fine_res]
+method = "residuals"
+sensor_ids = [0,1,2,3,4,5]
+align_ids =    [1,2,3,4]  # keep first and last plane fixed
+num_steps = 30
+search_spatial_sigma_max = 10.0
+reduced_chi2_max = 5.0
+
+[align.3-dut_coarse]
+method = "correlations" 
+sensor_ids = [0,1,2,3,4,5,6,7]
+align_ids = [6,7]
+estimate_beam_parameters = false
+
+[align.4-dut_fine]
+method = "localchi2" # correlations, residuals
+sensor_ids = [0,1,2,3,4,5,6,7]
+align_ids = [6,7]
+num_steps = 20
+search_spatial_sigma_max = 10.0
+reduced_chi2_max = 5.0
+estimate_beam_parameters = false

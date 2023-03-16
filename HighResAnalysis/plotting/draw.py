@@ -26,13 +26,16 @@ from typing import Any
 from warnings import catch_warnings, simplefilter
 from pathlib import Path
 from os.path import join
+from copy import deepcopy
+from datetime import datetime
 
 from ROOT import TGraphErrors, TGaxis, TLatex, TGraphAsymmErrors, TCanvas, gStyle, TLegend, TArrow, TPad, TCutG, TLine, TPaveText, TPaveStats, TH1F, TEllipse, TColor, TProfile
 from ROOT import TProfile2D, TH2F, TH3F, THStack, TMultiGraph, TPie, gROOT, TF1
 from numpy import sign, linspace, ones, ceil, append, tile, absolute, rot90, flip, argsort, ndarray, arange, diff, pi, concatenate, where, roll, indices, array_split, isnan, frombuffer, column_stack
 from scipy.stats import binned_statistic
 from screeninfo import get_monitors, Monitor, common
-from numpy import array
+from numpy import array, zeros, mean, sqrt, where
+from uncertainties import ufloat
 
 import HighResAnalysis.plotting.binning as bins
 from .binning import increase_range, quantile
@@ -233,6 +236,7 @@ class Draw(object):
     # region SET
     @staticmethod
     def setup():
+        print(f'--- Palette ------ {Draw.Palette}')
         gStyle.SetLegendFont(Draw.Font)
         gStyle.SetOptTitle(Draw.Title)
         gStyle.SetPalette(Draw.Palette)
@@ -859,7 +863,7 @@ class Draw(object):
 # ----------------------------------------
 # region FORMATTING
 
-# %% ../../nbs/09_plotting.draw.ipynb 7
+# %% ../../nbs/09_plotting.draw.ipynb 8
 def format_histo(histo, name=None, title=None, x_tit=None, y_tit=None, z_tit=None, marker=None, color=None, line_color=None, line_style=None, markersize=None, x_off=None, y_off=None, z_off=None,
                  lw=None, fill_color=None, fill_style=None, stats=None, tit_size=None, lab_size=None, xls=None, yls=None, l_off_y=None, l_off_x=None, draw_first=False,
                  x_range=None, xr=None, y_range=None, yr=None, z_range=None, zr=None,
@@ -917,22 +921,22 @@ def format_histo(histo, name=None, title=None, x_tit=None, y_tit=None, z_tit=Non
     update_canvas()
     return h
 
-# %% ../../nbs/09_plotting.draw.ipynb 8
+# %% ../../nbs/09_plotting.draw.ipynb 9
 def set_statbox(x2=None, y2=None, h=None, w=.3, entries=False, m=False, rms=False, all_stat=False, fit=False, center_x=False, center_y=False, form=None, stats=True, **kw):
     Draw.Stats = {'x2': x2, 'y2': y2, 'h': h, 'w': w, 'entries': entries, 'm': m, 'rms': rms, 'all_stat': all_stat, 'fit': fit, 'center_x': center_x, 'center_y': center_y, 'form': form, **kw}
     return stats
 
-# %% ../../nbs/09_plotting.draw.ipynb 9
+# %% ../../nbs/09_plotting.draw.ipynb 10
 def set_entries():
     Draw.Stats = {'entries': True, 'w': .2}
     return True
 
-# %% ../../nbs/09_plotting.draw.ipynb 10
+# %% ../../nbs/09_plotting.draw.ipynb 11
 def get_window_ratio(c=None):
     c = choose(c, get_last_canvas(warn=False))
     return c.GetWindowHeight() / c.GetWindowWidth() if c.ClassName() == 'TCanvas' else c.GetAbsHNDC() / c.GetAbsWNDC()
 
-# %% ../../nbs/09_plotting.draw.ipynb 11
+# %% ../../nbs/09_plotting.draw.ipynb 12
 def get_stat_margins(c=None, x2=None, y2=None, d=.01, bottom=False, left=False, h=0., w=0.):
     c = choose(c, get_last_canvas(warn=False))
     r = get_window_ratio(c)
@@ -940,7 +944,7 @@ def get_stat_margins(c=None, x2=None, y2=None, d=.01, bottom=False, left=False, 
     y2 = choose(y2, c.GetBottomMargin() + h + 4 * d if bottom else 1 - c.GetTopMargin() - d)
     return x2, y2
 
-# %% ../../nbs/09_plotting.draw.ipynb 12
+# %% ../../nbs/09_plotting.draw.ipynb 13
 def get_stat_pos(c, nentries, x2=None, y2=None, d=.01, h=None, w=.3, center_x=False, center_y=False, bottom=False, left=False):
     r = get_window_ratio(c)
     h = choose(h, .05 / r * nentries)
@@ -950,7 +954,7 @@ def get_stat_pos(c, nentries, x2=None, y2=None, d=.01, h=None, w=.3, center_x=Fa
     y1, y2 = (cy - h / 2, cy + h / 2) if center_y else (y2 - h, y2)
     return x1, y1, x2, y2
 
-# %% ../../nbs/09_plotting.draw.ipynb 13
+# %% ../../nbs/09_plotting.draw.ipynb 14
 def format_statbox(th, x2=None, y2=None, d=.01, h=None, w=.3, entries=False, m=False, rms=False, all_stat=False, fit=False, fit_opt=None, stat_opt=None, center_x=False,
                    center_y=False, bottom=False, left=False, form=None, c=None):
     c = choose(c, get_last_canvas(warn=False))
@@ -970,7 +974,7 @@ def format_statbox(th, x2=None, y2=None, d=.01, h=None, w=.3, entries=False, m=F
         p.Draw()
         update_canvas(c)
 
-# %% ../../nbs/09_plotting.draw.ipynb 14
+# %% ../../nbs/09_plotting.draw.ipynb 15
 def format_axis(axis, h, title, tit_offset, tit_size, centre_title, lab_size, label_offset, limits, ndiv, tick_size, color=None):
     do(axis.SetTitle, title)
     do(axis.SetTitleOffset, tit_offset)
@@ -986,7 +990,7 @@ def format_axis(axis, h, title, tit_offset, tit_size, centre_title, lab_size, la
     do(axis.SetLabelColor, color)
     do(axis.SetAxisColor, color)
 
-# %% ../../nbs/09_plotting.draw.ipynb 15
+# %% ../../nbs/09_plotting.draw.ipynb 16
 def format_pie(pie, h=None, r=None, text_size=None, angle3d=None, angle_off=None, label_format=None):
     do([pie.SetHeight, pie.SetRadius], [h, r])
     do(pie.SetTextSize, text_size)
@@ -994,7 +998,7 @@ def format_pie(pie, h=None, r=None, text_size=None, angle3d=None, angle_off=None
     do(pie.SetLabelFormat, label_format)
     do(pie.SetAngularOffset, angle_off)
 
-# %% ../../nbs/09_plotting.draw.ipynb 16
+# %% ../../nbs/09_plotting.draw.ipynb 17
 def format_text(t, name='text', align=20, color=1, size=.05, angle=None, ndc=None, font=None):
     t.SetName(name)
     t.SetTextAlign(align)
@@ -1005,7 +1009,7 @@ def format_text(t, name='text', align=20, color=1, size=.05, angle=None, ndc=Non
     do(t.SetNDC, ndc)
     return t
 
-# %% ../../nbs/09_plotting.draw.ipynb 17
+# %% ../../nbs/09_plotting.draw.ipynb 18
 def format_frame(frame):
     fr = frame
     fr.GetYaxis().SetTitleSize(.06)
@@ -1019,7 +1023,7 @@ def format_frame(frame):
 # endregion FORMATTING
 # ----------------------------------------
 
-# %% ../../nbs/09_plotting.draw.ipynb 18
+# %% ../../nbs/09_plotting.draw.ipynb 19
 def fill_hist(h, x, y=None, zz=None):
     if len(x) and is_ufloat(x[0]):
         for i, v in enumerate(x, 1):
@@ -1045,19 +1049,19 @@ def fill_hist(h, x, y=None, zz=None):
         for i in range(x.size):
             h.Fill(x[i], y[i], zz[i])
 
-# %% ../../nbs/09_plotting.draw.ipynb 19
+# %% ../../nbs/09_plotting.draw.ipynb 20
 def set_2d_ranges(h, dx, dy):
     # find centers in x and y
     xmid, ymid = [(p.GetBinCenter(p.FindFirstBinAbove(0)) + p.GetBinCenter(p.FindLastBinAbove(0))) / 2 for p in [h.ProjectionX(), h.ProjectionY()]]
     format_histo(h, x_range=[xmid - dx, xmid + dx], y_range=[ymid - dy, ymid + dx])
 
-# %% ../../nbs/09_plotting.draw.ipynb 20
+# %% ../../nbs/09_plotting.draw.ipynb 21
 def arr2coods(a):
     i = indices(a.shape)
     cut = ~isnan(a).flatten()
     return [v.flatten()[cut] for v in [i[1], i[0], a]]
 
-# %% ../../nbs/09_plotting.draw.ipynb 21
+# %% ../../nbs/09_plotting.draw.ipynb 22
 def fix_chi2(g, prec=.01, show=True):
     it = 0
     error = 2
@@ -1072,7 +1076,7 @@ def fix_chi2(g, prec=.01, show=True):
         it += 1
     return None if fit is None else FitRes(fit)
 
-# %% ../../nbs/09_plotting.draw.ipynb 22
+# %% ../../nbs/09_plotting.draw.ipynb 23
 def make_darray(values):
     return array([v.n for v in values] if is_ufloat(values[0]) else values, dtype='d')
 
@@ -1080,7 +1084,7 @@ def make_darray(values):
 # ----------------------------------------
 # region GRAPH VALUES
 
-# %% ../../nbs/09_plotting.draw.ipynb 23
+# %% ../../nbs/09_plotting.draw.ipynb 24
 def graph_values(g, m, err=False, as_u=True):
     if is_iter(g):
         return array([v for ig in g for v in graph_values(ig, m, err)])
@@ -1093,15 +1097,15 @@ def graph_values(g, m, err=False, as_u=True):
         return make_ufloat(v, e) if as_u else array([v, e]).T
     return v
 
-# %% ../../nbs/09_plotting.draw.ipynb 24
+# %% ../../nbs/09_plotting.draw.ipynb 25
 def graph_xy(g, err=True, as_u=True):
     return graph_x(g, err, as_u), graph_y(g, err, as_u)
 
-# %% ../../nbs/09_plotting.draw.ipynb 25
+# %% ../../nbs/09_plotting.draw.ipynb 26
 def graph_x(g, err=True, as_u=True):
     return graph_values(g, 'X', err, as_u)
 
-# %% ../../nbs/09_plotting.draw.ipynb 26
+# %% ../../nbs/09_plotting.draw.ipynb 27
 def graph_y(g, err=True, as_u=True):
     return graph_values(g, 'Y', err, as_u)
 # endregion GRAPH VALUES
@@ -1111,24 +1115,24 @@ def graph_y(g, err=True, as_u=True):
 # ----------------------------------------
 # region HISTOGRAM VALUES
 
-# %% ../../nbs/09_plotting.draw.ipynb 27
+# %% ../../nbs/09_plotting.draw.ipynb 28
 def hist_values(h, err=True):
     return array([ufloat(h.GetBinContent(i), h.GetBinError(i)) if err else h.GetBinContent(i) for i in bins.hn(h)])
 
-# %% ../../nbs/09_plotting.draw.ipynb 28
+# %% ../../nbs/09_plotting.draw.ipynb 29
 def hist_xy(h, err=True, raw=False):
     if type(h) in [ndarray, list]:
         return array([tup for ip in h for tup in array(hist_xy(ip, err, raw)).T]).T
     return bins.from_hist(h, err, raw), hist_values(h, err)
 
-# %% ../../nbs/09_plotting.draw.ipynb 29
+# %% ../../nbs/09_plotting.draw.ipynb 30
 def hist_values_2d(h, err=True, flat=True, z_sup=True):
     xbins, ybins = bins.hn(h, axis='X'), bins.hn(h, axis='Y')
     values = array([ufloat(h.GetBinContent(xbin, ybin), h.GetBinError(xbin, ybin)) for ybin in ybins for xbin in xbins])
     values = values if err else array([v.n for v in values])
     return (values[values != 0] if z_sup else values) if flat else values.reshape(len(ybins), len(xbins))
 
-# %% ../../nbs/09_plotting.draw.ipynb 30
+# %% ../../nbs/09_plotting.draw.ipynb 31
 def hist_xyz(h, err=True, flat=False, z_sup=True, grid=False):
     z_ = hist_values_2d(h, err, flat=False, z_sup=False)
     if grid:
@@ -1139,43 +1143,43 @@ def hist_xyz(h, err=True, flat=False, z_sup=True, grid=False):
 # endregion HISTOGRAM VALUES
 # ----------------------------------------
 
-# %% ../../nbs/09_plotting.draw.ipynb 31
+# %% ../../nbs/09_plotting.draw.ipynb 32
 def h_y(h):
     return graph_y(h) if 'Graph' in h.ClassName() else hist_values(h)
 
-# %% ../../nbs/09_plotting.draw.ipynb 32
+# %% ../../nbs/09_plotting.draw.ipynb 33
 def h_x(h):
     return graph_x(h) if 'Graph' in h.ClassName() else bins.from_hist(h)
 
-# %% ../../nbs/09_plotting.draw.ipynb 33
+# %% ../../nbs/09_plotting.draw.ipynb 34
 def h_xy(h):
     return h_x(h), h_y(h)
 
-# %% ../../nbs/09_plotting.draw.ipynb 34
+# %% ../../nbs/09_plotting.draw.ipynb 35
 def set_bin_labels(g, labels):
     if labels is not None:
         for i, label in enumerate(labels):
             g.GetXaxis().SetBinLabel(g.GetXaxis().FindBin(i), label)
         update_canvas()
 
-# %% ../../nbs/09_plotting.draw.ipynb 35
+# %% ../../nbs/09_plotting.draw.ipynb 36
 def make_box_args(x1, y1, x2, y2):
     return array([[x1, x1, x2, x2], [y1, y2, y2, y1]])
 
-# %% ../../nbs/09_plotting.draw.ipynb 36
+# %% ../../nbs/09_plotting.draw.ipynb 37
 def make_poly_args(x, y, last_x=None):
     return append(x.repeat(2)[1:], choose(last_x, x[-1] + x[-1] - x[-2])), y.repeat(2)
 
-# %% ../../nbs/09_plotting.draw.ipynb 37
+# %% ../../nbs/09_plotting.draw.ipynb 38
 def make_star(cx=0, cy=0, r=1, n=5):
     coods = pol2cart(tile([r, r / (2 * cos(pi / n) + 1)], n), linspace(0, 2 * pi, 2 * n, endpoint=False) - pi / 2)
     return (coods.T + array([cx, cy])).T
 
-# %% ../../nbs/09_plotting.draw.ipynb 38
+# %% ../../nbs/09_plotting.draw.ipynb 39
 def set_titles(status=True):
     gStyle.SetOptTitle(status)
 
-# %% ../../nbs/09_plotting.draw.ipynb 39
+# %% ../../nbs/09_plotting.draw.ipynb 40
 def shift_graph(g, ox=0, oy=0):
     if is_iter(g):
         return [shift_graph(ig, ox, oy) for ig in g]
@@ -1191,7 +1195,7 @@ def shift_graph(g, ox=0, oy=0):
                 g.SetPointError(i, x.s, y.s)
     return g
 
-# %% ../../nbs/09_plotting.draw.ipynb 40
+# %% ../../nbs/09_plotting.draw.ipynb 41
 def get_3d_profiles(h, opt, err=True):
     px, py = [], []
     for ibin in range(1, h.GetNbinsX() + 1):
@@ -1201,7 +1205,7 @@ def get_3d_profiles(h, opt, err=True):
         py.append(deepcopy(p.ProfileY()))
     return bins.hx(h, err), px, py
 
-# %% ../../nbs/09_plotting.draw.ipynb 41
+# %% ../../nbs/09_plotting.draw.ipynb 42
 def get_3d_correlations(h, opt='yz', thresh=.25, err=True, z_supp=True):
     corr = []
     for ibin in range(1, h.GetNbinsX() + 1):
@@ -1210,7 +1214,7 @@ def get_3d_correlations(h, opt='yz', thresh=.25, err=True, z_supp=True):
     c = array(corr)
     return (bins.hx(h, err)[c != 0], c[c != 0]) if z_supp else (bins.hx(h, err), c)
 
-# %% ../../nbs/09_plotting.draw.ipynb 42
+# %% ../../nbs/09_plotting.draw.ipynb 43
 def scale_graph(gr, scale=None, val=1, to_low_flux=False):
     x, y = graph_xy(gr)
     if scale is None:
@@ -1221,41 +1225,41 @@ def scale_graph(gr, scale=None, val=1, to_low_flux=False):
         gr.SetPointError(i, gr.GetErrorX(i), gr.GetErrorY(i) * scale) if 'Error' in gr.ClassName() else do_nothing()
     return scale
 
-# %% ../../nbs/09_plotting.draw.ipynb 43
+# %% ../../nbs/09_plotting.draw.ipynb 44
 def get_quantile(h, q):
     quantiles = make_list(q)
     v = zeros(quantiles.size)
     h.GetQuantiles(v.size, v, quantiles)
     return v[0] if v.size == 1 else v
 
-# %% ../../nbs/09_plotting.draw.ipynb 44
+# %% ../../nbs/09_plotting.draw.ipynb 45
 def markers(i, duo=False):
     return duo_markers(i) if duo else ((list(range(20, 24)) + [29, 33, 34]) * 2)[i]
 
-# %% ../../nbs/09_plotting.draw.ipynb 45
+# %% ../../nbs/09_plotting.draw.ipynb 46
 def duo_markers(i):
     """ :returns full and open marker"""
     full_, open_ = [20, 21, 22, 23, 29, 33, 34], [24, 25, 26, 32, 30, 27, 28]
     return list(concatenate(array([full_, open_]).T).tolist())[i]  # noqa
 
-# %% ../../nbs/09_plotting.draw.ipynb 46
+# %% ../../nbs/09_plotting.draw.ipynb 47
 def set_palette(pal):
     Draw.Palette = pal
     gStyle.SetPalette(*[len(pal), array(pal).astype('i')] if is_iter(pal) and type(pal) is not str else [pal])
 
-# %% ../../nbs/09_plotting.draw.ipynb 47
+# %% ../../nbs/09_plotting.draw.ipynb 48
 def n_pal(n):
     return append(0, Draw.get_colors(n)).astype('i')
 
-# %% ../../nbs/09_plotting.draw.ipynb 48
+# %% ../../nbs/09_plotting.draw.ipynb 49
 def set_n_palette(n):
     set_palette(n_pal(n))
 
-# %% ../../nbs/09_plotting.draw.ipynb 49
+# %% ../../nbs/09_plotting.draw.ipynb 50
 def is_graph(h):
     return 'Graph' in h.ClassName()
 
-# %% ../../nbs/09_plotting.draw.ipynb 50
+# %% ../../nbs/09_plotting.draw.ipynb 51
 def update_canvas(c=None):
     c = choose(c, get_last_canvas(warn=False))
     if c is not None:
@@ -1263,7 +1267,7 @@ def update_canvas(c=None):
         c.Update()
     return c
 
-# %% ../../nbs/09_plotting.draw.ipynb 51
+# %% ../../nbs/09_plotting.draw.ipynb 52
 def show_colors(colors):
     n = len(colors)
     c = Draw.canvas(divide=(int(ceil(sqrt(n))), int(ceil(sqrt(n)))))
@@ -1272,21 +1276,21 @@ def show_colors(colors):
         Draw.box(0, 0, 1, 1, fillstyle=Draw.Solid, fillcolor=col)
         Draw.tlatex(.5, .5, str(i - 1), align=22, size=.2)
 
-# %% ../../nbs/09_plotting.draw.ipynb 52
+# %% ../../nbs/09_plotting.draw.ipynb 53
 def show_wheel():
     from ROOT import TColorWheel
     t = TColorWheel()
     t.Draw()
     Draw.add(t)
 
-# %% ../../nbs/09_plotting.draw.ipynb 53
+# %% ../../nbs/09_plotting.draw.ipynb 54
 def show_line_styles():
     Draw.canvas(w=1.5, title='Line Styles')
     for i in range(1, 11):
         Draw.horizontal_line(1 / 11 * i, 0.1, .95, w=2, style=i)
         Draw.tlatex(.07, 1 / 11 * i, str(i), align=32)
 
-# %% ../../nbs/09_plotting.draw.ipynb 54
+# %% ../../nbs/09_plotting.draw.ipynb 55
 def ax_range(low: Any = None, high=None, fl=0., fh=0., h=None, to_int=False, thresh=None):
     if type(low) in [list, ndarray]:
         utypes = [Variable, AffineScalarFunc]
@@ -1303,14 +1307,14 @@ def ax_range(low: Any = None, high=None, fl=0., fh=0., h=None, to_int=False, thr
         return ax_range(h.GetBinCenter(h.FindFirstBinAbove(lo)), h.GetBinCenter(h.FindLastBinAbove(hi)), fl, fh, to_int=to_int)
     return increase_range(low, high, fl, fh, to_int)
 
-# %% ../../nbs/09_plotting.draw.ipynb 55
+# %% ../../nbs/09_plotting.draw.ipynb 56
 def find_z_range(h, q=None, z0=None):
     if q is not None:
         x = hist_values_2d(h, err=False, flat=True, z_sup=False)
         zmin, zmax = choose(z0, quantile, a=x, q=1 - q), quantile(x, q)
         return [zmin, zmax]
 
-# %% ../../nbs/09_plotting.draw.ipynb 56
+# %% ../../nbs/09_plotting.draw.ipynb 57
 def set_drawing_range(h, legend=True, lfac=None, rfac=None, thresh=None):
     for i in range(1, 4):
         h.SetBinContent(i, 0)
@@ -1320,7 +1324,7 @@ def set_drawing_range(h, legend=True, lfac=None, rfac=None, thresh=None):
     rfac = rfac if rfac is not None else .55 if legend else .1
     h.GetXaxis().SetRangeUser(*ax_range(range_, lfac, rfac))
 
-# %% ../../nbs/09_plotting.draw.ipynb 57
+# %% ../../nbs/09_plotting.draw.ipynb 58
 def normalise_histo(histo, x_range=None, from_min=False):
     h = histo
     x_axis = h.GetXaxis()
@@ -1329,7 +1333,7 @@ def normalise_histo(histo, x_range=None, from_min=False):
     integral = h.Integral(min_bin, h.GetNbinsX() - 2)
     return scale_histo(h, integral)
 
-# %% ../../nbs/09_plotting.draw.ipynb 58
+# %% ../../nbs/09_plotting.draw.ipynb 59
 def normalise_bins(h):
     px = h.ProjectionX()
     for xbin in range(h.GetNbinsX()):
@@ -1337,57 +1341,57 @@ def normalise_bins(h):
             h.SetBinContent(xbin, ybin, h.GetBinContent(xbin, ybin) / (px.GetBinContent(xbin) if px.GetBinContent(xbin) else 1))
     update_canvas()
 
-# %% ../../nbs/09_plotting.draw.ipynb 59
+# %% ../../nbs/09_plotting.draw.ipynb 60
 def set_z_range(zmin, zmax):
     c = get_last_canvas()
     h = c.GetListOfPrimitives()[1]
     h.GetZaxis().SetRangeUser(zmin, zmax)
 
-# %% ../../nbs/09_plotting.draw.ipynb 60
+# %% ../../nbs/09_plotting.draw.ipynb 61
 def set_axes_range(xmin, xmax, ymin, ymax, c=None):
     set_x_range(xmin, xmax, c)
     set_y_range(ymin, ymax, c)
     update_canvas()
 
-# %% ../../nbs/09_plotting.draw.ipynb 61
+# %% ../../nbs/09_plotting.draw.ipynb 62
 def get_ax_range(h, d='x'):
     ax = getattr(h, f'Get{d.title()}axis')()
     return [ax.GetXmin(), ax.GetXmax()]
 
-# %% ../../nbs/09_plotting.draw.ipynb 62
+# %% ../../nbs/09_plotting.draw.ipynb 63
 def get_dax(h, d='x'):
     return diff(get_ax_range(h, d))[0]
 
-# %% ../../nbs/09_plotting.draw.ipynb 63
+# %% ../../nbs/09_plotting.draw.ipynb 64
 def set_x_range(xmin, xmax, c=None):
     c = choose(c, get_last_canvas())
     h = c.GetListOfPrimitives()[1]
     h.GetXaxis().SetRangeUser(xmin, xmax)
 
-# %% ../../nbs/09_plotting.draw.ipynb 64
+# %% ../../nbs/09_plotting.draw.ipynb 65
 def set_y_range(ymin, ymax, c=None):
     c = choose(c, get_last_canvas())
     h = c.GetListOfPrimitives()[1]
     h.GetYaxis().SetRangeUser(ymin, ymax)
 
-# %% ../../nbs/09_plotting.draw.ipynb 65
+# %% ../../nbs/09_plotting.draw.ipynb 66
 def get_last_canvas(warn=True):
     try:
         return gROOT.GetListOfCanvases()[-1]
     except IndexError:
         warning('There is no canvas is in the list...', prnt=warn)
 
-# %% ../../nbs/09_plotting.draw.ipynb 66
+# %% ../../nbs/09_plotting.draw.ipynb 67
 def close_last_canvas():
     get_last_canvas().Close()
 
-# %% ../../nbs/09_plotting.draw.ipynb 67
+# %% ../../nbs/09_plotting.draw.ipynb 68
 def get_object(name):
     if name is not None:
         o = gROOT.FindObject(name)
         return None if o.__class__.Class_Name() == 'TObject' else o
 
-# %% ../../nbs/09_plotting.draw.ipynb 68
+# %% ../../nbs/09_plotting.draw.ipynb 69
 def set_time_axis(histo, form='%H:%M', off=0, axis='X'):
     ax = getattr(histo, f'Get{axis.upper()}axis')()
     ax.SetTimeFormat(form)
@@ -1395,7 +1399,7 @@ def set_time_axis(histo, form='%H:%M', off=0, axis='X'):
     ax.SetTimeDisplay(1)
     update_canvas()
 
-# %% ../../nbs/09_plotting.draw.ipynb 69
+# %% ../../nbs/09_plotting.draw.ipynb 70
 def find_mpv_fwhm(histo, nbins=15):
     max_bin = histo.GetMaximumBin()
     fit = TF1('fit', 'gaus', 0, 500)
@@ -1404,12 +1408,12 @@ def find_mpv_fwhm(histo, nbins=15):
     fwhm = histo.FindLastBinAbove(fit(mpv.n) / 2) - histo.FindFirstBinAbove(fit(mpv.n) / 2)
     return mpv, fwhm, mpv / fwhm
 
-# %% ../../nbs/09_plotting.draw.ipynb 70
+# %% ../../nbs/09_plotting.draw.ipynb 71
 def get_fw_center(h):
     (low, high), bw = get_fwhm(h, ret_edges=True), h.GetBinWidth(1)
     return mean([add_err(low, bw), add_err(high, bw)])  # center of FWHM as MPV
 
-# %% ../../nbs/09_plotting.draw.ipynb 71
+# %% ../../nbs/09_plotting.draw.ipynb 72
 def find_mpv(h, r=.8, show_fit=False):
     b, y = [f(hist_values(h, err=False)) for f in [argsort, sorted]]
     bmax, ymax = (b[-1] + 1, y[-1]) if y[-1] < 2 * y[-2] else (b[-2] + 1, y[-2])
@@ -1418,30 +1422,30 @@ def find_mpv(h, r=.8, show_fit=False):
     yfit, xfit = FitRes(h.Fit('gaus', f'qs{"" if show_fit else"0"}', '', *[h.GetBinCenter(i) for i in fit_range]))[:2]  # fit the top with a gaussian to get better maxvalue
     return (xfit, yfit) if abs(yfit - ymax) < .2 * ymax else (h.GetBinCenter(int(bmax)) + ufloat(0, h.GetBinWidth(1) / 2), ymax * ufloat(1, .02))  # check if fit value is reasonable ...
 
-# %% ../../nbs/09_plotting.draw.ipynb 72
+# %% ../../nbs/09_plotting.draw.ipynb 73
 def get_fwhm(h, fit_range=.8, ret_edges=False, err=True):
     half_max = find_mpv(h, fit_range)[1] * .5
     low, high = [ufloat(v.n, v.s + abs(v.n - i.n)) for v, i in zip(_get_fwhm(h, half_max), _get_fwhm(h, half_max - half_max.s))]
     return ((low, high) if err else (low.n, high.n)) if ret_edges else high - low
 
-# %% ../../nbs/09_plotting.draw.ipynb 73
+# %% ../../nbs/09_plotting.draw.ipynb 74
 def _get_fwhm(h, half_max):
     blow, bhigh, w = h.FindFirstBinAbove(half_max.n), h.FindLastBinAbove(half_max.n), h.GetBinWidth(1)
     low = get_x(h.GetBinCenter(blow - 1), h.GetBinCenter(blow), h.GetBinContent(blow - 1), h.GetBinContent(blow), half_max)
     high = get_x(h.GetBinCenter(bhigh), h.GetBinCenter(bhigh + 1), h.GetBinContent(bhigh), h.GetBinContent(bhigh + 1), half_max)
     return low, high
 
-# %% ../../nbs/09_plotting.draw.ipynb 74
+# %% ../../nbs/09_plotting.draw.ipynb 75
 def fit_fwhm(h, fitfunc='gaus', show=False, fit_range=.8):
     low, high = get_fwhm(h, fit_range, ret_edges=True)
     return FitRes(h.Fit(fitfunc, 'qs{}'.format('' if show else 0), '', low.n, high.n))
 
-# %% ../../nbs/09_plotting.draw.ipynb 75
+# %% ../../nbs/09_plotting.draw.ipynb 76
 def get_f_fwhm(f: TF1):
     half_max = f.GetMaximum() / 2
     return f.GetX(half_max, f.GetMaximumX(), 1e9) - f.GetX(half_max)
 
-# %% ../../nbs/09_plotting.draw.ipynb 76
+# %% ../../nbs/09_plotting.draw.ipynb 77
 def scale_histo(histo, value=None, to_max=False, x_range=None):
     h = histo
     maximum = h.GetBinContent(h.GetMaximumBin())
@@ -1454,12 +1458,12 @@ def scale_histo(histo, value=None, to_max=False, x_range=None):
         h.Scale(1 / value)
     return h
 
-# %% ../../nbs/09_plotting.draw.ipynb 77
+# %% ../../nbs/09_plotting.draw.ipynb 78
 def find_2d_centre(h, thresh=.5):
     px, py = h.ProjectionX(), h.ProjectionY()
     return array([mean([p.GetBinCenter(b) for b in [p.FindFirstBinAbove(p.GetMaximum() * thresh), p.FindLastBinAbove(p.GetMaximum() * thresh)]]) for p in [px, py]])
 
-# %% ../../nbs/09_plotting.draw.ipynb 78
+# %% ../../nbs/09_plotting.draw.ipynb 79
 def get_2d_centre_ranges(h, dx, dy=None, thresh=.5):
     if dx is None:
         return None, None
@@ -1467,24 +1471,24 @@ def get_2d_centre_ranges(h, dx, dy=None, thresh=.5):
     dx, dy = dx / 2, choose(dy, dx) / 2
     return [cx - dx, cx + dx], [cy - dy, cy + dy]
 
-# %% ../../nbs/09_plotting.draw.ipynb 79
+# %% ../../nbs/09_plotting.draw.ipynb 80
 def centre_2d(h, dx, dy=None, thresh=.5):
     c = get_last_canvas()
     set_axes_range(*concatenate(get_2d_centre_ranges(h, dx, dy, thresh)), c)
 
-# %% ../../nbs/09_plotting.draw.ipynb 80
+# %% ../../nbs/09_plotting.draw.ipynb 81
 def make_transparent(pad):
     pad.SetFillStyle(4000)
     pad.SetFillColor(0)
     pad.SetFrameFillStyle(4000)
 
-# %% ../../nbs/09_plotting.draw.ipynb 81
+# %% ../../nbs/09_plotting.draw.ipynb 82
 def hide_axis(axis):
     axis.SetTickLength(0)
     axis.SetLabelOffset(99)
     axis.SetTitleOffset(99)
 
-# %% ../../nbs/09_plotting.draw.ipynb 82
+# %% ../../nbs/09_plotting.draw.ipynb 83
 def remove_low_stat_bins(h, q=.9, thresh=None):
     if h.GetEntries() > 0:
         e = bins.entries_2d(h) if 'Profile' in h.ClassName() else hist_values_2d(h, err=False, z_sup=False, flat=False)
@@ -1495,7 +1499,7 @@ def remove_low_stat_bins(h, q=.9, thresh=None):
         update_canvas()
     return h
 
-# %% ../../nbs/09_plotting.draw.ipynb 83
+# %% ../../nbs/09_plotting.draw.ipynb 84
 def get_correlation_arrays(m1, m2, sx=0, sy=0, thresh=.1, flat=False):
     a1, a2 = [hist_values_2d(sm, err=False, flat=False) for sm in [m1, m2]]
     n1, n2 = [bins.entries_2d(sm) for sm in [m1, m2]]
@@ -1504,30 +1508,30 @@ def get_correlation_arrays(m1, m2, sx=0, sy=0, thresh=.1, flat=False):
     a2 = roll(a2, [sx, sy], axis=[0, 1])  # shift through second array
     return (a1.flatten(), a2.flatten()) if flat else (a1, a2)
 
-# %% ../../nbs/09_plotting.draw.ipynb 84
+# %% ../../nbs/09_plotting.draw.ipynb 85
 def correlate_maps(m1, m2, sx=0, sy=0, thresh=.1):
     a1, a2 = (m1, m2) if type(m1) is ndarray else get_correlation_arrays(m1, m2, thresh=thresh)
     return correlate(a1, roll(a2, [sx, sy], axis=[0, 1]))
 
-# %% ../../nbs/09_plotting.draw.ipynb 85
+# %% ../../nbs/09_plotting.draw.ipynb 86
 def correlate_all_maps(m1, m2, thresh=.1):
     a1, a2 = get_correlation_arrays(m1, m2, thresh=thresh)
     return array([[correlate_maps(a1, a2, x, y) for x in range(a1.shape[0])] for y in range(a1.shape[1])])
 
-# %% ../../nbs/09_plotting.draw.ipynb 86
+# %% ../../nbs/09_plotting.draw.ipynb 87
 def set_root_warnings(status, fatal=False):
     gROOT.ProcessLine('gErrorIgnoreLevel = {e};'.format(e='0' if status else 'kFatal' if fatal else 'kError'))
 
-# %% ../../nbs/09_plotting.draw.ipynb 87
+# %% ../../nbs/09_plotting.draw.ipynb 88
 def set_root_output(status=True):
     gROOT.SetBatch(not status)
     set_root_warnings(status)
 
-# %% ../../nbs/09_plotting.draw.ipynb 88
+# %% ../../nbs/09_plotting.draw.ipynb 89
 def is_root_object(o):
     return hasattr(o, 'GetName')
 
-# %% ../../nbs/09_plotting.draw.ipynb 89
+# %% ../../nbs/09_plotting.draw.ipynb 90
 def np_profile(x, y, u=False):
     with catch_warnings():
         simplefilter("ignore")
@@ -1536,7 +1540,7 @@ def np_profile(x, y, u=False):
         b, m, s, n = m[1], m[0][c], s[0][c], n[0][c]
         return ((b[:-1] + diff(b) / 2)[c], ) + ((arr2u(m, s / sqrt(n)), ) if u else (m, s / sqrt(n)))
 
-# %% ../../nbs/09_plotting.draw.ipynb 90
+# %% ../../nbs/09_plotting.draw.ipynb 91
 @call_parse
 def main():
     z = Draw()

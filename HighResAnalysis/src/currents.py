@@ -6,13 +6,19 @@ __all__ = ['Currents', 'main']
 # %% ../../nbs/38_src.currents.ipynb 2
 from os.path import getsize
 
-from numpy import genfromtxt, datetime64, invert, char, uint32
+from numpy import genfromtxt, datetime64, invert, char, uint32, mean, where, append, sign
 from pytz import timezone
+from uncertainties import ufloat
+import h5py
+from pathlib import Path
 
 from .analysis import *
 from ..utility.utils import *
+from ..plotting.utils import mean_sigma, prep_kw, download_file, Config
+from ..plotting.draw import Draw
 from glob import glob
 from fastcore.script import *
+import HighResAnalysis.src.bins as bins
 
 # %% ../../nbs/38_src.currents.ipynb 3
 class Currents(Analysis):
@@ -296,7 +302,6 @@ def main(v:Param(action='store_false'),
         ):
 
     #     from argparse import ArgumentParser
-
     #     aparser = ArgumentParser()
     #     aparser.add_argument('dut', nargs='?', default=1, type=int, help='dut number [default: 1] (choose from 1,2,...)')
     #     aparser.add_argument('begin', nargs='?', default=12)
