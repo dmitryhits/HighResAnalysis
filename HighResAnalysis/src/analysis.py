@@ -17,7 +17,7 @@ from ..utility.utils import Dir, print_banner, byte2str, ensure_dir
 
 # %% ../../nbs/32_src.analysis.ipynb 3
 class BeamTest:
-
+    " structure containing information about a beam test"
     def __init__(self, p: Path):
 
         self.Path = p
