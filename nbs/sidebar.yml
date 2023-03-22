@@ -52,11 +52,4 @@ website:
             contents:
               - section: 2023-02-22-nbdev-conversion
                 contents:
-                  - blog/posts/2023-02-22-nbdev-conversion/index.qmd
-      - section: blog
-        contents:
-          - section: posts
-            contents:
-              - section: 2023-02-22-nbdev-conversion
-                contents:
                   - blog/posts/2023-02-22-nbdev-conversion/index.ipynb

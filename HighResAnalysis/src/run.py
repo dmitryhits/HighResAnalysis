@@ -71,7 +71,11 @@ class Batch:
 
     DUTName = None
 
-    def __init__(self, name, dut_nr, beam_test: BeamTest, log=None):
+    def __init__(self, name:str, # Name of the batch
+                 dut_nr:int, # DUT number
+                 beam_test: BeamTest, # Structure containing `BeamTest` info 
+                 log=None # Runlog
+                ):
         self.Name = name
         self.BeamTest = beam_test
         self.DataDir = beam_test.Path
