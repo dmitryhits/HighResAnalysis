@@ -74,7 +74,7 @@ class Batch:
     def __init__(self, name:str, # Name of the batch
                  dut_nr:int, # DUT number
                  beam_test: BeamTest, # Structure containing `BeamTest` info 
-                 log=None # Runlog
+                 log=None # Runlog in JSON string format
                 ):
         self.Name = name
         self.BeamTest = beam_test

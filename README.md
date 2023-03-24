@@ -32,15 +32,54 @@ https://github.com/diamondIPP/HighResAnalysis
 - activate virtual environment and install aliases
   `shell    source .bash_aliases`
 
-## Running
+## Example analysis of the DESY data
 
-``` shell
-analyse <run_number> <dut_number=0>
+the data need to be frist pre-converted:
+
+`>analyse --run=4`
+
+you will need to import a couple of libraries. Most of the tools are in
+`src.dut_analysis`. It will load the data and set all the cuts. The
+`draw` module from plotting library has some useful functions and
+presets that allow plotting histograms and graphs
+
+``` python
+from HighResAnalysis.src.dut_analysis import *
+from HighResAnalysis.plotting.draw import *
 ```
 
-- for more information run `analyse -h`
+    Welcome to JupyROOT 6.28/00
 
-## Further reading
+Initialize the DUTAnalysis with run number, DUT number, and a string
+indicating the year and the month of the beam test
 
-More information how the code is structured may be found
-[here](src/README.md).
+``` python
+run4 = DUTAnalysis(4, 0, '201912')
+```
+
+    --- Palette ------ 55
+
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    STARTING DUT ANALYSIS of D02, run 4 (Dec 2019), 2.50M ev |
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    ************** Initing Converter *****************
+    *************** Initing PROTEUS ******************
+
+A small function that allows inline plotting of ROOT histograms
+
+``` python
+def dc(): get_last_canvas().Draw()
+```
+
+Let’s plot a signal distribution
+
+``` python
+run4.draw_charge_distribution()
+dc()
+```
+
+    INFO:     10:19:58 --> saving plot: SignalDist
+    WARNING:  10:19:58 --> Diamond server is not mounted in /Users/hits/mounts/high-rate
+
+![](index_files/figure-commonmark/cell-5-output-2.png)

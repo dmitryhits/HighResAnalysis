@@ -12,7 +12,8 @@ from fastcore.script import *
 from os.path import join
 from . import html
 from .draw import *
-from .utils import BaseDir, remove_file, ensure_dir, choose, prep_kw
+from .utils import *
+from .utils import BaseDir
 from pathlib import Path
 
 # %% ../../nbs/02_plotting.save.ipynb 4
