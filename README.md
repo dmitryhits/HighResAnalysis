@@ -79,7 +79,8 @@ run4.draw_charge_distribution()
 dc()
 ```
 
-    INFO:     10:19:58 --> saving plot: SignalDist
-    WARNING:  10:19:58 --> Diamond server is not mounted in /Users/hits/mounts/high-rate
+    INFO:     10:34:18 --> Creating directory: /Users/hits/Documents/GitHub/HighResAnalysis/HighResAnalysis/results/201912
+    INFO:     10:34:18 --> saving plot: SignalDist
+    WARNING:  10:34:19 --> Diamond server is not mounted in /Users/hits/mounts/high-rate
 
 ![](index_files/figure-commonmark/cell-5-output-2.png)

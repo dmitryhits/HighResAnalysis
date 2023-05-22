@@ -22,6 +22,7 @@ from .src.scan import Ensemble, Scan, VScan, TScan
 from .utility.utils import *  # noqa
 from .src.spreadsheet import make
 from .plotting.utils import load_json
+from nbdev.showdoc import *
 
 from fastcore.script import *
 

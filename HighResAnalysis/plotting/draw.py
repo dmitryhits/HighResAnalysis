@@ -26,6 +26,7 @@ from typing import Any
 from warnings import catch_warnings, simplefilter
 from pathlib import Path
 from os.path import join
+from os import environ
 from copy import deepcopy
 from datetime import datetime
 
@@ -120,10 +121,15 @@ def get_color_gradient():
 
 # %% ../../nbs/09_plotting.draw.ipynb 6
 class Draw(object):
-    try:
-        Dir = Path(__file__).resolve().parent
-    except NameError:
-        Dir = Path().resolve().parent/"HighResAnalysis"/"config"
+    if environ.get('ANALYSIS_DIR'):
+        Dir = Path(environ.get('ANALYSIS_DIR'))/"config"
+    else:
+        try:
+            Dir = Path(__file__).resolve().parent
+        except NameError:
+            Dir = Path().resolve().parent/"HighResAnalysis"/"config"
+        if 'site-packages' in str(Dir):
+            raise RuntimeError('Cannot run from the install directory. Please eihter setup an analysis dir and set $ANALYSIS_DIR variable pointing to it or run from the cloned GitHub dir')
     Verbose = False
     Config = None
     Monitor = None

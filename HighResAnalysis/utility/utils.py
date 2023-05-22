@@ -38,18 +38,23 @@ from ..plotting.utils import info, critical, add_to_info, get_kw, remove_file
 ROOT.PyConfig.IgnoreCommandLineOptions = True  # disable ROOT overwriting the help settings...
 
 # %% ../../nbs/28_utility.utils.ipynb 4
-try:
-    Dir = Path(__file__).resolve().parent.parent.parent
-except NameError:
-    Dir = Path().resolve().parent
+if environ.get('ANALYSIS_DIR'):
+    Dir = Path(environ.get('ANALYSIS_DIR'))
+else:
+    try:
+        Dir = Path(__file__).resolve().parent.parent.parent
+    except NameError:
+        Dir = Path().resolve().parent
+        if 'site-packages' in str(Dir):
+            raise RuntimeError('Cannot run from the install directory. Please eihter setup an analysis dir and set $ANALYSIS_DIR variable pointing to it or run from the cloned GitHub dir')
 
-# %% ../../nbs/28_utility.utils.ipynb 5
+# %% ../../nbs/28_utility.utils.ipynb 6
 type_dict = {'int32': 'I',
              'uint16': 's',
              'float64': 'D',
              'int64': 'L'}
 
-# %% ../../nbs/28_utility.utils.ipynb 6
+# %% ../../nbs/28_utility.utils.ipynb 7
 GREEN = '\033[92m'
 WHITE = '\033[98m'
 ENDC = '\033[0m'
@@ -59,65 +64,65 @@ RED = '\033[91m'
 UP1 = '\033[1A'
 ERASE = '\033[K'
 
-# %% ../../nbs/28_utility.utils.ipynb 7
+# %% ../../nbs/28_utility.utils.ipynb 8
 def move_up(n):
     print('\033[{}A'.format(n))
 
-# %% ../../nbs/28_utility.utils.ipynb 8
+# %% ../../nbs/28_utility.utils.ipynb 9
 def file_exists(filename):
     return isfile(filename)
 
-# %% ../../nbs/28_utility.utils.ipynb 9
+# %% ../../nbs/28_utility.utils.ipynb 10
 def dir_exists(path):
     return isdir(path)
 
-# %% ../../nbs/28_utility.utils.ipynb 10
+# %% ../../nbs/28_utility.utils.ipynb 11
 def time_stamp(dt, off=None):
     t = float(dt.strftime('%s'))
     return t if off is None else t - (off if off > 1 else dt.utcoffset().seconds)
 
-# %% ../../nbs/28_utility.utils.ipynb 11
+# %% ../../nbs/28_utility.utils.ipynb 12
 def print_elapsed_time(start, what='This', show=True, color=WHITE):
     string = f'Elapsed time for {what}: {get_elapsed_time(start)}'
     print_banner(string, color=color) if show else do_nothing()
     return time()
 
-# %% ../../nbs/28_utility.utils.ipynb 12
+# %% ../../nbs/28_utility.utils.ipynb 13
 def get_elapsed_time(start, hrs=False):
     t = str(timedelta(seconds=round(time() - start, 0 if hrs else 2)))
     return t if hrs else t[2:-4]
 
-# %% ../../nbs/28_utility.utils.ipynb 13
+# %% ../../nbs/28_utility.utils.ipynb 14
 def average_list(lst, n):
     return [mean(lst[i:i+n]) for i in arange(0, len(lst), n)] if n > 1 else lst
 
-# %% ../../nbs/28_utility.utils.ipynb 14
+# %% ../../nbs/28_utility.utils.ipynb 15
 def round_down_to(num, val=1):
     return int(num) // val * val
 
-# %% ../../nbs/28_utility.utils.ipynb 15
+# %% ../../nbs/28_utility.utils.ipynb 16
 def round_up_to(num, val=1):
     return int(num) // val * val + val
 
-# %% ../../nbs/28_utility.utils.ipynb 16
+# %% ../../nbs/28_utility.utils.ipynb 17
 def get_base_dir():
     return dirname(dirname(realpath(__file__)))
 
-# %% ../../nbs/28_utility.utils.ipynb 17
+# %% ../../nbs/28_utility.utils.ipynb 18
 def ensure_dir(path):
     if not exists(path):
         info('Creating directory: {d}'.format(d=path))
         makedirs(path)
     return path
 
-# %% ../../nbs/28_utility.utils.ipynb 18
+# %% ../../nbs/28_utility.utils.ipynb 19
 def isint(x):
     try:
         return float(x) == int(x)
     except (ValueError, TypeError):
         return False
 
-# %% ../../nbs/28_utility.utils.ipynb 19
+# %% ../../nbs/28_utility.utils.ipynb 20
 def is_iter(v):
     try:
         iter(v)
@@ -125,7 +130,7 @@ def is_iter(v):
     except TypeError:
         return False
 
-# %% ../../nbs/28_utility.utils.ipynb 20
+# %% ../../nbs/28_utility.utils.ipynb 21
 def is_num(string):
     try:
         float(string)
@@ -133,20 +138,20 @@ def is_num(string):
     except ValueError:
         return False
 
-# %% ../../nbs/28_utility.utils.ipynb 21
+# %% ../../nbs/28_utility.utils.ipynb 22
 def colored(string, color=None):
     return string if color is None else '{}{}{}'.format(color, string, ENDC)
 
-# %% ../../nbs/28_utility.utils.ipynb 22
+# %% ../../nbs/28_utility.utils.ipynb 23
 def small_banner(msg, symbol='-', color=None):
     print(colored('\n{delim}\n{msg}\n'.format(delim=len(str(msg)) * symbol, msg=msg), color))
 
-# %% ../../nbs/28_utility.utils.ipynb 23
+# %% ../../nbs/28_utility.utils.ipynb 24
 def print_banner(msg, symbol='~', new_lines=1, color=None):
     msg = '{} |'.format(msg)
     print(colored('{n}{delim}\n{msg}\n{delim}{n}'.format(delim=len(str(msg)) * symbol, msg=msg, n='\n' * new_lines), color))
 
-# %% ../../nbs/28_utility.utils.ipynb 24
+# %% ../../nbs/28_utility.utils.ipynb 25
 def prime_factors(n):
     factors = []
     while n % 2 == 0:  # even dividers
@@ -160,11 +165,11 @@ def prime_factors(n):
         factors.append(int(n))
     return factors
 
-# %% ../../nbs/28_utility.utils.ipynb 25
+# %% ../../nbs/28_utility.utils.ipynb 26
 def do_nothing():
     pass
 
-# %% ../../nbs/28_utility.utils.ipynb 26
+# %% ../../nbs/28_utility.utils.ipynb 27
 def has_root():
     try:
         import ROOT
@@ -172,32 +177,32 @@ def has_root():
     except ImportError:
         return False
 
-# %% ../../nbs/28_utility.utils.ipynb 27
+# %% ../../nbs/28_utility.utils.ipynb 28
 def open_root_file(filename, option=''):
     if file_exists(filename):
         return TFile(str(filename), option)
     critical(f'The file: "{filename}" does not exist...')
 
-# %% ../../nbs/28_utility.utils.ipynb 28
+# %% ../../nbs/28_utility.utils.ipynb 29
 def create_root_file(filename, option='recreate'):
     return TFile(str(filename), option)
 
-# %% ../../nbs/28_utility.utils.ipynb 29
+# %% ../../nbs/28_utility.utils.ipynb 30
 def choose(v, default, decider='None', *args, **kwargs):
     use_default = decider is None if decider != 'None' else v is None
     if callable(default) and use_default:
         default = default(*args, **kwargs)
     return default if use_default else v
 
-# %% ../../nbs/28_utility.utils.ipynb 30
+# %% ../../nbs/28_utility.utils.ipynb 31
 def remove_letters(string):
     return ''.join(filter(lambda x: x.isdigit(), string))
 
-# %% ../../nbs/28_utility.utils.ipynb 31
+# %% ../../nbs/28_utility.utils.ipynb 32
 def remove_digits(string):
     return ''.join(filter(lambda x: not x.isdigit(), string))
 
-# %% ../../nbs/28_utility.utils.ipynb 32
+# %% ../../nbs/28_utility.utils.ipynb 33
 def interpolate_two_points(x1, y1, x2, y2, name=''):
     # f = p1*x + p0
     p1 = (y1 - y2) / (x1 - x2)
@@ -208,58 +213,58 @@ def interpolate_two_points(x1, y1, x2, y2, name=''):
     f.SetParameters(p0, p1)
     return f
 
-# %% ../../nbs/28_utility.utils.ipynb 33
+# %% ../../nbs/28_utility.utils.ipynb 34
 def interpolate_x(x1, x2, y1, y2, y):
     p1 = get_p1(x1, x2, y1, y2)
     p0 = get_p0(x1, y1, p1)
     return (y - p0) / p1 if p1 else 0
 
-# %% ../../nbs/28_utility.utils.ipynb 34
+# %% ../../nbs/28_utility.utils.ipynb 35
 def interpolate(x1, x2, y1, y2, x):
     x1, x2, y1, y2 = [float(i) for i in [x1, x2, y1, y2]]
     p1 = get_p1(float(x1), x2, y1, y2)
     p0 = get_p0(x1, y1, p1)
     return p1 * x + p0
 
-# %% ../../nbs/28_utility.utils.ipynb 35
+# %% ../../nbs/28_utility.utils.ipynb 36
 def get_p1(x1, x2, y1, y2):
     return (y1 - y2) / (x1 - x2) if x1 != x2 else 0
 
-# %% ../../nbs/28_utility.utils.ipynb 36
+# %% ../../nbs/28_utility.utils.ipynb 37
 def get_p0(x1, y1, p1):
     return y1 - x1 * p1
 
-# %% ../../nbs/28_utility.utils.ipynb 37
+# %% ../../nbs/28_utility.utils.ipynb 38
 def make_ufloat(n, s=0):
     return array([ufloat(*v) for v in array([n, s]).T]) if is_iter(n) else n if is_ufloat(n) else ufloat(n, s)
 
-# %% ../../nbs/28_utility.utils.ipynb 38
+# %% ../../nbs/28_utility.utils.ipynb 39
 def is_ufloat(value):
     return type(value) in [Variable, AffineScalarFunc]
 
-# %% ../../nbs/28_utility.utils.ipynb 39
+# %% ../../nbs/28_utility.utils.ipynb 40
 def byte2str(v):
     n = int(log2(v) // 10) if v else 0
     return '{:1.1f} {}'.format(v / 2 ** (10 * n), ['B', 'kB', 'MB', 'GB'][n])
 
-# %% ../../nbs/28_utility.utils.ipynb 40
+# %% ../../nbs/28_utility.utils.ipynb 41
 def ev2str(v):
     n = int(log10(v) // 3)
     return f'{v / 10 ** (3 * n):.{2 if n > 1 else 0}f}{["", "k", "M"][n]}'
 
-# %% ../../nbs/28_utility.utils.ipynb 41
+# %% ../../nbs/28_utility.utils.ipynb 42
 def bias2str(*bias):
     return array([f'{i:+.0f} V' for i in bias])[... if len(bias) > 1 else 0]
 
-# %% ../../nbs/28_utility.utils.ipynb 42
+# %% ../../nbs/28_utility.utils.ipynb 43
 def bias2rootstr(*bias):
     return array([f'{i:+.0f} V'.replace('+-', '#pm').replace('+/-', '#pm').replace('+', '#plus').replace('-', '#minus') for i in bias])[... if len(bias) > 1 else 0]
 
-# %% ../../nbs/28_utility.utils.ipynb 43
+# %% ../../nbs/28_utility.utils.ipynb 44
 def get_buf(buf, n, dtype=None):
     return frombuffer(buf, dtype=buf.typecode, count=n).astype(dtype)
 
-# %% ../../nbs/28_utility.utils.ipynb 44
+# %% ../../nbs/28_utility.utils.ipynb 45
 def get_tree_vec(tree, var, cut='', dtype=None, nentries=None, firstentry=0):
     strings = make_list(var)
     n = tree.Draw(':'.join(strings), cut, 'goff', choose(nentries, tree.kMaxEntries), firstentry)
@@ -267,24 +272,24 @@ def get_tree_vec(tree, var, cut='', dtype=None, nentries=None, firstentry=0):
     vals = [get_buf(tree.GetVal(i), n, dtypes[i]) for i in range(len(strings))]
     return vals[0] if len(vals) == 1 else vals
 
-# %% ../../nbs/28_utility.utils.ipynb 45
+# %% ../../nbs/28_utility.utils.ipynb 46
 def make_list(value, dtype=None):
     v = value if is_iter(value) and not type(value) is str else array([choose(value, [])]).flatten()
     return v.tolist() if dtype == list else v.astype(dtype) if dtype is not None else v
 
-# %% ../../nbs/28_utility.utils.ipynb 46
+# %% ../../nbs/28_utility.utils.ipynb 47
 def uarr2n(arr):
     return array([i.n for i in arr]) if len(arr) and is_ufloat(arr[0]) else arr
 
-# %% ../../nbs/28_utility.utils.ipynb 47
+# %% ../../nbs/28_utility.utils.ipynb 48
 def uarr2s(arr):
     return array([i.s for i in arr]) if len(arr) and is_ufloat(arr[0]) else arr
 
-# %% ../../nbs/28_utility.utils.ipynb 48
+# %% ../../nbs/28_utility.utils.ipynb 49
 def gauss(x, scale, mean_, sigma, off=0):
     return scale * exp(-.5 * ((x - mean_) / sigma) ** 2) + off
 
-# %% ../../nbs/28_utility.utils.ipynb 49
+# %% ../../nbs/28_utility.utils.ipynb 50
 def do_hdf5(path, func, redo=False, *args, **kwargs):
     if file_exists(path) and redo:
         remove_file(path)
@@ -297,7 +302,7 @@ def do_hdf5(path, func, redo=False, *args, **kwargs):
         f.create_dataset('data', data=data)
         return f['data']
 
-# %% ../../nbs/28_utility.utils.ipynb 50
+# %% ../../nbs/28_utility.utils.ipynb 51
 def do_pickle(path, func=None, value=None, redo=False, *args, **kwargs):
     if value is not None:
         with open(path, 'wb') as f:
@@ -314,7 +319,7 @@ def do_pickle(path, func=None, value=None, redo=False, *args, **kwargs):
         pickle.dump(ret_val, f)
     return ret_val
 
-# %% ../../nbs/28_utility.utils.ipynb 51
+# %% ../../nbs/28_utility.utils.ipynb 52
 def print_table(rows, header=None, footer=None, prnt=True):
     head, foot = [choose([v], zeros((0, len(rows[0]))), v) for v in [header, footer]]
     t = concatenate([head, rows, foot]).astype('str')
@@ -329,7 +334,7 @@ def print_table(rows, header=None, footer=None, prnt=True):
         print('{}\n'.format(hline))
     return rows
 
-# %% ../../nbs/28_utility.utils.ipynb 52
+# %% ../../nbs/28_utility.utils.ipynb 53
 def merge_root_files(files, new_file_name):
     with open(devnull, 'w') as f:
         call([join(environ.get('ROOTSYS'), 'bin', 'hadd'), '-f', new_file_name] + files, stdout=f)
@@ -339,7 +344,7 @@ def merge_root_files(files, new_file_name):
 # ----------------------------------------
 # region CLASSES
 
-# %% ../../nbs/28_utility.utils.ipynb 53
+# %% ../../nbs/28_utility.utils.ipynb 54
 def update_pbar(func):
     @wraps(func)
     def my_func(*args, **kwargs):
@@ -349,7 +354,7 @@ def update_pbar(func):
         return value
     return my_func
 
-# %% ../../nbs/28_utility.utils.ipynb 54
+# %% ../../nbs/28_utility.utils.ipynb 55
 class PBar(object):
     def __init__(self, start=None, counter=False, t=None):
         self.PBar = None
@@ -401,7 +406,7 @@ class PBar(object):
         self.PBar.start_time = time_stamp(datetime.now() - timedelta(hours=h, minutes=m, seconds=s))
         self.update(i - 1)
 
-# %% ../../nbs/28_utility.utils.ipynb 55
+# %% ../../nbs/28_utility.utils.ipynb 56
 class EventSpeed(Widget):
     """Widget for showing the event speed (useful for slow updates)."""
 
@@ -415,12 +420,12 @@ class EventSpeed(Widget):
             value = pbar.currval / pbar.seconds_elapsed * self.factor
         return f'{value:4.1f} E/{self.unit}'
 
-# %% ../../nbs/28_utility.utils.ipynb 56
+# %% ../../nbs/28_utility.utils.ipynb 57
 PBAR = PBar()
 # endregion CLASSES
 # ----------------------------------------
 
-# %% ../../nbs/28_utility.utils.ipynb 57
+# %% ../../nbs/28_utility.utils.ipynb 58
 def prep_kw(dic, **default):
     d = deepcopy(dic)
     for kw, value in default.items():
@@ -428,18 +433,18 @@ def prep_kw(dic, **default):
             d[kw] = value
     return d
 
-# %% ../../nbs/28_utility.utils.ipynb 58
+# %% ../../nbs/28_utility.utils.ipynb 59
 def get_field(obj, field: str):
     if '.' in field:
         return get_field(getattr(obj, field.split('.')[0]), '.'.join(field.split('.')[1:]))
     return getattr(obj, field) if hasattr(obj, field) else None
 
-# %% ../../nbs/28_utility.utils.ipynb 59
+# %% ../../nbs/28_utility.utils.ipynb 60
 def make_suffix(*values):
     vals = [md5(val).hexdigest() if type(val) is ndarray else f'{int(val):.0f}' if isint(val) else val for val in values if val is not None]
     return '_'.join(str(val) for val in vals)
 
-# %% ../../nbs/28_utility.utils.ipynb 60
+# %% ../../nbs/28_utility.utils.ipynb 61
 def prep_suffix(f, ana, args, kwargs, suf_args, field=None):
     def_pars = signature(f).parameters
     names, values = list(def_pars.keys())[1:], [par.default for par in def_pars.values()][1:]  # first par is class instance
@@ -448,12 +453,12 @@ def prep_suffix(f, ana, args, kwargs, suf_args, field=None):
     suf_vals += [] if field is None else [get_field(ana, field)]
     return make_suffix(*suf_vals)
 
-# %% ../../nbs/28_utility.utils.ipynb 61
+# %% ../../nbs/28_utility.utils.ipynb 62
 def load_pickle(file_name):
     with open(file_name, 'rb') as f:
         return pickle.load(f)
 
-# %% ../../nbs/28_utility.utils.ipynb 62
+# %% ../../nbs/28_utility.utils.ipynb 63
 def save_pickle(*pargs, print_dur=False, low_rate=False, high_rate=False, suf_args='[]', field=None, verbose=False, **pkwargs):
     def inner(func):
         @wraps(func)
@@ -476,7 +481,7 @@ def save_pickle(*pargs, print_dur=False, low_rate=False, high_rate=False, suf_ar
         return wrapper
     return inner
 
-# %% ../../nbs/28_utility.utils.ipynb 63
+# %% ../../nbs/28_utility.utils.ipynb 64
 def save_hdf5(*pargs, arr=False, dtype=None, suf_args='[]', field=None, verbose=False, **pkwargs):
     def inner(f):
         @wraps(f)
@@ -499,7 +504,7 @@ def save_hdf5(*pargs, arr=False, dtype=None, suf_args='[]', field=None, verbose=
         return wrapper
     return inner
 
-# %% ../../nbs/28_utility.utils.ipynb 64
+# %% ../../nbs/28_utility.utils.ipynb 65
 def parallel(fp, what='something'):
     def inner(f):
         @wraps(f)
@@ -515,7 +520,7 @@ def parallel(fp, what='something'):
         return my_f
     return inner
 
-# %% ../../nbs/28_utility.utils.ipynb 65
+# %% ../../nbs/28_utility.utils.ipynb 66
 def _parallel(f, d, i, pbar, *args):
     ret = []
     use_pbar = i[0] == 0
@@ -525,15 +530,15 @@ def _parallel(f, d, i, pbar, *args):
         ret.append(f(v, *args))
     return ret
 
-# %% ../../nbs/28_utility.utils.ipynb 66
+# %% ../../nbs/28_utility.utils.ipynb 67
 def eff2u(eff):
     return ufloat(eff[0], mean(eff[1:]))
 
-# %% ../../nbs/28_utility.utils.ipynb 67
+# %% ../../nbs/28_utility.utils.ipynb 68
 def eff2str(eff, u='\\percent', f='.2f'):
     return f'\\SIerr{{{eff[0]:{f}}}}{{{eff[2]:{f}}}}{{{eff[1]:{f}}}}{{{u}}}'
 
-# %% ../../nbs/28_utility.utils.ipynb 68
+# %% ../../nbs/28_utility.utils.ipynb 69
 def show_hdf5(f: h5py.File, *include, ex_str=None):
     print('.')
     for i0, (key, grp) in enumerate(f.items()):
@@ -545,7 +550,7 @@ def show_hdf5(f: h5py.File, *include, ex_str=None):
                     for i in g.keys():
                         print(f'│   │   ├── {i}')
 
-# %% ../../nbs/28_utility.utils.ipynb 69
+# %% ../../nbs/28_utility.utils.ipynb 70
 def file_hash(fname, block_size=65536):
 
     fhash = sha256()
