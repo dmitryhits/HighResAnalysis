@@ -27,7 +27,8 @@ import pickle
 from copy import deepcopy
 from inspect import signature
 from functools import wraps
-from datetime import timedelta, datetime, time
+from datetime import timedelta, datetime
+from time import time
 from multiprocessing import Pool, cpu_count
 from hashlib import md5, sha256
 from pathlib import Path

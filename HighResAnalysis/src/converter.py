@@ -13,7 +13,8 @@ from uproot import ReadOnlyDirectory
 from uproot.models import TTree
 from pathlib import Path
 import awkward as aw  
-from datetime import time, timedelta
+from datetime import timedelta
+from time import time
 from inspect import signature
 from subprocess import check_call
 import h5py

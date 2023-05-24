@@ -10,7 +10,7 @@ __all__ = ['no_trans', 'DUTAnalysis']
 import h5py
 from typing import Any
 from pathlib import Path
-from datetime import timedelta, time, datetime
+from datetime import timedelta, datetime
 from numpy import zeros, array, mean, sqrt
 from fastcore.utils import *
 

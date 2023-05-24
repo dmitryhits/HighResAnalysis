@@ -7,30 +7,102 @@ The current repository is in development and is not guaranteed to work
 The working version can be found
 https://github.com/diamondIPP/HighResAnalysis
 
-## Requirements
+## Prerequisites
 
-- python\>=3.6
-- (py)ROOT\>=6.22
-- [proteus](https://github.com/diamondIPP/proteus)
-- [judith](https://github.com/diamondIPP/judith) (only for CERN data)
-- [eudaq2](https://github.com/diamondIPP/eudaq-2) (only for DESY data)
+- [python](https://www.python.org)\>=3.6
+  - python=3.10 was used for the development
+- [cmake](https://cmake.org)\>=3.7
+  - optionally [cmake GUI](https://cmake.org/runningcmake/), for example
+    ccmake
 
 ## Installation
 
-- download the code
-  `shell   git clone --recurse-submodules https://github.com/diamondIPP/HighResAnalysis.git   cd HighResAnalysis`
+- First, install `mamba`. If you do not yet have `conda` install then
+  getting
+  [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge) is
+  the recommended way to get `mamba`. Here is the instruction for Linux.
 
-- Install python3, pip, virtualenv (requires sudo)
-  `shell   make prepare-dev`
+``` shell
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh"
+bash Mambaforge-Linux-x86_64.sh 
+```
 
-- virtual environment and python packages (included in previous step)
-  `shell     make venv`
+If this not the case for you. You can follow the instruction on [mamba
+install
+page](https://mamba.readthedocs.io/en/latest/installation.html#installation "complete mamba installation instructions")
 
-- required python packages are listed in
-  [requirements](requirements.txt)
+- Next you can install [root](https://root.cern.ch). In the [root
+  installation instructions](https://root.cern/install/#conda) you need
+  to replace `conda` with `mamba` and skip the instructions about the
+  environment, since the `Mambaforge` already created the default `base`
+  environment.
 
-- activate virtual environment and install aliases
-  `shell    source .bash_aliases`
+``` shell
+mamba config --set channel_priority strict
+mamba install root
+mamba install -c conda-forge root
+```
+
+- Install the analysis code:
+
+``` shell
+pip install HighResAnalysys
+```
+
+- Optionally install other useful python packages:
+
+``` shell
+mamba install -c conda-forge scikit-learn numpy pandas 
+mamba install pyarrow openpyxl xlrd pytables requests sqlalchemy
+mamba install -c fastai nbdev
+mamba install jupyterlab
+mamba install jupyternotebook
+mamba install ipython
+mamba install notebook
+mamba install voila
+```
+
+- For the installation of the software hosted on the GitHub it is useful
+  to make a dedicated folder:
+
+``` shell
+mkdir software
+cd software
+```
+
+    - And clone all the necessary packages there:
+
+``` shell
+        git clone git@github.com:diamondIPP/DRS4-v5-shared.git
+        git clone git@github.com:diamondIPP/proteus.git
+        git clone git@github.com:diamondIPP/judith.git
+        git clone git@github.com:diamondIPP/HVClient.git
+        git clone git@github.com:diamondIPP/eudaq-2.git
+```
+
+- generate shh keys and copy them to login.phys.ethz.ch
+
+``` shell
+        ssh-keygen
+        ssh-copy-id username@login.phys.ethz.ch
+```
+
+- Clone the analysis setup from GitHub. It contains all the necessary
+  config files:
+
+``` shell
+git clone git@github.com:diamondIPP/setup-analysis.git HighResAnalysis
+cd HighResAnalysis/
+```
+
+- To install the converters follow the instructions on the respective
+  pages:
+  - [proteus](https://github.com/diamondIPP/proteus)
+    - It will need
+      [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page)
+      and you will have to tell `cmake` the path to it.
+  - [judith](https://github.com/diamondIPP/judith) (only for CERN data)
+  - [eudaq2](https://github.com/diamondIPP/eudaq-2) (only for DESY data)
 
 ## Example analysis of the DESY data
 

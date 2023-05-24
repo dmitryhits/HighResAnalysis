@@ -16,7 +16,7 @@ package-lock.json
 config/main.ini
 config/client_secret.json
 HighResAnalysis/plotting/dummy.root
-HighResAnalysis/resutls/
+HighResAnalysis/resutls
 venv/
 #.ipynb_checkpoints/
 #*/.ipynb_checkpoints/
