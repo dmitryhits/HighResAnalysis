@@ -12,7 +12,7 @@ from numpy import *
 from functools import partial
 from time import time
 
-import HighResAnalysis.convert
+import HighResAnalysis.convert as converter
 from .plotting.draw import *  # noqa
 import HighResAnalysis.src.bins as bins  # noqa
 from .src.dut_analysis import DUTAnalysis, Analysis
@@ -66,7 +66,7 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
 
         if is_batch:
             print('Doing batch')
-            bc = convert.BatchConvert(dut_ana.args[0], dut_ana.args[-1], verbose=False, force=False)
+            bc = converter.BatchConvert(dut_ana.args[0], dut_ana.args[-1], verbose=False, force=False)
             if convert:
                 remove_file(bc.Batch.FileName)
                 bc.remove_aux_files()
