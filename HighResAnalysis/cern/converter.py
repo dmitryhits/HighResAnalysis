@@ -56,19 +56,19 @@ class CERNConverter(Converter):
         return [self.EventAlignment.RefPath, self.Adc2Vcal.RawFilePath] + super().raw_files
 
     def init_raw(self):
-        from cern.raw import CERNRaw
+        from HighResAnalysis.cern.raw import CERNRaw
         return CERNRaw(self)
 
     def init_event_alignment(self):
-        from cern.event_alignment import EventAlignment
+        from HighResAnalysis.cern.event_alignment import EventAlignment
         return EventAlignment(self.Raw)
 
     def init_adc2vcal(self):
-        from cern.adc import Adc2Vcal
+        from HighResAnalysis.cern.adc import Adc2Vcal
         return Adc2Vcal(self)
 
     def init_ref(self):
-        from cern.ref import RefConverter
+        from HighResAnalysis.cern.ref import RefConverter
         return RefConverter(self)
 
     def init_duts(self):
@@ -90,7 +90,7 @@ class CERNConverter(Converter):
 
     @property
     def calibration(self):
-        from cern.calibration import CERNCalibration
+        from HighResAnalysis.cern.calibration import CERNCalibration
         return CERNCalibration
 
 # %% ../../nbs/12_cern.converter.ipynb 5
