@@ -148,7 +148,7 @@ class DUTAnalysis(Analysis):
 
     @property
     def converter(self):
-        return cern.converter.CERNConverter if self.BeamTest.Location == 'CERN' else HighResAnalysis.src.converter.Converter
+        return HighResAnalysis.cern.converter.CERNConverter if self.BeamTest.Location == 'CERN' else HighResAnalysis.src.converter.Converter
 
     def init_planes(self):
         n_tel, n_dut = self.Converter.NTelPlanes, self.Converter.NDUTPlanes
