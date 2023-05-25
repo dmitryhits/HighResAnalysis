@@ -100,9 +100,40 @@ cd HighResAnalysis/
   - [proteus](https://github.com/diamondIPP/proteus)
     - It will need
       [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page)
-      and you will have to tell `cmake` the path to it.
+      and tell the `cmake` the path to it.
   - [judith](https://github.com/diamondIPP/judith) (only for CERN data)
-  - [eudaq2](https://github.com/diamondIPP/eudaq-2) (only for DESY data)
+  - [eudaq-2](https://github.com/diamondIPP/eudaq-2) (only for DESY
+    data)
+    - For `eudaq-2` you will need couple more libraries:
+    - [DRS4-v5-shared](https://github.com/diamondIPP/DRS4-v5-shared),
+      where you only need to compile the shared library
+
+    ``` shell
+          make libDRS.so
+    ```
+
+    - And [pXar](https://github.com/diamondIPP/pxar) to compile it you
+      will need
+      - `libusb-1.0` which you can install with
+        `apt install libusb-1.0-0-dev` on Ubuntu
+      - [FTDI chip drivers](https://ftdichip.com/drivers/d2xx-drivers/)
+        for Linux.
+
+      ``` shell
+        curl -L -O "https://ftdichip.com/wp-content/uploads/2022/07/libftd2xx-x86_64-1.4.27.tgz"
+        tar xvf libftd2xx-x86_64-1.4.27.tgz 
+        sudo cp release/build/lib* /usr/local/lib
+        sudo ln -sf /usr/local/lib/libftd2xx.so.1.4.27 /usr/local/lib/libftd2xx.so
+        sudo cp WinTypes.h ftd2xx.h /usr/local/include/
+      ```
+    - After compiling both `pxar` and `DRS4-v5-shared` libraries you
+      will need to set couple of shell variable to help the `eudaq-2`
+      find them:
+
+    ``` shell
+          export PXARPATH="/home/dmitry/software/pxar/"
+          export DRS_PATH="/home/dmitry/software/DRS4-v5-shared/"
+    ```
 
 ## Example analysis of the DESY data
 
@@ -156,3 +187,29 @@ dc()
     WARNING:  10:34:19 --> Diamond server is not mounted in /Users/hits/mounts/high-rate
 
 ![](index_files/figure-commonmark/cell-5-output-2.png)
+
+## Run logs
+
+There are three beam tests with high resolution data:
+
+- [CERN
+  09/2018](https://docs.google.com/spreadsheets/d/1KoDi9OLU0SiqtLvTGgglQGHm51xn5J0ErAs89h6a-Rc/edit#gid=0)
+- [CERN
+  10/2018](https://docs.google.com/spreadsheets/d/1t-MXNW0eN9tkGZSakfPdmnd_wcq4cX14Nw0bQ2ma_OQ/edit#gid=0)
+- [DESY
+  12/2019](https://docs.google.com/spreadsheets/d/1vtwJnPLbk0M1UztpSX9SZNsPYAyMCO0TnYQzD6jQWoo/edit#gid=0)
+
+### Conversion to json files
+
+- requires *client_secret.json* file which is stored on
+  mutter:/home/reichmann/software/HighResAnalysis/config
+
+- convert online runlogs to a runlog.json file with
+  [src/spreadsheet.py](spreadsheet.py):
+
+  ``` shell
+  make_runlog <YYYYMM>
+  ```
+
+- runlogs are stored in the data directory which may be set in the
+  config
