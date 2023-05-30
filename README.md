@@ -227,15 +227,14 @@ There are three beam tests with high resolution data:
 
 ### Conversion to json files
 
-- requires *client_secret.json* file which is stored on
-  mutter:/home/reichmann/software/HighResAnalysis/config
+- requires `client_secret.json` file which is stored on
+  `ipp group share` in `~/HighResAnalysis/`
+- convert online runlogs to a `runlog.json` file with
+  [HighResAnalysis/src/spreadsheet.py](spreadsheet.py):
 
-- convert online runlogs to a runlog.json file with
-  [src/spreadsheet.py](spreadsheet.py):
-
-  ``` shell
-  make_runlog <YYYYMM>
-  ```
+``` shell
+    make_runlog <YYYYMM>
+```
 
 - runlogs are stored in the data directory which may be set in the
   config

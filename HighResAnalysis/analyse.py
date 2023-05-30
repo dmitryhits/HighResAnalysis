@@ -42,6 +42,7 @@ def main(test:Param('test run, nothing is converted, just initialize the classes
          run_plan:str=None, # create new runplan.json for beam test <YYYYMM>
         ):
     # ToDo: Check why sometimes it is 'False' could be name conflict test and test_campaign
+    print(f'test: {test}, verbose: {verbose}, remove_meta: {remove_meta}, convert: {convert}, test_campaign: {test_campaign}, run: {run}, dut: {dut}, batch: {batch}, run_plan: {run_plan}')
     if test_campaign == 'False':
         test_campaign = Analysis.find_testcampaign() 
         print('test campaign was == "False":', test_campaign)

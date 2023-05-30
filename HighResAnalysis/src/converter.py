@@ -32,8 +32,7 @@ from ..plotting.utils import warning, download_file, remove_file, add_to_info, G
 
 # %% ../../nbs/37_src.converter.ipynb 4
 class Converter:
-    """
-    Converts EUDAQ2 raw files in several steps into hdf5 files.
+    """Converts EUDAQ2 raw files in several steps into hdf5 files.
     STEP  0: raw -> root                  (EUDAQ2)
     STEP  1: noisescan                    (proteus)
     STEP  2: alignment                    (proteus)
@@ -44,8 +43,6 @@ class Converter:
     DUTName = None
 
     def __init__(self, data_dir: Path, run_number, dut_name=None):
-        print('************** Initing Converter *****************')
-
         self.T0 = time()
         self.T1 = timedelta(seconds=0)
         self.Run = Run(run_number, 0, data_dir)

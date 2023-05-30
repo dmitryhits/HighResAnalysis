@@ -1,55 +1,64 @@
 website:
   sidebar:
+    style: floating
+    collapse-level: 1
     contents:
-      - index.ipynb
-      - 00_analyse.ipynb
-      - 01_convert.ipynb
-      - 02_plotting.save.ipynb
-      - 03_plotting.binning.ipynb
-      - 04_plotting.fit.ipynb
-      - 05_plotting.html.ipynb
-      - 06_plotting.utils.ipynb
-      - 07_plotting.info.ipynb
-      - 08_plotting.latex.ipynb
-      - 09_plotting.draw.ipynb
-      - 10_cern.raw.ipynb
-      - 11_cern.event_alignment.ipynb
-      - 12_cern.converter.ipynb
-      - 13_cern.ref.ipynb
-      - 14_cern.adc.ipynb
-      - 15_cern.calibration.ipynb
-      - 16_mod.efficiency.ipynb
-      - 17_mod.track_cuts.ipynb
-      - 18_mod.tracks.ipynb
-      - 19_mod.dut_cuts.ipynb
-      - 20_mod.tel_cuts.ipynb
-      - 21_mod.residuals.ipynb
-      - 22_mod.reso_cuts.ipynb
-      - 23_mod.reference.ipynb
-      - 24_mod.telescope.ipynb
-      - 25_mod.resolution.ipynb
-      - 26_mod.ref_cuts.ipynb
-      - 27_utility.affine_transformations.ipynb
-      - 28_utility.utils.ipynb
-      - 29_src.dut_analysis.ipynb
-      - 30_src.run.ipynb
-      - 31_src.spreadsheet.ipynb
-      - 32_src.analysis.ipynb
-      - 33_src.dut.ipynb
-      - 34_src.raw.ipynb
-      - 35_src.cut.ipynb
-      - 36_src.proteus.ipynb
-      - 37_src.converter.ipynb
-      - 38_src.currents.ipynb
-      - 39_src.scan.ipynb
-      - 40_src.batch_analysis.ipynb
-      - 41_src.bins.ipynb
-      - 42_src.calibration.ipynb
-      - section: blog
+      - section: Intro
+        contents: 
+         - index.ipynb
+      - section: CLI
         contents:
-          - blog/index.qmd
-          - section: posts
-            contents:
-              - section: 2023-02-22-nbdev-conversion
-                contents:
-                  - blog/posts/2023-02-22-nbdev-conversion/index.ipynb
+          - 00_analyse.ipynb
+          - 01_convert.ipynb
+      - section: Main sources
+        contents:
+          - 29_src.dut_analysis.ipynb
+          - 30_src.run.ipynb
+          - 31_src.spreadsheet.ipynb
+          - 32_src.analysis.ipynb
+          - 33_src.dut.ipynb
+          - 34_src.raw.ipynb
+          - 35_src.cut.ipynb
+          - 36_src.proteus.ipynb
+          - 37_src.converter.ipynb
+          - 38_src.currents.ipynb
+          - 39_src.scan.ipynb
+          - 40_src.batch_analysis.ipynb
+          - 41_src.bins.ipynb
+          - 42_src.calibration.ipynb
+      - section: Modules
+        contents:
+          - 16_mod.efficiency.ipynb
+          - 17_mod.track_cuts.ipynb
+          - 18_mod.tracks.ipynb
+          - 19_mod.dut_cuts.ipynb
+          - 20_mod.tel_cuts.ipynb
+          - 21_mod.residuals.ipynb
+          - 22_mod.reso_cuts.ipynb
+          - 23_mod.reference.ipynb
+          - 24_mod.telescope.ipynb
+          - 25_mod.resolution.ipynb
+          - 26_mod.ref_cuts.ipynb
+      - section: CERN
+        contents:
+          - 10_cern.raw.ipynb
+          - 11_cern.event_alignment.ipynb
+          - 12_cern.converter.ipynb
+          - 13_cern.ref.ipynb
+          - 14_cern.adc.ipynb
+          - 15_cern.calibration.ipynb
+      - section: Plotting
+        contents:
+          - 02_plotting.save.ipynb
+          - 03_plotting.binning.ipynb
+          - 04_plotting.fit.ipynb
+          - 05_plotting.html.ipynb
+          - 06_plotting.utils.ipynb
+          - 07_plotting.info.ipynb
+          - 08_plotting.latex.ipynb
+          - 09_plotting.draw.ipynb 
+      - section: Utilities
+        contents:
+          - 27_utility.affine_transformations.ipynb
+          - 28_utility.utils.ipynb
+      

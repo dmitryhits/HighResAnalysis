@@ -14,8 +14,9 @@ from .src.run import init_batch
 from .plotting.utils import choose, info, colored, GREEN, RED, check_call, critical, warning
 from .utility.utils import print_banner, PBAR, small_banner, byte2str
 from .src.analysis import Analysis
-from .cern.converter import CERNConverter, Converter
-from .src.converter import batch_converter
+from .src.converter import Converter
+from .cern.converter import CERNConverter
+from .src.converter import batch_converter, Converter
 from multiprocessing import cpu_count, Pool
 from numpy import where, diff, array, concatenate, cumsum, append, mean
 from functools import partial
