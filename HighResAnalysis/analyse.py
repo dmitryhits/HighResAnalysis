@@ -41,25 +41,22 @@ def analyse(test:bool=False, # Test run. Nothing is converted. Just initialize t
              batch:str=None, # Batch name
              run_plan:str=None # Create new runplan.json for beam test <YYYYMM>
            ):
-    "runs the whole chain of data analysis from raw data to hdf5 files"
-    # ToDo: Check why sometimes it is 'False' could be name conflict test and test_campaign
+    "runs the whole chain of data conversion, reconstruction, datastream merge and their alignment, telescope alignment and preliminary analysis starting from raw data and ending up with hdf5 files"
     print(f'test: {test}, verbose: {verbose}, remove_meta: {remove_meta}, convert: {convert}, test_campaign: {test_campaign}, run: {run}, dut: {dut}, batch: {batch}, run_plan: {run_plan}')
-    if test_campaign == 'False':
-        test_campaign = Analysis.find_testcampaign() 
-        print('test campaign was == "False":', test_campaign)
     
+    # Only make a run plan
     if run_plan is not None:
         make(run_plan)
         exit(2)
     
-    ensembles = load_json(Ensemble.FilePath)
+    # The scans consist of an ensemble of runs of batches of runs 
+    scans = load_json(Ensemble.FilePath)
 
-    if run in ensembles:
+    if run in scans: # then it is a Scan
         s = VScan if 'v-' in run else TScan if 't-' in run else Scan
         z = s(run, verbose, test)
 
     else:
-
         ana = Analysis(test_campaign)
         runs = load_nrs(ana.BeamTest.Path)
         is_batch = not (run in runs and batch is None)

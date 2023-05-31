@@ -26,7 +26,9 @@ def load_runlog(p: Path):
     return load_json(f)
 
 # %% ../../nbs/30_src.run.ipynb 5
-def load_nrs(p: Path):
+def load_nrs(p:Path # Path to json runlog
+            )->list:
+    "returns list of runs in runlog.json with either no status or `green` = `good run` status"
     log = load_runlog(p)
     return [key for key, dic in log.items() if 'status' not in dic or dic['status'] == 'green']
 

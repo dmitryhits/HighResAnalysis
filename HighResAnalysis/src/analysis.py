@@ -10,6 +10,7 @@ from shutil import copyfile
 from pathlib import Path
 from datetime import datetime
 from fastcore.script import *
+from fastcore.basics import patch
 
 from ..plotting.save import *
 from ..plotting.utils import warning, Config, choose, info, add_to_info, GREEN, RED
@@ -52,7 +53,11 @@ class Analysis:
     ResultsDir = Dir.joinpath('results')
     MetaDir = Dir.joinpath(Config.get('SAVE', 'meta directory'))
 
-    def __init__(self, beamtest=None, meta_sub_dir='', verbose=False):
+    def __init__(self, 
+                 beamtest:str=None, # A year and a month of the beam test, for example '201912' for DESY and '201810' for CERN
+                 meta_sub_dir:str='', # Subdirectory for storing meta files
+                 verbose:bool=False # Verbosity
+                ):
 
         self.Verbose = verbose
 
@@ -149,15 +154,20 @@ class Analysis:
     def print_start(self):
         print_banner(f'STARTING {self!r}', symbol='~', color=GREEN)
 
-    def create_run_config(self):
-        if self.BeamTest.Location == 'CERN':
-            from src.spreadsheet import make_cern_run_log
-            make_cern_run_log(self.BeamTest.Path.stem)
-        elif self.BeamTest.Location == 'DESY':
-            from src.spreadsheet import make_desy_run_log
-            make_desy_run_log()
+    
 
 # %% ../../nbs/32_src.analysis.ipynb 6
+@patch
+def create_run_config(self:Analysis):
+    "Creates a runlog.json from Google spread sheet"
+    if self.BeamTest.Location == 'CERN':
+        from src.spreadsheet import make_cern_run_log
+        make_cern_run_log(self.BeamTest.Path.stem)
+    elif self.BeamTest.Location == 'DESY':
+        from src.spreadsheet import make_desy_run_log
+        make_desy_run_log()
+
+# %% ../../nbs/32_src.analysis.ipynb 7
 @call_parse
 def main():
     z = Analysis()
