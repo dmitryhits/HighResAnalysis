@@ -64,7 +64,7 @@ def analyse(test:bool=False, # Test run. Nothing is converted. Just initialize t
         dut_ana = partial(dut_ana, dut, test_campaign)
 
         if is_batch:
-            print('Doing batch')
+            print(f'Doing batch')
             bc = converter.BatchConvert(dut_ana.args[0], dut_ana.args[-1], verbose=False, force=False)
             if convert:
                 remove_file(bc.Batch.FileName)

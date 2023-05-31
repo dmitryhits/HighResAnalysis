@@ -106,27 +106,28 @@ def get_stat(status):
 
 # %% ../../nbs/06_plotting.utils.ipynb 24
 def choose(v, default, decider='None', *args, **kwargs):
+    "Chooses the first element if the `decider` not `None` and itself is not `None` and , otherwise chooses the second `default` element, optionally passes arguments to the chosen function"
     use_default = decider is None if decider != 'None' else v is None  # noqa
     if callable(default) and use_default:
         default = default(*args, **kwargs)
     return default if use_default else v(*args, **kwargs) if callable(v) else v
 
-# %% ../../nbs/06_plotting.utils.ipynb 26
+# %% ../../nbs/06_plotting.utils.ipynb 32
 def round_up_to(num, val=1):
     return int(num) // val * val + val
 
-# %% ../../nbs/06_plotting.utils.ipynb 27
+# %% ../../nbs/06_plotting.utils.ipynb 33
 def do(fs, pars, exe=-1):
     fs, pars = ([fs], [pars]) if type(fs) is not list else (fs, pars)  # noqa
     exe = pars if exe == -1 else [exe]
     for f, p, e in zip(fs, pars, exe):
         f(p) if e is not None else do_nothing()
 
-# %% ../../nbs/06_plotting.utils.ipynb 28
+# %% ../../nbs/06_plotting.utils.ipynb 34
 def do_nothing():
     pass
 
-# %% ../../nbs/06_plotting.utils.ipynb 29
+# %% ../../nbs/06_plotting.utils.ipynb 35
 def is_iter(v):
     try:
         iter(v)
@@ -134,43 +135,43 @@ def is_iter(v):
     except TypeError:
         return False
 
-# %% ../../nbs/06_plotting.utils.ipynb 30
+# %% ../../nbs/06_plotting.utils.ipynb 36
 def is_ufloat(value):
     return type(value) in [Variable, AffineScalarFunc, AsymVar]
 
-# %% ../../nbs/06_plotting.utils.ipynb 31
+# %% ../../nbs/06_plotting.utils.ipynb 37
 def uarr2n(x):
     return array([i.n for i in x]) if len(x) and is_ufloat(x[0]) else x
 
-# %% ../../nbs/06_plotting.utils.ipynb 32
+# %% ../../nbs/06_plotting.utils.ipynb 38
 def uarr2s(arr):
     return array([i.s for i in arr]) if len(arr) and is_ufloat(arr[0]) else arr
 
-# %% ../../nbs/06_plotting.utils.ipynb 33
+# %% ../../nbs/06_plotting.utils.ipynb 39
 def arr2u(x, ex):
     return array([ufloat(i, e) for i, e in zip(x, ex)])
 
-# %% ../../nbs/06_plotting.utils.ipynb 34
+# %% ../../nbs/06_plotting.utils.ipynb 40
 def add_err(u, e):
     return u + ufloat(0, e)
 
-# %% ../../nbs/06_plotting.utils.ipynb 35
+# %% ../../nbs/06_plotting.utils.ipynb 41
 def add_perr(u, e):
     return u * ufloat(1, e)
 
-# %% ../../nbs/06_plotting.utils.ipynb 36
+# %% ../../nbs/06_plotting.utils.ipynb 42
 def eff2u(eff):
     return ufloat(eff[0], mean(eff[1:])) if eff.shape == (3,) else array([eff2u(e) for e in eff])
 
-# %% ../../nbs/06_plotting.utils.ipynb 37
+# %% ../../nbs/06_plotting.utils.ipynb 43
 def make_ufloat(n, s=0):
     return (eff2u(n) if len(n) == 3 and s == 0 else array([ufloat(*v) for v in array([n, s]).T])) if is_iter(n) else n if is_ufloat(n) else ufloat(n, s)
 
-# %% ../../nbs/06_plotting.utils.ipynb 38
+# %% ../../nbs/06_plotting.utils.ipynb 44
 def make_list(value):
     return array([value], dtype=object).flatten()
 
-# %% ../../nbs/06_plotting.utils.ipynb 39
+# %% ../../nbs/06_plotting.utils.ipynb 45
 def prep_kw(dic, **default):
     d = deepcopy(dic)
     for kw, value in default.items():
@@ -178,11 +179,11 @@ def prep_kw(dic, **default):
             d[kw] = value
     return d
 
-# %% ../../nbs/06_plotting.utils.ipynb 40
+# %% ../../nbs/06_plotting.utils.ipynb 46
 def get_kw(kw, kwargs, default=None):
     return kwargs[kw] if kw in kwargs else default
 
-# %% ../../nbs/06_plotting.utils.ipynb 41
+# %% ../../nbs/06_plotting.utils.ipynb 47
 def rm_key(d, *key):
     d = deepcopy(d)
     for k in key:
@@ -190,7 +191,7 @@ def rm_key(d, *key):
             del d[k]
     return d
 
-# %% ../../nbs/06_plotting.utils.ipynb 42
+# %% ../../nbs/06_plotting.utils.ipynb 48
 def mean_sigma(values, weights=None, err=True):
     """ Return the weighted average and standard deviation. values, weights -- Numpy ndarrays with the same shape. """
     if len(values) == 1:
@@ -211,7 +212,7 @@ def mean_sigma(values, weights=None, err=True):
     s = ufloat(sigma, sigma / sqrt(2 * len(values)))
     return (m, s) if err else (m.n, s.n)
 
-# %% ../../nbs/06_plotting.utils.ipynb 43
+# %% ../../nbs/06_plotting.utils.ipynb 49
 def calc_eff(k=0, n=0, values=None):
     values = array(values) if values is not None else None
     if n == 0 and (values is None or not values.size):
@@ -223,37 +224,37 @@ def calc_eff(k=0, n=0, values=None):
     s = sqrt(((k + 1) / (n + 2) * (k + 2) / (n + 3) - ((k + 1) ** 2) / ((n + 2) ** 2)))
     return array([mode, max(s + (mode - m), 0), max(s - (mode - m), 0)]) * 100
 
-# %% ../../nbs/06_plotting.utils.ipynb 44
+# %% ../../nbs/06_plotting.utils.ipynb 50
 def cart2pol(x, y):
     return array([sqrt(x ** 2 + y ** 2), arctan2(y, x)])
 
-# %% ../../nbs/06_plotting.utils.ipynb 45
+# %% ../../nbs/06_plotting.utils.ipynb 51
 def pol2cart(rho, phi):
     return array([rho * cos(phi), rho * sin(phi)])
 
-# %% ../../nbs/06_plotting.utils.ipynb 46
+# %% ../../nbs/06_plotting.utils.ipynb 52
 def get_x(x1, x2, y1, y2, y):
     return (x2 - x1) / (y2 - y1) * (y - y1) + x1
 
-# %% ../../nbs/06_plotting.utils.ipynb 47
+# %% ../../nbs/06_plotting.utils.ipynb 53
 def get_y(x1, x2, y1, y2, x):
     return get_x(y1, y2, x1, x2, x)
 
-# %% ../../nbs/06_plotting.utils.ipynb 48
+# %% ../../nbs/06_plotting.utils.ipynb 54
 def ensure_dir(path):
     if not exists(path):
         info('Creating directory: {d}'.format(d=path))
         makedirs(path)
     return path
 
-# %% ../../nbs/06_plotting.utils.ipynb 49
+# %% ../../nbs/06_plotting.utils.ipynb 55
 def remove_file(*file_path, string=None, warn=True):
     for f in file_path:
         if Path(f).exists():
             warning(f'removing {choose(string, f)}', prnt=warn)
             remove(f)
 
-# %% ../../nbs/06_plotting.utils.ipynb 50
+# %% ../../nbs/06_plotting.utils.ipynb 56
 def correlate(l1, l2):
     if len(l1.shape) == 2:
         x, y = l1.flatten(), l2.flatten()
@@ -261,22 +262,22 @@ def correlate(l1, l2):
         return correlate(x[cut], y[cut]) if count_nonzero(cut) > .6 * s else 0
     return corrcoef(l1, l2)[0][1]
 
-# %% ../../nbs/06_plotting.utils.ipynb 51
+# %% ../../nbs/06_plotting.utils.ipynb 57
 def add_spaces(s):
     return ''.join(f' {s[i]}' if i and (s[i].isupper() or s[i].isdigit()) and not s[i - 1].isdigit() and not s[i - 1].isupper() else s[i] for i in range(len(s)))
 
-# %% ../../nbs/06_plotting.utils.ipynb 52
+# %% ../../nbs/06_plotting.utils.ipynb 58
 def print_check(reset=False):
     global COUNT
     COUNT = 0 if reset else COUNT
     print('======={}========'.format(COUNT))
     COUNT += 1
 
-# %% ../../nbs/06_plotting.utils.ipynb 53
+# %% ../../nbs/06_plotting.utils.ipynb 59
 def sum_times(t, fmt='%H:%M:%S'):
     return sum(array([datetime.strptime(i, fmt) for i in t]) - datetime.strptime('0', '%H'))
 
-# %% ../../nbs/06_plotting.utils.ipynb 54
+# %% ../../nbs/06_plotting.utils.ipynb 60
 def load_json(filename):
     if not isfile(filename):
         warning(f'json file does not exist: {filename}')
@@ -284,7 +285,7 @@ def load_json(filename):
     with open(filename) as f:
         return load(f)
 
-# %% ../../nbs/06_plotting.utils.ipynb 55
+# %% ../../nbs/06_plotting.utils.ipynb 61
 class Config(ConfigParser):
 
     def __init__(self, file_name, section=None, from_json=False, required=False, **kwargs):
@@ -344,7 +345,7 @@ class Config(ConfigParser):
         with open(choose(file_name, self.FilePath), 'w') as f:
             super(Config, self).write(f, space_around_delimiters)
 
-# %% ../../nbs/06_plotting.utils.ipynb 56
+# %% ../../nbs/06_plotting.utils.ipynb 62
 class AsymVar:
 
     def __init__(self, value, err_down, err_up, fmt='.2f'):
@@ -448,15 +449,15 @@ class AsymVar:
         return AsymVar(self.n, self.s1, self.s0)
     f = flip_errors
 
-# %% ../../nbs/06_plotting.utils.ipynb 57
+# %% ../../nbs/06_plotting.utils.ipynb 63
 def aufloat(n, s0=0, s1=0):
     return AsymVar(n, s0, s1)
 
-# %% ../../nbs/06_plotting.utils.ipynb 58
+# %% ../../nbs/06_plotting.utils.ipynb 64
 def add_asym_error(v, s0=0, s1=0):
     return array([add_asym_error(i, s0, s1) for i in v], dtype=AsymVar) if is_iter(v) else AsymVar(0, s0, s1) + v
 
-# %% ../../nbs/06_plotting.utils.ipynb 59
+# %% ../../nbs/06_plotting.utils.ipynb 65
 def download_file(server, loc, target, out=True):
     cmd = f'rsync -aPvL {server}:{loc} {target}'
     return (check_call if out else check_output)(cmd, shell=True)
