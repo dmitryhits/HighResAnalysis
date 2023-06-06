@@ -60,7 +60,9 @@ def analyse(test:bool=False, # Test run. Nothing is converted. Just initialize t
         ana = Analysis(test_campaign)
         runs = load_nrs(ana.BeamTest.Path)
         is_batch = not (run in runs and batch is None)
+        # Create either an instance of BatchAnalysis class or DUTAnalysis class and fill the batch or the run number
         dut_ana = partial(BatchAnalysis, choose(batch, run)) if is_batch else partial(DUTAnalysis, run)
+        # Add the DUT number and the test campaign name to the instance
         dut_ana = partial(dut_ana, dut, test_campaign)
 
         if is_batch:

@@ -11,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from fastcore.script import *
 from fastcore.basics import patch
+from nbdev import *
 
 from ..plotting.save import *
 from ..plotting.utils import warning, Config, choose, info, add_to_info, GREEN, RED
@@ -18,8 +19,15 @@ from ..utility.utils import Dir, print_banner, byte2str, ensure_dir
 
 # %% ../../nbs/32_src.analysis.ipynb 3
 class BeamTest:
-    " structure containing information about a beam test"
-    def __init__(self, p: Path):
+    """ structure containing information about a beam test:
+        - Path to the data Dir
+        - Location
+        - T - date as a datetime
+        - Year
+        - Tag and Name - same as T but in string formats"""
+    def __init__(self, 
+                 p: Path # path to the data dir
+                ):
 
         self.Path = p
         self.Location = p.parts[-2].upper()
@@ -36,6 +44,7 @@ class BeamTest:
 
 # %% ../../nbs/32_src.analysis.ipynb 4
 def load_config():
+    """A Utility function that loads """
     config_file_path = Dir.joinpath('config', 'main.ini')
     if not isfile(config_file_path):
         warning('The main config file "config/main.ini" does not exist! Using the default!')
@@ -45,10 +54,9 @@ def load_config():
 # %% ../../nbs/32_src.analysis.ipynb 5
 class Analysis:
     """ The analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. """
-
+    # Analysis Class Variables
     Config = load_config()
     Locations = Config.get_value('data', 'beam tests', type)
-
     DataDir = Path(Config.get('data', 'dir')).expanduser()
     ResultsDir = Dir.joinpath('results')
     MetaDir = Dir.joinpath(Config.get('SAVE', 'meta directory'))
@@ -78,14 +86,7 @@ class Analysis:
     def server_save_dir(self):
         return
 
-    @staticmethod
-    def init_locations():
-        for loc, beam_tests in Analysis.Locations.items():
-            p = Analysis.DataDir.joinpath(loc.lower())
-            p.mkdir(exist_ok=True)
-            for bt in beam_tests:
-                bt = str(bt)
-                p.joinpath(f'{bt[:4]}-{bt[4:]}').mkdir(exist_ok=True)
+
 
     @staticmethod
     def load_test_campaign(beamtest=None):
@@ -97,10 +98,23 @@ class Analysis:
 
     @staticmethod
     def find_testcampaign():
+        """Determine the Tag of the test beam, either from the current path or from config file"""
         p = Path(getcwd())
         return BeamTest(p).Tag if p.parts[-2].upper() in Analysis.Locations else Analysis.Config.get('data', 'default test campaign')
-
+    
+    @staticmethod
+    def init_locations():
+        """creates folders for each beamtest organizing them by location then by date, 
+        in order to store there raw and processed data storing raw and processed data"""
+        for loc, beam_tests in Analysis.Locations.items():
+            p = Analysis.DataDir.joinpath(loc.lower())
+            p.mkdir(exist_ok=True)
+            for bt in beam_tests:
+                bt = str(bt)
+                p.joinpath(f'{bt[:4]}-{bt[4:]}').mkdir(exist_ok=True)
+    
     def print_testcampaign(self):
+        """Prints current timestamp and the location and date of the beam test"""
         self.info(f'{self.BeamTest!r}')
     # endregion INIT
     # ----------------------------------------
@@ -153,8 +167,6 @@ class Analysis:
 
     def print_start(self):
         print_banner(f'STARTING {self!r}', symbol='~', color=GREEN)
-
-    
 
 # %% ../../nbs/32_src.analysis.ipynb 6
 @patch
