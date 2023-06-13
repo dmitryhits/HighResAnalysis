@@ -13,7 +13,7 @@ from pathlib import Path
 from datetime import timedelta, datetime
 from numpy import zeros, array, mean, sqrt
 from fastcore.utils import *
-
+from fastcore.basics import patch
 import HighResAnalysis.cern.converter
 import HighResAnalysis.src.converter
 
@@ -33,7 +33,6 @@ from .run import Run
 from ..utility.affine_transformations import transform, m_transform
 from ..utility.utils import *
 
-
 # %% ../../nbs/29_src.dut_analysis.ipynb 4
 def no_trans(f):
     def inner(*args, **kwargs):
@@ -51,7 +50,11 @@ class DUTAnalysis(Analysis):
     L2G = False       # transform local to global coordinates instead of using global directly
     DrawColLeg = True # draw bias and readout column in in-pixel plots
 
-    def __init__(self, run_number, dut_number, test_campaign, verbose=True, test=False):
+    def __init__(self, run_number, # run number string or Run structure
+                 dut_number:int, # DUT number `0`, `1`, `2`
+                 test_campaign:str, # testbeam date for example, `201912` for DESY test beam 
+                 verbose:bool=True, # verbosity
+                 test:bool=False): # Test only, no conversion, just initialize the classes
 
         Analysis.__init__(self, test_campaign, meta_sub_dir='DUT', verbose=verbose)
         self.Run = run_number if isinstance(run_number, Run) else Run.from_ana(run_number, dut_number, self)
@@ -669,7 +672,16 @@ class DUTAnalysis(Analysis):
     # endregion IN PIXEL
     # ----------------------------------------
 
-    def fit_langau(self, h=None, nconv=30, show=True, chi_thresh=8, fit_range=None):
+    
+
+# %% ../../nbs/29_src.dut_analysis.ipynb 6
+@patch
+def fit_langau(self:Analysis, 
+               h=None, # histogram to fit, if `None` then fit the signal distribution
+               nconv=30, 
+               show:bool=True, # whether or not to show the histogram that is being fitted
+               chi_thresh=8, # maximum chi2 if not reached then increase the number of convolutions upto 80
+               fit_range=None):
         h = self.draw_signal_distribution(show=show) if h is None and hasattr(self, 'draw_signal_distribution') else h
         fit = Langau(h, nconv, fit_range)
         fit.get_parameters()

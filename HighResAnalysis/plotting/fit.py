@@ -12,14 +12,20 @@ from scipy.special import erf
 from os.path import join
 from functools import partial
 from fastcore.script import *
+from fastcore.basics import patch
 from .draw import *
 from .utils import BaseDir, choose, prep_kw
 from uncertainties import ufloat
 
-# %% ../../nbs/04_plotting.fit.ipynb 3
+# %% ../../nbs/04_plotting.fit.ipynb 4
 class Fit(object):
-    """ general class to perform fits on a histgram"""
-    def __init__(self, name='fit', h=None, fit_range=None, npx=1000, invert=False, par_names=None):
+    """ general class for fitting histograms"""
+    def __init__(self, name='fit', # Name of the fitting function
+                 h=None, # histogram to fit
+                 fit_range=None, # list or tuple of fit range borders
+                 npx:int=1000, # Number of points used to draw the fit function
+                 invert:bool=False, 
+                 par_names=None): # List of parameter names of the fitting function
         self.Name = name
         self.Histo = h
         self.Draw = Draw(join(BaseDir, 'config', 'main.ini'))
@@ -45,16 +51,6 @@ class Fit(object):
 
     def __repr__(self):
         return f'{self.__class__.__name__} Fit: {self.Name} with {self.NPars} parameters'
-
-    @classmethod
-    def from_hist(cls, h):
-        try:
-            f = next(f for f in h.GetListOfFunctions() if 'TF1' in f.ClassName())
-            fit = Fit(f.GetName(), fit_range=[f.GetXmin(), f.GetXmax()], par_names=[f.GetParName(i) for i in range(f.GetNpar())])
-            fit.Fit = f
-            return fit
-        except StopIteration:
-            return
 
     def clear_old(self):
         old = get_object(self.Name)
@@ -101,29 +97,47 @@ class Fit(object):
         if show:
             Draw.vertical_line(t1, -100, 1e5)
             Draw.vertical_line(t0, -100, 1e5)
-        return t1 - t0
-
-    def fit(self, n=1, draw=True, minuit=True, fl=0, fh=0):
-        if minuit:
-            Math.MinimizerOptions.SetDefaultMinimizer('Minuit2', 'Migrad')
-        for _ in range(n):
-            set_root_output(0)
-            self.Histo.Fit(self.Fit, f'qs{"" if draw else 0}', '', *ax_range(self.XMin, self.XMax, fl, fh))
-        set_root_output(True)
-        if draw:
-            self.Fit.Draw('same')
-            update_canvas()
-        return FitRes(self.Fit)
+        return t1 - t0  
 
     def draw(self, *args, **kwargs):
-        self.Draw.function(self.Fit, self.Name, *args, **prep_kw(kwargs, x_tit='x', y_tit='y'))
+        self.Draw.function(self.Fit, self.Name, *args, **prep_kw(kwargs, x_tit='x', y_tit='y')) 
 
-    @property
-    def formula(self):
-        return self.Fit.GetFormula().GetTitle()
+# %% ../../nbs/04_plotting.fit.ipynb 6
+@patch(as_prop=True)
+def formula(self:Fit)->str:
+    "return the formula of the fit function"
+    return self.Fit.GetFormula().GetTitle()
 
-# %% ../../nbs/04_plotting.fit.ipynb 4
-def make_fit(h, f, xmin=0, xmax=1, start_values=None, par_names=None, name=None, npx=1000):
+# %% ../../nbs/04_plotting.fit.ipynb 7
+@patch
+def fit(self:Fit, 
+        n:int=1, # number of iterations 
+        draw=True, # Overlay the fitting function on histogram
+        minuit=True, # Use Minuit2 and Migrad for minimization
+        fl=0, # lower fitting range
+        fh=0): # upper fitting range
+    "The method performs the fit and optionally draws fit function overlayed on the histogram"
+    if minuit:
+        Math.MinimizerOptions.SetDefaultMinimizer('Minuit2', 'Migrad')
+    for _ in range(n):
+        set_root_output(0)
+        self.Histo.Fit(self.Fit, f'qs{"" if draw else 0}', '', *ax_range(self.XMin, self.XMax, fl, fh))
+    set_root_output(True)
+    if draw:
+        self.Fit.Draw('same')
+        update_canvas()
+    return FitRes(self.Fit)
+
+# %% ../../nbs/04_plotting.fit.ipynb 8
+def make_fit(h,    # histogram to fit
+             f,    # fitting function
+             xmin=0, # lower fitting range
+             xmax=1, # upper fitting range
+             start_values=None, # list initial values
+             par_names=None,  # list of parameter names
+             name=None, # name of the fitting function
+             npx=1000): # number of points used to draw the fitting function
+    "factory method for making NewFit classes that are inherit from the `Fit` class"
     class NewFit(Fit):
         def __init__(self):
             Fit.__init__(self, choose(name, 'NewFit'), h, [xmin, xmax], npx, par_names=par_names)
@@ -135,7 +149,7 @@ def make_fit(h, f, xmin=0, xmax=1, start_values=None, par_names=None, name=None,
 
     return NewFit()
 
-# %% ../../nbs/04_plotting.fit.ipynb 5
+# %% ../../nbs/04_plotting.fit.ipynb 9
 class PoissonI(Fit):
     def __init__(self, h=None, fit_range=None, npx=1000, p0=None, p1=None):
         self.Pars = [choose(p0, h.GetEntries() if h else 1), choose(p1, 1)]
@@ -144,7 +158,7 @@ class PoissonI(Fit):
     def init_fit(self):
         return self.Draw.make_f(self.Name, '[0] * TMath::PoissonI(x, [1])', self.XMin, self.XMax, self.Pars)
 
-# %% ../../nbs/04_plotting.fit.ipynb 6
+# %% ../../nbs/04_plotting.fit.ipynb 10
 class Expo(Fit):
     def __init__(self, h=None, xmin=None, xmax=None, npx=100):
         Fit.__init__(self, 'Exponential', h, None if xmin is None else [xmin, xmax], npx)
@@ -162,7 +176,7 @@ class Expo(Fit):
     def get_par_names(self):
         return ['asymptote', 'starting value', 'starting time', 'time constant']
 
-# %% ../../nbs/04_plotting.fit.ipynb 7
+# %% ../../nbs/04_plotting.fit.ipynb 11
 class Gauss(Fit):
     def __init__(self, h=None, fit_range=None, npx=100, fl=3, fh=3, thresh=.01, **fkw):
         self.Fl, self.Fh = fl, fh
@@ -179,7 +193,7 @@ class Gauss(Fit):
             ymax = h.GetMaximum()
             return [h.GetBinCenter(f(self.T * ymax)) for f in [h.FindFirstBinAbove, h.FindLastBinAbove]]
 
-# %% ../../nbs/04_plotting.fit.ipynb 8
+# %% ../../nbs/04_plotting.fit.ipynb 12
 class Landau(Fit):
     def __init__(self, h=None, fit_range=None, npx=100):
         self.XOff = -.22278
@@ -193,7 +207,7 @@ class Landau(Fit):
         f = self.fit(draw=draw, minuit=False)
         return f[1] + self.XOff * f[2]
 
-# %% ../../nbs/04_plotting.fit.ipynb 9
+# %% ../../nbs/04_plotting.fit.ipynb 13
 class Erf(Fit):
     def __init__(self, h=None, fit_range=None, pars=None, npx=100):
         self.Pars = pars
@@ -211,7 +225,7 @@ class Erf(Fit):
             x, y = x[(x >= self.XMin) & (x <= self.XMax)], y[(x >= self.XMin) & (x <= self.XMax)]
             self.set_parameters(mean(y), sign(y[-1] - y[0]) * (max(y) - min(y)) / 2, mean(x), (x[-1] - x[0]) / 5)
 
-# %% ../../nbs/04_plotting.fit.ipynb 10
+# %% ../../nbs/04_plotting.fit.ipynb 14
 class Crystalball(Fit):
     def __init__(self, h=None, fit_range=None, inv=False, npx=1000):
         """ :parameter:  0 - scale, 1 - alpha, 2 - n, 3 - mean, 4 - sigma, 5 - offset """
@@ -239,7 +253,7 @@ class Crystalball(Fit):
             self.Fit.SetParLimits(5, -.1 * maxval, .1 * maxval)
             self.Fit.SetParameters(maxval, .5, 1, max_x, (self.XMax - self.XMin) / 4., 0)
 
-# %% ../../nbs/04_plotting.fit.ipynb 11
+# %% ../../nbs/04_plotting.fit.ipynb 15
 class ErfLand(Fit):
     def __init__(self, h=None, fit_range=None, npx=1000):
         """ :parameter:  0 - erf-scale, 1 - alpha, 2 - n, 3 - mean, 4 - sigma, 5 - offset """
@@ -274,7 +288,7 @@ class ErfLand(Fit):
             self.Fit.FixParameter(7, max_x - .4 * w1)
             self.Fit.SetParameters(maxval * 5, max_x, 3, maxval / 2., .5, max_x - 10, 0, max_x - .5 * w1)
 
-# %% ../../nbs/04_plotting.fit.ipynb 12
+# %% ../../nbs/04_plotting.fit.ipynb 16
 class Langau(Fit):
     def __init__(self, h=None, nconv=100, fit_range=None, npx=1000):
 
@@ -307,7 +321,7 @@ class Langau(Fit):
     def get_mpv(self):
         return self.get_parameter(1)
 
-# %% ../../nbs/04_plotting.fit.ipynb 13
+# %% ../../nbs/04_plotting.fit.ipynb 17
 class NLandau(Fit):
 
     def __init__(self, h=None, fit_range=None, npx=100, n=3):
@@ -336,16 +350,16 @@ class NLandau(Fit):
             self.Fit.SetParameter(i + 1, self.MPV + (i - 1) * self.W / 2)
             self.Fit.SetParameter(i + 2, self.W)
 
-# %% ../../nbs/04_plotting.fit.ipynb 14
+# %% ../../nbs/04_plotting.fit.ipynb 18
 def erfland(x, pars):
     c0, mpv, sigma, c1, xoff, w, yoff, x0 = [float(p) for p in pars]
     return yoff + (c0 * TMath.Landau(x[0], mpv, sigma) if x[0] > x0 else c1 * (erf(w * (x[0] - xoff)) + 1))
 
-# %% ../../nbs/04_plotting.fit.ipynb 15
+# %% ../../nbs/04_plotting.fit.ipynb 19
 def gauss(x, scale, mean_, sigma, off=0):
     return scale * exp(-.5 * ((x - mean_) / sigma) ** 2) + off
 
-# %% ../../nbs/04_plotting.fit.ipynb 16
+# %% ../../nbs/04_plotting.fit.ipynb 20
 def crystalball(x, pars, inv=False):
     scale, alpha, n, m, sigma, off = [float(p) for p in pars]
     x[0] *= -1 if inv else 1
@@ -357,16 +371,29 @@ def crystalball(x, pars, inv=False):
         b = n / abs(alpha) - abs(alpha)
         return scale * a * (b - (x[0] - m) / sigma) ** -n + off
 
-# %% ../../nbs/04_plotting.fit.ipynb 17
-def langau(x, pars, nconv, nsigma=5):
-    # Convoluted Landau and Gaussian Fitting Function
-    #         (using ROOT's Landau and Gauss functions)
-    # Fit parameters:
-    # par[0]=Width (scale) parameter of Landau density
-    # par[1]=Most Probable (MP, location) parameter of Landau density
-    # par[2]=Total area (integral -inf to inf, normalization constant)
-    # par[3]=Width (sigma) of convoluted Gaussian function
+# %% ../../nbs/04_plotting.fit.ipynb 21
+def langau(x:float,       # independent variable 
+           pars,          # list of langau fit parameters
+           nconv:int,     # number of convolutions
+           nsigma:int=5): # number of sigmas, extent of the convolution intergral
+    """    
+    Convoluted Landau and Gaussian Fitting Function
+            (using ROOT's Landau and Gauss functions)
+            
+    Fit parameters:
+    par[0]=Width (scale) parameter of Landau density
+    par[1]=Most Probable (MP, location) parameter of Landau density
+    par[2]=Total area (integral -inf to inf, normalization constant)
+    par[3]=Width (sigma) of convoluted Gaussian function
+    
+    In the Landau distribution (represented by the CERNLIB approximation), 
+    the maximum is located at x=-0.22278298 with the location parameter=0.
+    This shift is corrected within this function, so that the actual
+    maximum is identical to the MP parameter.
 
+    
+    The code is literally converted to python from the original C at https://root.cern.ch/root/html404/examples/langaus.C.html
+    """
     # MP shift correction
     mpshift = -0.22278298  # Landau maximum location
     mpc = pars[1] - mpshift * pars[0]
@@ -393,14 +420,17 @@ def langau(x, pars, nconv, nsigma=5):
 
     return pars[2] * step * sum_int / sqrt(2 * pi) / pars[3]
 
-# %% ../../nbs/04_plotting.fit.ipynb 18
+# %% ../../nbs/04_plotting.fit.ipynb 22
 def langaupro(params, maxx, FWHM):
 
-    #  Seaches for the location (x value) at the maximum of the
-    #  Landau-Gaussian convolute and its full width at half-maximum.
-    #
-    #  The search is probably not very efficient, but it's a first try.
+    """
+    Seaches for the location (x value) at the maximum of the
+    Landau-Gaussian convolute and its full width at half-maximum.
 
+    The search is probably not very efficient, but it's a first try.
+
+
+    The code is literally converted to python from the original C at https://root.cern.ch/root/html404/examples/langaus.C.html"""
     i = 0
     MAXCALLS = 10000
 
@@ -485,7 +515,7 @@ def langaupro(params, maxx, FWHM):
     FWHM = fxr - fxl
     return (0)
 
-# %% ../../nbs/04_plotting.fit.ipynb 19
+# %% ../../nbs/04_plotting.fit.ipynb 23
 @call_parse
 def main():
     z = Crystalball(fit_range=[-10, 20])

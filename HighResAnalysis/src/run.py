@@ -10,6 +10,7 @@ __all__ = ['load_runlog', 'load_nrs', 'init_batch', 'load_batches', 'Batch', 'DU
 from numpy import where, roll, split, array
 from pathlib import Path
 from fastcore.script import *
+from nbdev import *
 from ..utility.utils import print_table, datetime, ev2str, remove_letters, Dir, small_banner, isint, do_pickle, file_hash
 from ..plotting.utils import load_json, warning, critical
 from .analysis import Analysis, BeamTest
@@ -17,27 +18,28 @@ from ..utility.utils import choose
 from .dut import DUT
 from .spreadsheet import make
 
-# %% ../../nbs/30_src.run.ipynb 4
-def load_runlog(p: Path):
+# %% ../../nbs/30_src.run.ipynb 5
+def load_runlog(p: Path): # path the runlog.json 
+    "Loads runlog.json creating it if it does not exist"
     f = p.joinpath(Analysis.Config.get('data', 'runlog file'))
     if not f.exists():
         warning('runlog file does not exist! -> creating new one!')
         make(p.stem.replace('-', ''))
     return load_json(f)
 
-# %% ../../nbs/30_src.run.ipynb 5
+# %% ../../nbs/30_src.run.ipynb 6
 def load_nrs(p:Path # Path to json runlog
             )->list:
     "returns list of runs in runlog.json with either no status or `green` = `good run` status"
     log = load_runlog(p)
     return [key for key, dic in log.items() if 'status' not in dic or dic['status'] == 'green']
 
-# %% ../../nbs/30_src.run.ipynb 6
+# %% ../../nbs/30_src.run.ipynb 7
 def init_batch(name, dut, beam_test: BeamTest, log=None):
     batches = load_batches(beam_test)
     return DUTBatch(name, beam_test, log) if type(batches[name]) == dict else Batch(name, dut, beam_test, log) if isint(dut) else Batch.from_dut_name(name, dut, beam_test, log)
 
-# %% ../../nbs/30_src.run.ipynb 7
+# %% ../../nbs/30_src.run.ipynb 8
 def load_batches(bt: BeamTest, redo=False):
     """ unify batches from run logs and custom batches and save them in a tmp file. """
     log_file = bt.Path.joinpath(Analysis.Config.get('data', 'runlog file'))
@@ -67,7 +69,7 @@ def load_batches(bt: BeamTest, redo=False):
 
     return do_pickle(tmp_file, load, redo=True)[2]
 
-# %% ../../nbs/30_src.run.ipynb 8
+# %% ../../nbs/30_src.run.ipynb 9
 class Batch:
     """ class containing the run infos of a single batch. """
 
@@ -157,11 +159,13 @@ class Batch:
         logs = [log[str(run)] for run in new_batches[batch_name]] if batch_name in new_batches else filter(lambda x: x['batch'] == batch_name and x['status'] == 'green', log.values())
         return [d['duts'].index(dut_name) for d in logs]
 
-# %% ../../nbs/30_src.run.ipynb 9
+# %% ../../nbs/30_src.run.ipynb 10
 class DUTBatch(Batch):
     """ extension of batch class for a single DUT (for runs with mismatching duts). """
 
-    def __init__(self, name, beam_test: BeamTest, log=None):
+    def __init__(self, name:str, # Name of the batch
+                 beam_test:BeamTest, # BeamTest info
+                 log:Path=None): # Path to the runlog.json
         super().__init__(name, 0, beam_test, log)
         self.DUTName = self.DUT.Name
 
@@ -172,11 +176,14 @@ class DUTBatch(Batch):
         batches = load_batches(self.BeamTest)
         return [Run.from_dut_name(nr, dut_name, self.DataDir, self.Log) for dut_name, nrs in batches[self.Name].items() for nr in nrs]
 
-# %% ../../nbs/30_src.run.ipynb 10
+# %% ../../nbs/30_src.run.ipynb 11
 class Run:
     """ Run class containing all the information for a single run from the tree and the json file. """
 
-    def __init__(self, run_number, dut_number, tc_dir: Path, log=None):
+    def __init__(self, run_number:str, # Run number 
+                 dut_number:int, # Dut Number
+                 tc_dir:Path,  # Path to the data for the test beam
+                 log:Path=None): # Path to runlog.json
 
         # Main Info
         self.Number = int(run_number)
@@ -241,13 +248,13 @@ class Run:
     def n_ev(self):
         return self.Info['events']
 
-# %% ../../nbs/30_src.run.ipynb 11
+# %% ../../nbs/30_src.run.ipynb 13
 class Ensemble(object):
     """ General enseble class for runs and batches. """
 
     FilePath = Dir.joinpath('ensembles', 'scans.json')
 
-    def __init__(self, name: str):
+    def __init__(self, name: str): # 
 
         self.Name = name
         self.Dic = self.load_dic()
@@ -286,7 +293,7 @@ class Ensemble(object):
     def biases(self):
         return [u.DUT.Bias for u in self.Units]
 
-# %% ../../nbs/30_src.run.ipynb 12
+# %% ../../nbs/30_src.run.ipynb 14
 @call_parse
 def main(a:Param(action='store_true'), # show all
         alle:Param(action='store_true'),

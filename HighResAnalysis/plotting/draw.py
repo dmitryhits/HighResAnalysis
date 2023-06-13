@@ -137,7 +137,7 @@ class Draw(object):
 
     Count = {}
     Colors = get_color_gradient()
-    Objects = []
+    Objects = [] # A Container of Draw objects
 
     Show = True
     Title = True
@@ -150,7 +150,9 @@ class Draw(object):
     DefaultStats = {'x2': None, 'y2': None, 'h': None, 'w': .3, 'entries': False, 'm': False, 'rms': False, 'all_stat': True, 'fit': False, 'center_x': False, 'center_y': False, 'form': None}
     Stats = {}
 
-    def __init__(self, config=None, verbose=True):
+    def __init__(self, config:str=None, # Path to the config file
+                 verbose:bool=True): # verbosity
+        "Main class for drawing histograms and functions"
 
         if Draw.Config is None:  # only run the setup once
             # Basics
@@ -226,6 +228,7 @@ class Draw(object):
 
     @staticmethod
     def add(*args):
+        "Adds a Draw object to the container and cleans the container from empty objects, returns the added object or an array of added objects"
         for obj in args:
             Draw.Objects.append(obj)
         Draw.clean()
@@ -233,6 +236,7 @@ class Draw(object):
 
     @staticmethod
     def clean():
+        "Cleans Draw object container by removing empty objects"
         for obj in Draw.Objects:
             # if '0x(nil)' in str(obj) or obj is None:
             if obj is None:
@@ -242,7 +246,6 @@ class Draw(object):
     # region SET
     @staticmethod
     def setup():
-        print(f'--- Palette ------ {Draw.Palette}')
         gStyle.SetLegendFont(Draw.Font)
         gStyle.SetOptTitle(Draw.Title)
         gStyle.SetPalette(Draw.Palette)
