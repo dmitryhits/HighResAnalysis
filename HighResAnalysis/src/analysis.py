@@ -44,7 +44,9 @@ class BeamTest:
 
 # %% ../../nbs/32_src.analysis.ipynb 4
 def load_config():
-    """A Utility function that loads """
+    """A utility function that loads config file
+    it expects main.ini file in the config directory under the root analyis directory
+    Returns the instance of `Config` class"""
     config_file_path = Dir.joinpath('config', 'main.ini')
     if not isfile(config_file_path):
         warning('The main config file "config/main.ini" does not exist! Using the default!')
@@ -53,7 +55,8 @@ def load_config():
 
 # %% ../../nbs/32_src.analysis.ipynb 5
 class Analysis:
-    """ The analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. """
+    """ The analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. 
+    The main part"""
     # Analysis Class Variables
     Config = load_config()
     Locations = Config.get_value('data', 'beam tests', type)
@@ -171,7 +174,7 @@ class Analysis:
 # %% ../../nbs/32_src.analysis.ipynb 6
 @patch
 def create_run_config(self:Analysis):
-    "Creates a runlog.json from Google spread sheet"
+    "Creates a runlog.json from Google spreadsheet"
     if self.BeamTest.Location == 'CERN':
         from src.spreadsheet import make_cern_run_log
         make_cern_run_log(self.BeamTest.Path.stem)

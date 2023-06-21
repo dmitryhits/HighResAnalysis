@@ -24,7 +24,13 @@ import HighResAnalysis.src.bins as bins
 class Currents(Analysis):
     """reads in information from the keithley log file"""
 
-    def __init__(self, analysis=None, test_campaign=None, dut=None, begin=None, end=None, averaging=None, verbose=False):
+    def __init__(self, analysis=None, 
+                 test_campaign=None, 
+                 dut=None, 
+                 begin=None, 
+                 end=None, 
+                 averaging=None, 
+                 verbose=False):
         Analysis.__init__(self, test_campaign if analysis is None else analysis.BeamTest.Tag, verbose=verbose)
 
         # Settings
