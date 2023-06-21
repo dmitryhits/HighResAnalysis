@@ -1,0 +1,450 @@
+[
+  {
+    "objectID": "src.proteus.html",
+    "href": "src.proteus.html",
+    "title": "Proteus",
+    "section": "",
+    "text": "source\n\ninit_toml\n\n init_toml (name)\n\n\nsource\n\n\nProteus\n\n Proteus (soft_dir, data_dir, cfg_dir, raw_file, max_events=None,\n          skip_events=None, dut_pos=None, duts=None, align_run=None)\n\nAlignment and tracking of telescope data. STEP 1: noisescan STEP 2: alignment STEP 3: tracking STEP 4: track-matching\n\nsource\n\n\nmain\n\n main ()"
+  },
+  {
+    "objectID": "blog/index.html",
+    "href": "blog/index.html",
+    "title": "High Resolution Analysis Blog",
+    "section": "",
+    "text": "Conversion to NbDev\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog/posts/2023-02-22-nbdev-conversion/index.html",
+    "href": "blog/posts/2023-02-22-nbdev-conversion/index.html",
+    "title": "Conversion to NbDev",
+    "section": "",
+    "text": "A short description of Converting HighResAnalysis to NbDev"
+  },
+  {
+    "objectID": "blog/posts/2023-02-22-nbdev-conversion/index.html#motivation",
+    "href": "blog/posts/2023-02-22-nbdev-conversion/index.html#motivation",
+    "title": "Conversion to NbDev",
+    "section": "Motivation",
+    "text": "Motivation\nHighResAnalysis package was developed for analysis of the data that a diamond sensor group at ETH IPA is using to study the data collected in 2018 and 2019 beam tests at CERN and DESY. The main focus of study was on two 3D diamond detectors. The package works and efficient, however, the documentation is sparse and the future development and maintenance of the code is difficult. By converting the code to a notebook style will hopefully improve that."
+  },
+  {
+    "objectID": "blog/posts/2023-02-22-nbdev-conversion/index.html#lib2nbdev",
+    "href": "blog/posts/2023-02-22-nbdev-conversion/index.html#lib2nbdev",
+    "title": "Conversion to NbDev",
+    "section": "lib2nbdev",
+    "text": "lib2nbdev\nlib2nbdev is a nice little package originally created by Zach Mueller at Novetta. The package was however based on the old version of the NbDev so I started by converting it to the new version. I hopefully will describe the details of that conversion on the projects website"
+  },
+  {
+    "objectID": "blog/posts/2023-02-22-nbdev-conversion/index.html#conversion",
+    "href": "blog/posts/2023-02-22-nbdev-conversion/index.html#conversion",
+    "title": "Conversion to NbDev",
+    "section": "Conversion",
+    "text": "Conversion\n\nFirst steps\nI forked the project from https://github.com/diamondIPP/HighResAnalysis to my personal account and cloned it on my laptop. The lib2nbdev2 package provides a convert_lib command that, when run in the project directory, creates a notebook for every .py file in the libdir. The libdir is determined from the settings.ini file, which is automatically created with most of the information inferred from the github info of the repository. Whatever the program is not able to infer it will ask.\n\n\n\n\n\n\nNote\n\n\n\nAll of your .py files should be preferably inside one directory (libdir) which is inside your root github project directory.\n\n\nMy project did not have such directory, so I created it and moved all the dirs with .py files into it.\nThis is however all the convert_lib program does at the moment. Most of the next steps are done manually. First, I run nbdev_new, which copied an extra necessary files into my project, some of which, for example, 00_core.ipynb were not needed, so I removed them.\n\n\nDebugging\nThe following steps involved long process of adding basic, not yet extensive, documentation, because the convert_lib created only standard default titles and descriptions (see below), which need to be changed in order to have at least a useful sidebar.\n\nSimultaneously, I was running the notebooks and fixing the errors that come up and also placing\n#| hide\nfrom nbdev import *\nnbdev_export()\nAt the bottom of each notebook\n\n\n\n\n\n\nNote to Self\n\n\n\n\n\nI should add that to convert_lib\n\n\n\nFirst errors, I fixed were the import errors. In the notebooks I needed a path to the project that starts from the project lib dir.\nimport HighResAnalysis.convert\ninstead of just:\nimport convert\n\n\n\n\n\n\nNote to Self\n\n\n\n\n\nI wonder if it also possible to automate\n\n\n\nNext bugs that needed fixing belong to the type of code that works in a file but not in interactive coding:\n    Dir = Path(__file__).resolve().parent.parent\nWill give a NameError exception, because __file__ does not exists in interactive cell. It can be resolved by using a\ntry:\n    ...\nexcept:\n    ...\ncombo with a reasonable default in case of exception. For example:\ntry:\n    Dir = Path(__file__).resolve().parent.parent\nexcept NameError:\n    Dir = Path().resolve().parent/\"HighResAnalysis\"\nThe next type of code that does not work in interactive notebooks is anything related with argparse module. Luckily, the fastcore module provides a script module that helps to solve that problem.\nThe something like this:\nfrom argparse import ArgumentParser\n\naparser = ArgumentParser()\naparser.add_argument('run', nargs='?', default=Analysis.Config.get_value('data', 'default run'))\naparser.add_argument('dut', nargs='?', default=Analysis.Config.get_value('data', 'default dut', default=0), type=int)\naparser.add_argument('--batch', '-b', nargs='?', default=None, help='batch name')\naparser.add_argument('--testcampaign', '-tc', nargs='?', default=Analysis.find_testcampaign())\naparser.add_argument('--verbose', '-v', action='store_false')\naparser.add_argument('--test', '-t', action='store_true')\naparser.add_argument('--remove_meta', '-rm', action='store_true')\naparser.add_argument('--convert', '-c', action='store_true', help='removes current analysis files and reconverts from the raw files')\naparser.add_argument('--runplan', '-rp', nargs='?', default=None, help='create new runplan.json for beam test &lt;YYYYMM&gt;')\n\nargs = aparser.parse_args()\nturns into something like this:\nfrom fastcore.script import *\n@call_parse\ndef main(verbose:Param('verbosity level', action='store_false'),\n         test:Param('test run, nothing is converted, just initialize the classes', action='store_true'),\n         remove_meta:Param('removes ', action='store_true'),\n         convert:Param('removes current analysis files and reconverts from the raw files', action='store_true'),\n         run:str=Analysis.Config.get_value('data', 'default run'), # run number or batch id or scan id\n         dut:int=Analysis.Config.get_value('data', 'default dut', default=0), # DUT number in the telescope\n         batch:str=None, #batch name\n         test_campaign:str=Analysis.find_testcampaign(), # test campaign in the YYYYMM format, for example 201912\n         run_plan:bool=False, # create new runplan.json for beam test &lt;YYYYMM&gt;\n        ):\n    ...\n\n\n\n\n\n\nToDo\n\n\n\nCheck that the script works"
+  },
+  {
+    "objectID": "blog/posts/2023-02-22-nbdev-conversion/index.html#git-actions",
+    "href": "blog/posts/2023-02-22-nbdev-conversion/index.html#git-actions",
+    "title": "Conversion to NbDev",
+    "section": "Git Actions",
+    "text": "Git Actions\n\nNbDev version\nUnfortunately after passing all test locally on my laptop the code failed to pass the tests on GitHub. One of the bugs, which I discovered last, was an older version of NbDev. Instead of getting the NbDev from fastchan I got it from the default mamba/conda channel, which of apparently significantly behind the fastchan version.\n\n\nMamba on GitHub\nAnother issue, which required a lot of effort on my part, was unavailability of ROOT package. The package is, however, available on conda and hence on mamba default channel. After spending some time learning about GitHub actions and Yaml from scratch. Luckily, the documentation on GitHub action is quite good and extensive. I found that there is an action available from mamba-org that allows one get a micromamba environment on the GitHub action virtual machine (VR). For the action to work I needed to provide it with environemnt.yaml, that is when I realized that none of my repository files are available on the VR by default but luckily there is a checkout action available from GitHub actions. That allowed the micromamba setup to work and to install root, however, it still did not make it available for import in a python script, because the environment was not activated. Here I learned something about the differences in bash flavors. If one looks at a log output of a git action, one sees that the default process to execute a bash command is bash -e {0}, which is not a logging shell. So one needs to change the default to bash -l {0} in order to have the login shell available, which allows to activate mamba environment. After that I was able to do python -c \"import ROOT\" test. However, I was not finished yet. The NbDev actions nbdev-ci and quarto-ghp changed the processing shell to bash and the ROOT was not available any longer. To remedy this I simply copied the NbDev workflows into my explicitly and changed the shell back to bash -l. This finally, gave me the green mark on both actions and I was able to finally see the projects website :-)"
+  },
+  {
+    "objectID": "plotting.save.html",
+    "href": "plotting.save.html",
+    "title": "Save plots",
+    "section": "",
+    "text": "source\n\nSaveDraw\n\n SaveDraw (analysis=None, results_dir=None, sub_dir='')\n\nMain class for drawing histograms and functions\n\nsource\n\n\nmain\n\n main ()"
+  },
+  {
+    "objectID": "cern.raw.html",
+    "href": "cern.raw.html",
+    "title": "Raw Data Processer (CERN)",
+    "section": "",
+    "text": "source\n\nCERNRaw\n\n CERNRaw (c:HighResAnalysis.src.converter.Converter, load_file=False,\n          step=-1)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "mod.ref_cuts.html",
+    "href": "mod.ref_cuts.html",
+    "title": "Reference Detector Cuts",
+    "section": "",
+    "text": "source\n\nRefCut\n\n RefCut (ana)\n\nClass that holds several cuts with functionality to combine them"
+  },
+  {
+    "objectID": "plotting.info.html",
+    "href": "plotting.info.html",
+    "title": "Plot Info Legend Utils",
+    "section": "",
+    "text": "source\n\nInfo\n\n Info (draw)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "src.bins.html",
+    "href": "src.bins.html",
+    "title": "Bins",
+    "section": "",
+    "text": "source"
+  },
+  {
+    "objectID": "src.bins.html#region-pixel",
+    "href": "src.bins.html#region-pixel",
+    "title": "Bins",
+    "section": "## Region Pixel",
+    "text": "## Region Pixel\n\nsource\n\nget_local\n\n get_local (plane, bin_width=1, aspect_ratio=False)\n\n\nsource\n\n\nget_local_x\n\n get_local_x (plane, bin_width=1, aspect_ratio=False)\n\n\nsource\n\n\nget_local_y\n\n get_local_y (plane, bin_width=1, aspect_ratio=False)\n\n\nsource\n\n\nget_corr\n\n get_corr (mode, pl0, pl1, bw=1)\n\n\nsource\n\n\nget_global\n\n get_global (plane, res=1)\n\n\nsource\n\n\nget_xy\n\n get_xy (local, plane, bin_width=1, aspect_ratio=False)\n\n\nsource\n\n\nget_global_x\n\n get_global_x (plane, res=1)\n\ncalculates the global telescope bins :return: [nbins, bin_array]\n\nsource\n\n\nget_x\n\n get_x (plane, bw=1, res=1, local=True, aspect_ratio=False)\n\n\nsource\n\n\nget_y\n\n get_y (plane, bw=1, res=1, local=True, aspect_ratio=False)\n\n\nsource\n\n\nget_global_y\n\n get_global_y (plane, res=1)\n\n\nsource\n\n\nget_pixel\n\n get_pixel (plane, res, outer=0.5, cell=False)\n\n\nsource\n\n\nget_adc\n\n get_adc ()\n\n\nsource\n\n\nget_vcal\n\n get_vcal (bin_width=1)\n\n\nsource\n\n\nget_electrons\n\n get_electrons (bin_width=200)\n\n\nsource\n\n\nget_ph\n\n get_ph (vcal=False, adc=False, bin_width=None)\n\n\nsource\n\n\nget_triggerphase\n\n get_triggerphase ()"
+  },
+  {
+    "objectID": "src.bins.html#end-region-pixel",
+    "href": "src.bins.html#end-region-pixel",
+    "title": "Bins",
+    "section": "## End Region PIXEL",
+    "text": "## End Region PIXEL"
+  },
+  {
+    "objectID": "src.bins.html#binning",
+    "href": "src.bins.html#binning",
+    "title": "Bins",
+    "section": "Binning",
+    "text": "Binning"
+  },
+  {
+    "objectID": "src.cut.html",
+    "href": "src.cut.html",
+    "title": "Analysis Cuts",
+    "section": "",
+    "text": "source\n\nCuts\n\n Cuts ()\n\nClass that holds several cuts with functionality to combine them\n\nsource\n\n\nCut\n\n Cut (name='', values:Any=1, level=99, description=None, n0=None)\n\nBase class to describe a single cut"
+  },
+  {
+    "objectID": "analyse.html",
+    "href": "analyse.html",
+    "title": "Analysis script",
+    "section": "",
+    "text": "source\n\nanalyse\n\n analyse (test:bool=False, verbose:bool=False, remove_meta:bool=False,\n          convert:bool=False, test_campaign:str='201912', run:str='17',\n          dut:int=0, batch:str=None, run_plan:str=None)\n\nruns the whole chain of data conversion, reconstruction, datastream merge and their alignment, telescope alignment and preliminary analysis starting from raw data and ending up with hdf5 files\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ntest\nbool\nFalse\nTest run. Nothing is converted. Just initialize the classes\n\n\nverbose\nbool\nFalse\nVerbosity\n\n\nremove_meta\nbool\nFalse\nRemoves meta files\n\n\nconvert\nbool\nFalse\nRemoves current analysis files and reconverts from the raw files\n\n\ntest_campaign\nstr\n201912\nTest campaign in the YYYYMM format, for example 201912\n\n\nrun\nstr\n17\nRun number or batch id or scan id\n\n\ndut\nint\n0\nDUT number in the telescope\n\n\nbatch\nstr\nNone\nBatch name\n\n\nrun_plan\nstr\nNone\nCreate new runplan.json for beam test \n\n\n\n\nis_batch = True\nbatch = '1k'\nrun = '4'\ndut = 0\ntest_campaign = '201912'\ndut_ana = partial(BatchAnalysis, choose(batch, run)) if is_batch else partial(DUTAnalysis, run)\ndut_ana = partial(dut_ana, dut, test_campaign)\n\n\ndut_ana.args[-1]\n\n\nbc = converter.BatchConvert(dut_ana.args[0], dut_ana.args[-1])\n\n\nbc.Batch.FileName.exists()\n\n\nz=dut_ana()\n\n\nz.add_info(t_start, 'Init time:', prnt=True)\n\n\ncut = z.Cut"
+  },
+  {
+    "objectID": "src.calibration.html",
+    "href": "src.calibration.html",
+    "title": "Pulse Height Calibration CMS Pixel",
+    "section": "",
+    "text": "source\n\nCalibration\n\n Calibration (run:HighResAnalysis.src.run.Run, n=None)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "utility.affine_transformations.html",
+    "href": "utility.affine_transformations.html",
+    "title": "Affine transforms",
+    "section": "",
+    "text": "# created on April 5th 2022 by M. Reichmann (remichae@phys.ethz.ch)\n# --------------------------------------------------------\n\n\nsource\n\nscale_matrix\n\n scale_matrix (sx=1, sy=None)\n\n\nsource\n\n\ntransition_matrix\n\n transition_matrix (ox=0, oy=0)\n\n\nsource\n\n\nrotation_matrix\n\n rotation_matrix (rx=0, ry=None)\n\n\nsource\n\n\nmatrix_order\n\n matrix_order (order)\n\n\nsource\n\n\nmultiply\n\n multiply (m0, m1, m2)\n\nreturns: M0 * M1 * M2\n\nsource\n\n\nmatrix\n\n matrix (sx=1, sy=1, ox=0, oy=0, rx=0, ry=None, order='srt')\n\n\nsource\n\n\ntransform\n\n transform (x, y, sx=1, sy=1, ox=0, oy=0, rx=0, ry=None, order='srt',\n            invert=False)\n\n\nsource\n\n\nm_transform\n\n m_transform (m, x, y, invert=False)"
+  },
+  {
+    "objectID": "plotting.draw.html",
+    "href": "plotting.draw.html",
+    "title": "Draw",
+    "section": "",
+    "text": "/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Attributes\n  else: warn(msg)\n/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section See Also\n  else: warn(msg)\n/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Notes\n  else: warn(msg)\n/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Examples\n  else: warn(msg)\n\nsource\n\nFitRes\n\n FitRes (f)\n\nAn array object represents a multidimensional, homogeneous array of fixed-size items. An associated data-type object describes the format of each element in the array (its byte-order, how many bytes it occupies in memory, whether it is an integer, a floating point number, or something else, etc.)\nArrays should be constructed using array, zeros or empty (refer to the See Also section below). The parameters given here refer to a low-level method (ndarray(...)) for instantiating an array.\nFor more information, refer to the numpy module and examine the methods and attributes of an array.\n\nsource\n\n\nget_color_gradient\n\n get_color_gradient ()\n\n\nsource\n\n\nDraw\n\n Draw (config:str=None, verbose:bool=True)\n\nMain class for drawing histograms and functions\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nconfig\nstr\nNone\nPath to the config file\n\n\nverbose\nbool\nTrue\nverbosity\n\n\n\n\ndraw = Draw()\ndraw\n\nROOT Draw instance: Title = OFF, Show = ON, Info = ON\n\n\n\nsource\n\n\nformat_histo\n\n format_histo (histo, name=None, title=None, x_tit=None, y_tit=None,\n               z_tit=None, marker=None, color=None, line_color=None,\n               line_style=None, markersize=None, x_off=None, y_off=None,\n               z_off=None, lw=None, fill_color=None, fill_style=None,\n               stats=None, tit_size=None, lab_size=None, xls=None,\n               yls=None, l_off_y=None, l_off_x=None, draw_first=False,\n               x_range=None, xr=None, y_range=None, yr=None, z_range=None,\n               zr=None, sumw2=None, do_marker=True, style=None,\n               ndivx=None, ndivy=None, ncont=None, tick_size=None,\n               t_ax_off=None, tform='%H:%M', center_y=False,\n               center_x=False, yax_col=None, normalise=None, pal=None,\n               rebin=None, y_ticks=None, x_ticks=None, z_ticks=None,\n               opacity=None, center_tit=None, **kwargs)\n\n\nsource\n\n\nset_statbox\n\n set_statbox (x2=None, y2=None, h=None, w=0.3, entries=False, m=False,\n              rms=False, all_stat=False, fit=False, center_x=False,\n              center_y=False, form=None, stats=True, **kw)\n\n\nsource\n\n\nset_entries\n\n set_entries ()\n\n\nsource\n\n\nget_window_ratio\n\n get_window_ratio (c=None)\n\n\nsource\n\n\nget_stat_margins\n\n get_stat_margins (c=None, x2=None, y2=None, d=0.01, bottom=False,\n                   left=False, h=0.0, w=0.0)\n\n\nsource\n\n\nget_stat_pos\n\n get_stat_pos (c, nentries, x2=None, y2=None, d=0.01, h=None, w=0.3,\n               center_x=False, center_y=False, bottom=False, left=False)\n\n\nsource\n\n\nformat_statbox\n\n format_statbox (th, x2=None, y2=None, d=0.01, h=None, w=0.3,\n                 entries=False, m=False, rms=False, all_stat=False,\n                 fit=False, fit_opt=None, stat_opt=None, center_x=False,\n                 center_y=False, bottom=False, left=False, form=None,\n                 c=None)\n\n\nsource\n\n\nformat_axis\n\n format_axis (axis, h, title, tit_offset, tit_size, centre_title,\n              lab_size, label_offset, limits, ndiv, tick_size, color=None)\n\n\nsource\n\n\nformat_pie\n\n format_pie (pie, h=None, r=None, text_size=None, angle3d=None,\n             angle_off=None, label_format=None)\n\n\nsource\n\n\nformat_text\n\n format_text (t, name='text', align=20, color=1, size=0.05, angle=None,\n              ndc=None, font=None)\n\n\nsource\n\n\nformat_frame\n\n format_frame (frame)\n\n\nsource\n\n\nfill_hist\n\n fill_hist (h, x, y=None, zz=None)\n\n\nsource\n\n\nset_2d_ranges\n\n set_2d_ranges (h, dx, dy)\n\n\nsource\n\n\narr2coods\n\n arr2coods (a)\n\n\nsource\n\n\nfix_chi2\n\n fix_chi2 (g, prec=0.01, show=True)\n\n\nsource\n\n\nmake_darray\n\n make_darray (values)\n\n\nsource\n\n\ngraph_values\n\n graph_values (g, m, err=False, as_u=True)\n\n\nsource\n\n\ngraph_xy\n\n graph_xy (g, err=True, as_u=True)\n\n\nsource\n\n\ngraph_x\n\n graph_x (g, err=True, as_u=True)\n\n\nsource\n\n\ngraph_y\n\n graph_y (g, err=True, as_u=True)\n\n\nsource\n\n\nhist_values\n\n hist_values (h, err=True)\n\n\nsource\n\n\nhist_xy\n\n hist_xy (h, err=True, raw=False)\n\n\nsource\n\n\nhist_values_2d\n\n hist_values_2d (h, err=True, flat=True, z_sup=True)\n\n\nsource\n\n\nhist_xyz\n\n hist_xyz (h, err=True, flat=False, z_sup=True, grid=False)\n\n\nsource\n\n\nh_y\n\n h_y (h)\n\n\nsource\n\n\nh_x\n\n h_x (h)\n\n\nsource\n\n\nh_xy\n\n h_xy (h)\n\n\nsource\n\n\nset_bin_labels\n\n set_bin_labels (g, labels)\n\n\nsource\n\n\nmake_box_args\n\n make_box_args (x1, y1, x2, y2)\n\n\nsource\n\n\nmake_poly_args\n\n make_poly_args (x, y, last_x=None)\n\n\nsource\n\n\nmake_star\n\n make_star (cx=0, cy=0, r=1, n=5)\n\n\nsource\n\n\nset_titles\n\n set_titles (status=True)\n\n\nsource\n\n\nshift_graph\n\n shift_graph (g, ox=0, oy=0)\n\n\nsource\n\n\nget_3d_profiles\n\n get_3d_profiles (h, opt, err=True)\n\n\nsource\n\n\nget_3d_correlations\n\n get_3d_correlations (h, opt='yz', thresh=0.25, err=True, z_supp=True)\n\n\nsource\n\n\nscale_graph\n\n scale_graph (gr, scale=None, val=1, to_low_flux=False)\n\n\nsource\n\n\nget_quantile\n\n get_quantile (h, q)\n\n\nsource\n\n\nmarkers\n\n markers (i, duo=False)\n\n\nsource\n\n\nduo_markers\n\n duo_markers (i)\n\n:returns full and open marker\n\nsource\n\n\nset_palette\n\n set_palette (pal)\n\n\nsource\n\n\nn_pal\n\n n_pal (n)\n\n\nsource\n\n\nset_n_palette\n\n set_n_palette (n)\n\n\nsource\n\n\nis_graph\n\n is_graph (h)\n\n\nsource\n\n\nupdate_canvas\n\n update_canvas (c=None)\n\n\nsource\n\n\nshow_colors\n\n show_colors (colors)\n\n\nsource\n\n\nshow_wheel\n\n show_wheel ()\n\n\nsource\n\n\nshow_line_styles\n\n show_line_styles ()\n\n\nsource\n\n\nax_range\n\n ax_range (low:Any=None, high=None, fl=0.0, fh=0.0, h=None, to_int=False,\n           thresh=None)\n\n\nsource\n\n\nfind_z_range\n\n find_z_range (h, q=None, z0=None)\n\n\nsource\n\n\nset_drawing_range\n\n set_drawing_range (h, legend=True, lfac=None, rfac=None, thresh=None)\n\n\nsource\n\n\nnormalise_histo\n\n normalise_histo (histo, x_range=None, from_min=False)\n\n\nsource\n\n\nnormalise_bins\n\n normalise_bins (h)\n\n\nsource\n\n\nset_z_range\n\n set_z_range (zmin, zmax)\n\n\nsource\n\n\nset_axes_range\n\n set_axes_range (xmin, xmax, ymin, ymax, c=None)\n\n\nsource\n\n\nget_ax_range\n\n get_ax_range (h, d='x')\n\n\nsource\n\n\nget_dax\n\n get_dax (h, d='x')\n\n\nsource\n\n\nset_x_range\n\n set_x_range (xmin, xmax, c=None)\n\n\nsource\n\n\nset_y_range\n\n set_y_range (ymin, ymax, c=None)\n\n\nsource\n\n\nget_last_canvas\n\n get_last_canvas (warn=True)\n\n\nsource\n\n\nclose_last_canvas\n\n close_last_canvas ()\n\n\nsource\n\n\nget_object\n\n get_object (name)\n\n\nsource\n\n\nset_time_axis\n\n set_time_axis (histo, form='%H:%M', off=0, axis='X')\n\n\nsource\n\n\nfind_mpv_fwhm\n\n find_mpv_fwhm (histo, nbins=15)\n\n\nsource\n\n\nget_fw_center\n\n get_fw_center (h)\n\n\nsource\n\n\nfind_mpv\n\n find_mpv (h, r=0.8, show_fit=False)\n\n\nsource\n\n\nget_fwhm\n\n get_fwhm (h, fit_range=0.8, ret_edges=False, err=True)\n\n\nsource\n\n\nfit_fwhm\n\n fit_fwhm (h, fitfunc='gaus', show=False, fit_range=0.8)\n\n\nsource\n\n\nget_f_fwhm\n\n get_f_fwhm (f:cppyy.gbl.TF1)\n\n\nsource\n\n\nscale_histo\n\n scale_histo (histo, value=None, to_max=False, x_range=None)\n\n\nsource\n\n\nfind_2d_centre\n\n find_2d_centre (h, thresh=0.5)\n\n\nsource\n\n\nget_2d_centre_ranges\n\n get_2d_centre_ranges (h, dx, dy=None, thresh=0.5)\n\n\nsource\n\n\ncentre_2d\n\n centre_2d (h, dx, dy=None, thresh=0.5)\n\n\nsource\n\n\nmake_transparent\n\n make_transparent (pad)\n\n\nsource\n\n\nhide_axis\n\n hide_axis (axis)\n\n\nsource\n\n\nremove_low_stat_bins\n\n remove_low_stat_bins (h, q=0.9, thresh=None)\n\n\nsource\n\n\nget_correlation_arrays\n\n get_correlation_arrays (m1, m2, sx=0, sy=0, thresh=0.1, flat=False)\n\n\nsource\n\n\ncorrelate_maps\n\n correlate_maps (m1, m2, sx=0, sy=0, thresh=0.1)\n\n\nsource\n\n\ncorrelate_all_maps\n\n correlate_all_maps (m1, m2, thresh=0.1)\n\n\nsource\n\n\nset_root_warnings\n\n set_root_warnings (status, fatal=False)\n\n\nsource\n\n\nset_root_output\n\n set_root_output (status=True)\n\n\nsource\n\n\nis_root_object\n\n is_root_object (o)\n\n\nsource\n\n\nnp_profile\n\n np_profile (x, y, u=False)\n\n\nsource\n\n\nmain\n\n main ()"
+  },
+  {
+    "objectID": "plotting.latex.html",
+    "href": "plotting.latex.html",
+    "title": "LATEX UTILITY FUNCTIONS",
+    "section": "",
+    "text": "source\n\nf\n\n f (name, *args)\n\n\nsource\n\n\nmultirow\n\n multirow (txt, n, pos='*')\n\n\nsource\n\n\nmakecell\n\n makecell (*txt)\n\n\nsource\n\n\nbold\n\n bold (*txt)\n\n\nsource\n\n\nmath\n\n math (txt)\n\n\nsource\n\n\nunit\n\n unit (*txt, custom=False)\n\n\nsource\n\n\nsi\n\n si (*v, fmt='.1f', unt=None)\n\n\nsource\n\n\nqty\n\n qty (*v, fmt='.1f', unt=None)\n\n\nsource\n\n\nsi_2err\n\n si_2err (*v, fmt='.1f', unt=None)\n\n\nsource\n\n\nnum\n\n num (*v, fmt='.1f', rm='@')\n\n\nsource\n\n\nnum_2err\n\n num_2err (v, fmt='.1f')\n\n\nsource\n\n\nsi_range\n\n si_range (v0, v1, fmt='.0f', unt=None)\n\n\nsource\n\n\nqty_range\n\n qty_range (v0, v1, fmt='.0f', unt=None)\n\n\nsource\n\n\nnum_range\n\n num_range (v0, v1, fmt='.0f')\n\n\nsource\n\n\nhline\n\n hline (word)\n\n\nsource\n\n\ntable_row\n\n table_row (*words, endl=False)\n\n\nsource\n\n\ntable\n\n table (header, rows, endl=False, align_header=False)"
+  },
+  {
+    "objectID": "cern.adc.html",
+    "href": "cern.adc.html",
+    "title": "ADC Converter",
+    "section": "",
+    "text": "source\n\nAdc2Vcal\n\n Adc2Vcal (c:HighResAnalysis.cern.converter.CERNConverter)\n\nReads the DUT ROOT files saved with pXar and converts adc -&gt; vcal and removes faulty events from the telescope. Specific DUTs can be selected with the  arg [default = None -&gt; all DUTs]."
+  },
+  {
+    "objectID": "src.spreadsheet.html",
+    "href": "src.spreadsheet.html",
+    "title": "Google Spreadsheet Reader",
+    "section": "",
+    "text": "source\n\nlogin_to_google\n\n login_to_google ()\n\n\nsource\n\n\ncolnum_string\n\n colnum_string (n)\n\n\nsource\n\n\nmake_timestamp\n\n make_timestamp (date, time, off=0)\n\n\nsource\n\n\nmake_desy_run_log\n\n make_desy_run_log ()\n\n\nsource\n\n\nload_cern_sheet\n\n load_cern_sheet (tc='2018-10')\n\n\nsource\n\n\nmake_cern_run_log\n\n make_cern_run_log (tc='2018-10')\n\n\nsource\n\n\nmake\n\n make (bt)"
+  },
+  {
+    "objectID": "mod.tel_cuts.html",
+    "href": "mod.tel_cuts.html",
+    "title": "Telescope Cuts",
+    "section": "",
+    "text": "source\n\nTelCut\n\n TelCut (ana)\n\nClass that holds several cuts with functionality to combine them"
+  },
+  {
+    "objectID": "mod.tracks.html",
+    "href": "mod.tracks.html",
+    "title": "Track Analysis",
+    "section": "",
+    "text": "source\n\ntrack_analysis\n\n track_analysis (cls)"
+  },
+  {
+    "objectID": "cern.ref.html",
+    "href": "cern.ref.html",
+    "title": "Converter for FE-IV reference plane",
+    "section": "",
+    "text": "source\n\nRefConverter\n\n RefConverter (c:HighResAnalysis.cern.converter.CERNConverter)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "plotting.fit.html",
+    "href": "plotting.fit.html",
+    "title": "Fit",
+    "section": "",
+    "text": "This class define generic methods\n\nsource\n\n\n\n Fit (name='fit', h=None, fit_range=None, npx:int=1000, invert:bool=False,\n      par_names=None)\n\ngeneral class for fitting histograms\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\nfit\nName of the fitting function\n\n\nh\nNoneType\nNone\nhistogram to fit\n\n\nfit_range\nNoneType\nNone\nlist or tuple of fit range borders\n\n\nnpx\nint\n1000\nNumber of points used to draw the fit function\n\n\ninvert\nbool\nFalse\n\n\n\npar_names\nNoneType\nNone\nList of parameter names of the fitting function\n\n\n\n\nsource\n\n\n\n\n Fit.init_fit ()\n\nreturns root TF1 fit function\n\n\n\nPlace holder functions, will be overwritten in the child classes\n\nsource\n\n\n\n Fit.find_fit_range ()\n\nplaceholder to be overwritten in child classes, here is simply returns [0, 1000]\n\nsource\n\n\n\n\n Fit.get_par_names ()\n\nplaceholder to be overwritten in child classes, here is simply returns []\n\n\n\n\nfunctions that set parameter name, limits, start values, as well as clears previous fit functions\n\nsource\n\n\n\n Fit.set_par_names ()\n\nSets fit function parameter names by passing a list of parameter names to the TF1.SetParNames() method\n\nsource\n\n\n\n\n Fit.set_par_limits ()\n\nplaceholder to be overwritten in child classes\n\nsource\n\n\n\n\n Fit.set_start_values ()\n\nplaceholder to be overwritten in child classes\n\nsource\n\n\n\n\n Fit.set_parameters (*pars)\n\nSets fit function parameters by passing a parameter list to the TF1.SetParameters() method\n\nsource\n\n\n\n\n Fit.clear_old ()\n\ndeletes the previous fit function\n\n\n\n\nfunctions that access internal state of the fit class such as parameters and the results of the fit\n\nsource\n\n\n\n Fit.get_parameter (i:int)\n\nreturns the value and the error of a parameter\n\n\n\n\nType\nDetails\n\n\n\n\ni\nint\nindex of the parameter to get\n\n\n\n\nsource\n\n\n\n\n Fit.get_parameters ()\n\nreturns a list of parameter values\n\nsource\n\n\n\n\n Fit.from_hist (h)\n\nWhen Fit (TH1:Fit) is invoked, the fitted function is added to the list of function associated with this histogram. Given an histogram h, one can retrieve an associated function\n\n\n\n\nDetails\n\n\n\n\nh\nhistogram\n\n\n\n\nsource\n\n\n\n\n Fit.get_chi2 ()\n\nreturns chi2 of the fit divided by the number of degrees of freedom\n\nsource\n\n\n\n\n Fit.formula ()\n\nreturn the formula of the fit function\n\n\n\n\n\n\n\nf = Fit()\nf\n\nFit Fit: fit with 0 parameters\n\n\n\nsource\n\n\n\n\n Fit.print_parameters ()\n\nprints parameters names and values\n\n\n\n\n\nsource\n\n\n\n Fit.fit (n:int=1, draw=True, minuit=True, fl=0, fh=0)\n\nThe method performs the fit and optionally draws fit function overlayed on the histogram\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nn\nint\n1\nnumber of iterations\n\n\ndraw\nbool\nTrue\nOverlay the fitting function on histogram\n\n\nminuit\nbool\nTrue\nUse Minuit2 and Migrad for minimization\n\n\nfl\nint\n0\nlower fitting range\n\n\nfh\nint\n0\nupper fitting range\n\n\n\n\n\n\n\n\nsource\n\n\n\n Fit.draw (*args, **kwargs)\n\nplots the fit functions\n\nsource\n\n\n\n\n make_fit (h, f, xmin=0, xmax=1, start_values=None, par_names=None,\n           name=None, npx=1000)\n\nfactory method for making NewFit classes that are inherit from the Fit class\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nh\n\n\nhistogram to fit\n\n\nf\n\n\nfitting function\n\n\nxmin\nint\n0\nlower fitting range\n\n\nxmax\nint\n1\nupper fitting range\n\n\nstart_values\nNoneType\nNone\nlist initial values\n\n\npar_names\nNoneType\nNone\nlist of parameter names\n\n\nname\nNoneType\nNone\nname of the fitting function\n\n\nnpx\nint\n1000\nnumber of points used to draw the fitting function"
+  },
+  {
+    "objectID": "plotting.fit.html#placeholders",
+    "href": "plotting.fit.html#placeholders",
+    "title": "Fit",
+    "section": "",
+    "text": "Place holder functions, will be overwritten in the child classes\n\nsource\n\n\n\n Fit.find_fit_range ()\n\nplaceholder to be overwritten in child classes, here is simply returns [0, 1000]\n\nsource\n\n\n\n\n Fit.get_par_names ()\n\nplaceholder to be overwritten in child classes, here is simply returns []"
+  },
+  {
+    "objectID": "plotting.fit.html#setters",
+    "href": "plotting.fit.html#setters",
+    "title": "Fit",
+    "section": "",
+    "text": "functions that set parameter name, limits, start values, as well as clears previous fit functions\n\nsource\n\n\n\n Fit.set_par_names ()\n\nSets fit function parameter names by passing a list of parameter names to the TF1.SetParNames() method\n\nsource\n\n\n\n\n Fit.set_par_limits ()\n\nplaceholder to be overwritten in child classes\n\nsource\n\n\n\n\n Fit.set_start_values ()\n\nplaceholder to be overwritten in child classes\n\nsource\n\n\n\n\n Fit.set_parameters (*pars)\n\nSets fit function parameters by passing a parameter list to the TF1.SetParameters() method\n\nsource\n\n\n\n\n Fit.clear_old ()\n\ndeletes the previous fit function"
+  },
+  {
+    "objectID": "plotting.fit.html#getters",
+    "href": "plotting.fit.html#getters",
+    "title": "Fit",
+    "section": "",
+    "text": "functions that access internal state of the fit class such as parameters and the results of the fit\n\nsource\n\n\n\n Fit.get_parameter (i:int)\n\nreturns the value and the error of a parameter\n\n\n\n\nType\nDetails\n\n\n\n\ni\nint\nindex of the parameter to get\n\n\n\n\nsource\n\n\n\n\n Fit.get_parameters ()\n\nreturns a list of parameter values\n\nsource\n\n\n\n\n Fit.from_hist (h)\n\nWhen Fit (TH1:Fit) is invoked, the fitted function is added to the list of function associated with this histogram. Given an histogram h, one can retrieve an associated function\n\n\n\n\nDetails\n\n\n\n\nh\nhistogram\n\n\n\n\nsource\n\n\n\n\n Fit.get_chi2 ()\n\nreturns chi2 of the fit divided by the number of degrees of freedom\n\nsource\n\n\n\n\n Fit.formula ()\n\nreturn the formula of the fit function"
+  },
+  {
+    "objectID": "plotting.fit.html#info-functions",
+    "href": "plotting.fit.html#info-functions",
+    "title": "Fit",
+    "section": "",
+    "text": "f = Fit()\nf\n\nFit Fit: fit with 0 parameters\n\n\n\nsource\n\n\n\n\n Fit.print_parameters ()\n\nprints parameters names and values"
+  },
+  {
+    "objectID": "plotting.fit.html#worker-function",
+    "href": "plotting.fit.html#worker-function",
+    "title": "Fit",
+    "section": "",
+    "text": "source\n\n\n\n Fit.fit (n:int=1, draw=True, minuit=True, fl=0, fh=0)\n\nThe method performs the fit and optionally draws fit function overlayed on the histogram\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nn\nint\n1\nnumber of iterations\n\n\ndraw\nbool\nTrue\nOverlay the fitting function on histogram\n\n\nminuit\nbool\nTrue\nUse Minuit2 and Migrad for minimization\n\n\nfl\nint\n0\nlower fitting range\n\n\nfh\nint\n0\nupper fitting range"
+  },
+  {
+    "objectID": "plotting.fit.html#display-function",
+    "href": "plotting.fit.html#display-function",
+    "title": "Fit",
+    "section": "",
+    "text": "source\n\n\n\n Fit.draw (*args, **kwargs)\n\nplots the fit functions\n\nsource\n\n\n\n\n make_fit (h, f, xmin=0, xmax=1, start_values=None, par_names=None,\n           name=None, npx=1000)\n\nfactory method for making NewFit classes that are inherit from the Fit class\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nh\n\n\nhistogram to fit\n\n\nf\n\n\nfitting function\n\n\nxmin\nint\n0\nlower fitting range\n\n\nxmax\nint\n1\nupper fitting range\n\n\nstart_values\nNoneType\nNone\nlist initial values\n\n\npar_names\nNoneType\nNone\nlist of parameter names\n\n\nname\nNoneType\nNone\nname of the fitting function\n\n\nnpx\nint\n1000\nnumber of points used to draw the fitting function"
+  },
+  {
+    "objectID": "src.converter.html",
+    "href": "src.converter.html",
+    "title": "Converter",
+    "section": "",
+    "text": "source\n\nConverter\n\n Converter (data_dir:pathlib.Path, run_number, dut_name=None)\n\nConverts EUDAQ2 raw files in several steps into hdf5 files. STEP 0: raw -&gt; root (EUDAQ2) STEP 1: noisescan (proteus) STEP 2: alignment (proteus) STEP 3: track reconstruction (proteus) STEP 4: root -&gt; hdf5 (python)\n\nsource\n\n\nbatch_converter\n\n batch_converter (cls:__main__.Converter)\n\n\nsource\n\n\nRaw\n\n Raw (c:__main__.Converter, load_file=False, step=-1)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "cern.calibration.html",
+    "href": "cern.calibration.html",
+    "title": "CERN Pulse Height Calibration",
+    "section": "",
+    "text": "source\n\nCERNCalibration\n\n CERNCalibration (run:HighResAnalysis.src.run.Run)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "mod.track_cuts.html",
+    "href": "mod.track_cuts.html",
+    "title": "Track Cuts",
+    "section": "",
+    "text": "source\n\nTrackCut\n\n TrackCut (ana)\n\nClass that holds several cuts with functionality to combine them"
+  },
+  {
+    "objectID": "plotting.html.html",
+    "href": "plotting.html.html",
+    "title": "HTML UTILITY FUNCTIONS",
+    "section": "",
+    "text": "source\n\ntag\n\n tag (name, txt, *opts_)\n\n\nsource\n\n\nsup\n\n sup (txt)\n\n\nsource\n\n\nnth\n\n nth (d)\n\n\nsource\n\n\nirr2str\n\n irr2str (val, unit=False)\n\n\nsource\n\n\nconv_time\n\n conv_time (time_str, to_string=True)\n\n\nsource\n\n\ndiv\n\n div (txt, *opts_)\n\n\nsource\n\n\na\n\n a (txt, *opts_)\n\n\nsource\n\n\nsmall\n\n small (txt, *opts_)\n\n\nsource\n\n\nbig\n\n big (txt)\n\n\nsource\n\n\nimage\n\n image (filename, h=None, w=None)\n\n\nsource\n\n\nicon\n\n icon (filename)\n\n\nsource\n\n\nfig_icon\n\n fig_icon (symbol=9736)\n\n\nsource\n\n\nempty_line\n\n empty_line (n=1)\n\n\nsource\n\n\nmake_root_html\n\n make_root_html ()\n\n\nsource\n\n\ncreate_tree\n\n create_tree (p:pathlib.Path)\n\n\nsource\n\n\ncreate_root_overview\n\n create_root_overview (p:pathlib.Path, x=3, y=2, verbose=None)\n\n\nsource\n\n\nstyle\n\n style (center=False, right=False, left=False, colour=None, vcenter=False,\n        fontsize=None, smaller=False, transform=None, nowrap=None)\n\n\nsource\n\n\nstyle_\n\n style_ (*opts_)\n\n\nsource\n\n\npath\n\n path (*dirs)\n\n\nsource\n\n\nlink\n\n link (target:pathlib.Path, name, active=False, center=False,\n       new_tab=False, use_name=True, colour:Any=None, right=False,\n       warn=True)\n\n\nsource\n\n\nprep_opts\n\n prep_opts (*opts_)\n\n\nsource\n\n\nheading\n\n heading (txt, size=1, *opts_)\n\n\nsource\n\n\nscript\n\n script (src, *opts_)\n\n\nsource\n\n\ndropdown\n\n dropdown (name, items, targets, n, active=False, ind=1)\n\n\nsource\n\n\nopts\n\n opts (rs=None, cs=None, src=None, h=None, w=None, active=None,\n       new_tab=None)\n\n\nsource\n\n\nsopts\n\n sopts (rs=None, cs=None, src=None)\n\n\nsource\n\n\nmake_opt\n\n make_opt (name, value)\n\n\nsource\n\n\ntable\n\n table (title, header, rows, *row_opts)\n\n\nsource\n\n\nFile\n\n File (filename=None, ind_width=2, verbose=True)\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\ncreate_root\n\n create_root (file_path:pathlib.Path, title='', draw_opt='colz', pal=55,\n              verbose=None)"
+  },
+  {
+    "objectID": "src.currents.html",
+    "href": "src.currents.html",
+    "title": "Currents Reader",
+    "section": "",
+    "text": "source\n\nCurrents\n\n Currents (analysis=None, test_campaign=None, dut=None, begin=None,\n           end=None, averaging=None, verbose=False)\n\nreads in information from the keithley log file\n\nsource\n\n\nmain\n\n main (v:, collection:&lt;beginanalysiscollection&gt;, dut:int=1, begin:int=12,\n       end:int=None, test_campaign:str=None)\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nv\n\n\n\n\n\ncollection\n\n\n\n\n\ndut\nint\n1\ndut number [default: 1] (choose from 1,2,…)\n\n\nbegin\nint\n12\n\n\n\nend\nint\nNone\n\n\n\ntest_campaign\nstr\nNone\nYYYYMM beam test [default in main.ini]"
+  },
+  {
+    "objectID": "src.dut_analysis.html",
+    "href": "src.dut_analysis.html",
+    "title": "DUT analysis",
+    "section": "",
+    "text": "source\n\nno_trans\n\n no_trans (f)\n\n\nsource\n\n\nDUTAnalysis\n\n DUTAnalysis (run_number, dut_number:int, test_campaign:str,\n              verbose:bool=True, test:bool=False)\n\nThe analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. The main part\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nrun_number\n\n\nrun number string or Run structure\n\n\ndut_number\nint\n\nDUT number 0, 1, 2\n\n\ntest_campaign\nstr\n\ntestbeam date for example, 201912 for DESY test beam\n\n\nverbose\nbool\nTrue\nverbosity\n\n\ntest\nbool\nFalse\nTest only, no conversion, just initialize the classes\n\n\n\n\nsource\n\n\nAnalysis.fit_langau\n\n Analysis.fit_langau (h=None, nconv=30, show:bool=True, chi_thresh=8,\n                      fit_range=None)\n\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nh\nNoneType\nNone\nhistogram to fit, if None then fit the signal distribution\n\n\nnconv\nint\n30\n\n\n\nshow\nbool\nTrue\nwhether or not to show the histogram that is being fitted\n\n\nchi_thresh\nint\n8\nmaximum chi2 if not reached then increase the number of convolutions upto 80\n\n\nfit_range\nNoneType\nNone"
+  },
+  {
+    "objectID": "cern.converter.html",
+    "href": "cern.converter.html",
+    "title": "CERN Converter",
+    "section": "",
+    "text": "source\n\nCERNConverter\n\n CERNConverter (data_dir, run_number, dut_name=None)\n\nConverts the raw data taken at CERN in several steps to hdf5 files. The raw data consists of one root file for the DUTs saved with pXar and a binary file from the KARTEL telescope. STEP -2: raw -&gt; root for tel (judith) STEP -1: adc -&gt; vcal for DUTs (python) STEP 0: merge tel and dut root files (python) STEP 2: alignment (proteus) STEP 3: track reconstruction (proteus) STEP 4: root -&gt; hdf5 (python)\n\nsource\n\n\nmain\n\n main (run:int=232, dut:int=0, tc:str=None)"
+  },
+  {
+    "objectID": "mod.dut_cuts.html",
+    "href": "mod.dut_cuts.html",
+    "title": "DUT Cuts",
+    "section": "",
+    "text": "source\n\nsave_cut\n\n save_cut (*pargs, suf_args='[]', field=None, verbose=False, cfg=None,\n           cfield=None, **pkwargs)\n\n\nsource\n\n\nDUTCut\n\n DUTCut (ana, meta_sub_dir='dut_cuts')\n\nClass that holds several cuts with functionality to combine them"
+  },
+  {
+    "objectID": "mod.reso_cuts.html",
+    "href": "mod.reso_cuts.html",
+    "title": "Reference Detector Cuts",
+    "section": "",
+    "text": "source\n\nResCut\n\n ResCut (parent)\n\nClass that holds several cuts with functionality to combine them\n\n\n\n\nDetails\n\n\n\n\nparent\nnoqa"
+  },
+  {
+    "objectID": "src.run.html",
+    "href": "src.run.html",
+    "title": "Run",
+    "section": "",
+    "text": "Analysis.Config.get('data', 'runlog file')\n\n\nsource\n\nload_runlog\n\n load_runlog (p:pathlib.Path)\n\nLoads runlog.json creating it if it does not exist\n\n\n\n\nType\nDetails\n\n\n\n\np\nPath\npath the runlog.json\n\n\n\n\nsource\n\n\nload_nrs\n\n load_nrs (p:pathlib.Path)\n\nreturns list of runs in runlog.json with either no status or green = good run status\n\n\n\n\nType\nDetails\n\n\n\n\np\nPath\nPath to json runlog\n\n\nReturns\nlist\n\n\n\n\n\nsource\n\n\ninit_batch\n\n init_batch (name, dut, beam_test:HighResAnalysis.src.analysis.BeamTest,\n             log=None)\n\n\nsource\n\n\nload_batches\n\n load_batches (bt:HighResAnalysis.src.analysis.BeamTest, redo=False)\n\nunify batches from run logs and custom batches and save them in a tmp file.\n\nsource\n\n\nBatch\n\n Batch (name:str, dut_nr:int,\n        beam_test:HighResAnalysis.src.analysis.BeamTest, log=None)\n\nclass containing the run infos of a single batch.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\n\nName of the batch\n\n\ndut_nr\nint\n\nDUT number\n\n\nbeam_test\nBeamTest\n\nStructure containing BeamTest info\n\n\nlog\nNoneType\nNone\nRunlog in JSON string format\n\n\n\n\nsource\n\n\nDUTBatch\n\n DUTBatch (name:str, beam_test:HighResAnalysis.src.analysis.BeamTest,\n           log:pathlib.Path=None)\n\nextension of batch class for a single DUT (for runs with mismatching duts).\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nname\nstr\n\nName of the batch\n\n\nbeam_test\nBeamTest\n\nBeamTest info\n\n\nlog\nPath\nNone\nPath to the runlog.json\n\n\n\n\nsource\n\n\nRun\n\n Run (run_number:str, dut_number:int, tc_dir:pathlib.Path,\n      log:pathlib.Path=None)\n\nRun class containing all the information for a single run from the tree and the json file.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nrun_number\nstr\n\nRun number\n\n\ndut_number\nint\n\nDut Number\n\n\ntc_dir\nPath\n\nPath to the data for the test beam\n\n\nlog\nPath\nNone\nPath to runlog.json\n\n\n\n\nsource\n\n\nEnsemble\n\n Ensemble (name:str)\n\nGeneral enseble class for runs and batches.\n\n\n\n\nType\nDetails\n\n\n\n\nname\nstr\n\n\n\n\n\nsource\n\n\nmain\n\n main (a:, alle:, b:str='1a')\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\na\n\n\nshow all\n\n\nalle\n\n\n\n\n\nb\nstr\n1a\nbatch name"
+  },
+  {
+    "objectID": "convert.html",
+    "href": "convert.html",
+    "title": "Convert",
+    "section": "",
+    "text": "source\n\nAutoConvert\n\n AutoConvert (first_run=None, last_run=None, batch=None, beamtest=None,\n              verbose=False, force=False)\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\nBatchConvert\n\n BatchConvert (batch=None, beamtest=None, verbose=False, force=False)\n\nInitialize self. See help(type(self)) for accurate signature.\n\n@call_parse\ndef main(m:Param('turn parallel processing ON', action='store_true'),\n         v:Param('turn verbose OFF', action='store_false'),\n         t:Param('turn test mode ON', action='store_true'),\n         f:Param('force conversion', action='store_true'),\n         tc:str=None, # Test Campaign in YYYYMM format\n         s:int=None, # run number where to start, default [None], = stop if no end is provided\n         e:int=None, # run number where to stop, default [None]\n         b:str=None, # batch number, default [None]\n        ):\n\n#     from argparse import ArgumentParser\n\n#     parser = ArgumentParser()\n#     parser.add_argument('-m', action='store_true', help='turn parallel processing ON')\n#     parser.add_argument('-tc', nargs='?', default=None)\n#     parser.add_argument('s', nargs='?', default=None, help='run number where to start, default [None], = stop if no end is provided', type=int)\n#     parser.add_argument('e', nargs='?', default=None, help='run number where to stop, default [None]', type=int)\n#     parser.add_argument('-b', nargs='?', default=None, help='batch number, default [None]')\n#     parser.add_argument('-v', action='store_false', help='turn verbose OFF')\n#     parser.add_argument('-t', action='store_true', help='turn test mode ON')\n#     parser.add_argument('-f', action='store_true', help='force conversion')\n\n#     args = parser.parse_args()\n\n    z = AutoConvert(s, e, b, tc, v, f) if s is not None else BatchConvert(b, tc, v, f)\n    a = z.Converter\n    cs = z.Converters if hasattr(z, 'Converters') else None\n\n    if not t:\n        cs = z.converters\n        if len(cs):\n            print_banner(f'Start converting runs {cs[0].Run} - {cs[-1].Run}', color=GREEN)\n            z.run()\n            print_banner('Finished Conversion!', color=GREEN)\n        else:\n            info('There is nothing to convert :-)\\n', blank_lines=1)"
+  },
+  {
+    "objectID": "src.raw.html",
+    "href": "src.raw.html",
+    "title": "Raw Data Conversion",
+    "section": "",
+    "text": "source\n\nmain\n\n main ()"
+  },
+  {
+    "objectID": "mod.efficiency.html",
+    "href": "mod.efficiency.html",
+    "title": "Efficiency module",
+    "section": "",
+    "text": "source\n\neff_analysis\n\n eff_analysis (cls)"
+  },
+  {
+    "objectID": "src.dut.html",
+    "href": "src.dut.html",
+    "title": "DUT and Device Classes",
+    "section": "",
+    "text": "source\n\nDevice\n\n Device (number=1, name='Name', typ=None, has_ref=False)\n\nparent class with information about a single device.\n\nsource\n\n\nREF\n\n REF (number=0, name='REF')\n\nClass with information about the reference plane.\n\nsource\n\n\nDUT\n\n DUT (number=1, run_log:dict=None, has_ref=False)\n\nClass with all information about a single DUT.\n\nsource\n\n\nPlane\n\n Plane (n, typ='DUT', rotated=False)\n\nClass with all information about a single pixel plane."
+  },
+  {
+    "objectID": "utility.utils.html",
+    "href": "utility.utils.html",
+    "title": "UTILITY FUNCTIONS",
+    "section": "",
+    "text": "list(Dir.glob('*'))\n\n\nsource\n\nmove_up\n\n move_up (n)\n\n\nsource\n\n\nfile_exists\n\n file_exists (filename)\n\n\nsource\n\n\ndir_exists\n\n dir_exists (path)\n\n\nsource\n\n\ntime_stamp\n\n time_stamp (dt, off=None)\n\n\nsource\n\n\nprint_elapsed_time\n\n print_elapsed_time (start, what='This', show=True, color='\\x1b[98m')\n\n\nsource\n\n\nget_elapsed_time\n\n get_elapsed_time (start, hrs=False)\n\n\nsource\n\n\naverage_list\n\n average_list (lst, n)\n\n\nsource\n\n\nround_down_to\n\n round_down_to (num, val=1)\n\n\nsource\n\n\nround_up_to\n\n round_up_to (num, val=1)\n\n\nsource\n\n\nget_base_dir\n\n get_base_dir ()\n\n\nsource\n\n\nensure_dir\n\n ensure_dir (path)\n\n\nsource\n\n\nisint\n\n isint (x)\n\n\nsource\n\n\nis_iter\n\n is_iter (v)\n\n\nsource\n\n\nis_num\n\n is_num (string)\n\n\nsource\n\n\ncolored\n\n colored (string, color=None)\n\n\nsource\n\n\nsmall_banner\n\n small_banner (msg, symbol='-', color=None)\n\n\nsource\n\n\nprint_banner\n\n print_banner (msg, symbol='~', new_lines=1, color=None)\n\n\nsource\n\n\nprime_factors\n\n prime_factors (n)\n\n\nsource\n\n\ndo_nothing\n\n do_nothing ()\n\n\nsource\n\n\nhas_root\n\n has_root ()\n\n\nsource\n\n\nopen_root_file\n\n open_root_file (filename, option='')\n\n\nsource\n\n\ncreate_root_file\n\n create_root_file (filename, option='recreate')\n\n\nsource\n\n\nchoose\n\n choose (v, default, decider='None', *args, **kwargs)\n\n\nsource\n\n\nremove_letters\n\n remove_letters (string)\n\n\nsource\n\n\nremove_digits\n\n remove_digits (string)\n\n\nsource\n\n\ninterpolate_two_points\n\n interpolate_two_points (x1, y1, x2, y2, name='')\n\n\nsource\n\n\ninterpolate_x\n\n interpolate_x (x1, x2, y1, y2, y)\n\n\nsource\n\n\ninterpolate\n\n interpolate (x1, x2, y1, y2, x)\n\n\nsource\n\n\nget_p1\n\n get_p1 (x1, x2, y1, y2)\n\n\nsource\n\n\nget_p0\n\n get_p0 (x1, y1, p1)\n\n\nsource\n\n\nmake_ufloat\n\n make_ufloat (n, s=0)\n\n\nsource\n\n\nis_ufloat\n\n is_ufloat (value)\n\n\nsource\n\n\nbyte2str\n\n byte2str (v)\n\n\nsource\n\n\nev2str\n\n ev2str (v)\n\n\nsource\n\n\nbias2str\n\n bias2str (*bias)\n\n\nsource\n\n\nbias2rootstr\n\n bias2rootstr (*bias)\n\n\nsource\n\n\nget_buf\n\n get_buf (buf, n, dtype=None)\n\n\nsource\n\n\nget_tree_vec\n\n get_tree_vec (tree, var, cut='', dtype=None, nentries=None, firstentry=0)\n\n\nsource\n\n\nmake_list\n\n make_list (value, dtype=None)\n\n\nsource\n\n\nuarr2n\n\n uarr2n (arr)\n\n\nsource\n\n\nuarr2s\n\n uarr2s (arr)\n\n\nsource\n\n\ngauss\n\n gauss (x, scale, mean_, sigma, off=0)\n\n\nsource\n\n\ndo_hdf5\n\n do_hdf5 (path, func, redo=False, *args, **kwargs)\n\n\nsource\n\n\ndo_pickle\n\n do_pickle (path, func=None, value=None, redo=False, *args, **kwargs)\n\n\nsource\n\n\nprint_table\n\n print_table (rows, header=None, footer=None, prnt=True)\n\n\nsource\n\n\nmerge_root_files\n\n merge_root_files (files, new_file_name)\n\n\nsource\n\n\nupdate_pbar\n\n update_pbar (func)\n\n\nsource\n\n\nPBar\n\n PBar (start=None, counter=False, t=None)\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\nEventSpeed\n\n EventSpeed (t='s')\n\nWidget for showing the event speed (useful for slow updates).\n\nsource\n\n\nprep_kw\n\n prep_kw (dic, **default)\n\n\nsource\n\n\nget_field\n\n get_field (obj, field:str)\n\n\nsource\n\n\nmake_suffix\n\n make_suffix (*values)\n\n\nsource\n\n\nprep_suffix\n\n prep_suffix (f, ana, args, kwargs, suf_args, field=None)\n\n\nsource\n\n\nload_pickle\n\n load_pickle (file_name)\n\n\nsource\n\n\nsave_pickle\n\n save_pickle (*pargs, print_dur=False, low_rate=False, high_rate=False,\n              suf_args='[]', field=None, verbose=False, **pkwargs)\n\n\nsource\n\n\nsave_hdf5\n\n save_hdf5 (*pargs, arr=False, dtype=None, suf_args='[]', field=None,\n            verbose=False, **pkwargs)\n\n\nsource\n\n\nparallel\n\n parallel (fp, what='something')\n\n\nsource\n\n\neff2u\n\n eff2u (eff)\n\n\nsource\n\n\neff2str\n\n eff2str (eff, u='\\\\percent', f='.2f')\n\n\nsource\n\n\nshow_hdf5\n\n show_hdf5 (f:h5py._hl.files.File, *include, ex_str=None)\n\n\nsource\n\n\nfile_hash\n\n file_hash (fname, block_size=65536)"
+  },
+  {
+    "objectID": "cern.event_alignment.html",
+    "href": "cern.event_alignment.html",
+    "title": "Event Alignment",
+    "section": "",
+    "text": "source\n\nEventAlignment\n\n EventAlignment (raw:HighResAnalysis.src.converter.Raw)\n\nInitialize self. See help(type(self)) for accurate signature."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "HighResAnalysis",
+    "section": "",
+    "text": "python&gt;=3.6\n\npython=3.10 was used for the development\n\ncmake&gt;=3.7\n\noptionally cmake GUI, for example ccmake\n\ngit should already exist on most systems\nOptionally one can install tmux it useful for the conversions that take long time."
+  },
+  {
+    "objectID": "index.html#prerequisites",
+    "href": "index.html#prerequisites",
+    "title": "HighResAnalysis",
+    "section": "",
+    "text": "python&gt;=3.6\n\npython=3.10 was used for the development\n\ncmake&gt;=3.7\n\noptionally cmake GUI, for example ccmake\n\ngit should already exist on most systems\nOptionally one can install tmux it useful for the conversions that take long time."
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "HighResAnalysis",
+    "section": "Installation",
+    "text": "Installation\n\nInstall mamba\nIf you do not yet have conda install then getting Mambaforge is the recommended way to get mamba. Bellow are the instructions for Linux. If your are using a different system, then follow the instruction on mamba install page\ncurl -L -O \"https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh\"\nbash Mambaforge-Linux-x86_64.sh \n\n\nUse mamba to install Root and other useful packages\nroot. In the root installation instructions you need to replace conda with mamba and skip the instructions about the environment, since the Mambaforge already created the default base environment.\nmamba config --set channel_priority strict\nmamba install root\nmamba install -c conda-forge root\n\nOptionally install other useful python packages:\n\nmamba install scikit-learn numpy pandas pyarrow openpyxl xlrd pytables requests sqlalchemy jupyterlab jupyternotebook ipython notebook\nmamba install -c fastai nbdev\n\n\nInstall the analysis code with pip\npip install HighResAnalysys\n\n\nInstall converters\n\nFor the installation of the software hosted on the GitHub it is useful to make a dedicated folder:\n\n        mkdir software\n        cd software\n\nClone all the necessary packages in this folder:\n\n        git clone git@github.com:diamondIPP/DRS4-v5-shared.git\n        git clone git@github.com:diamondIPP/pxar.git\n        git clone git@github.com:diamondIPP/proteus.git\n        git clone git@github.com:diamondIPP/judith.git\n        git clone git@github.com:diamondIPP/HVClient.git\n        git clone git@github.com:diamondIPP/eudaq-2.git\n\nClone the analysis setup from GitHub. It contains all the necessary config files:\n\n        git clone git@github.com:diamondIPP/setup-analysis.git HighResAnalysis\n        cd HighResAnalysis/\n\nThe To install the converters follow the instructions on the respective GitHub pages:\n\nproteus\n\nIt will need Eigen3 and tell the cmake the path to it.\n\njudith (only for CERN data)\neudaq-2 (only for DESY data) You will need a couple of extra libraries:\n\nDRS4-v5-shared, where you only need to compile the shared library\n\n      make libDRS.so\n\npXar to compile it you will need\n\nlibusb-1.0 which you can install with apt install libusb-1.0-0-dev on Ubuntu\nFTDI chip drivers for Linux.\n\n  curl -L -O \"https://ftdichip.com/wp-content/uploads/2022/07/libftd2xx-x86_64-1.4.27.tgz\"\n  tar xvf libftd2xx-x86_64-1.4.27.tgz \n  sudo cp release/build/lib* /usr/local/lib\n  sudo ln -sf /usr/local/lib/libftd2xx.so.1.4.27 /usr/local/lib/libftd2xx.so\n  sudo cp WinTypes.h ftd2xx.h /usr/local/include/\nAfter compiling both pxar and DRS4-v5-shared libraries you will need to set couple of shell variable to help the eudaq-2 find them:\n\n      export PXARPATH=\"/home/dmitry/software/pxar/\"\n      export DRS_PATH=\"/home/dmitry/software/DRS4-v5-shared/\""
+  },
+  {
+    "objectID": "index.html#preparation-for-analysis",
+    "href": "index.html#preparation-for-analysis",
+    "title": "HighResAnalysis",
+    "section": "Preparation for analysis",
+    "text": "Preparation for analysis\n\nEnvironment\n\nyou will need an analysis folder and to tell the analysis software a path to it\n\nclone the analysis directory from the Github\n\n      git clone git@github.com:diamondIPP/setup-analysis.git HighResAnalysis\n\nand add the following line in your .bashrc\n\n      export ANALYSIS_DIR=\"/home/username/HighResAnalysis\"\n\n\n\nData\n\nThe DESY data are located on the /home/ipp groupshare to access them it is useful to generate shh keys and copy them to login.phys.ethz.ch\n\n        ssh-keygen\n        ssh-copy-id username@login.phys.ethz.ch\n\nThe CERN data are located at CERN in rd42 eos space. It is useful to get a kerberos certificate:\n\n        kinit -f username@CERN.CH\n\n\nData conversion\nanalyse --run=4"
+  },
+  {
+    "objectID": "index.html#example-analysis-of-the-desy-data",
+    "href": "index.html#example-analysis-of-the-desy-data",
+    "title": "HighResAnalysis",
+    "section": "Example analysis of the DESY data",
+    "text": "Example analysis of the DESY data\nyou will need to import a couple of libraries. Most of the tools are in src.dut_analysis. It will load the data and set all the cuts. The draw module from plotting library has some useful functions and presets that allow plotting histograms and graphs\n\nfrom HighResAnalysis.src.dut_analysis import *\nfrom HighResAnalysis.plotting.draw import *\n\nWelcome to JupyROOT 6.28/00\n\n\nInitialize the DUTAnalysis with run number, DUT number, and a string indicating the year and the month of the beam test\n\nrun4 = DUTAnalysis(4, 0, '201912')\n\n--- Palette ------ 55\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nSTARTING DUT ANALYSIS of D02, run 4 (Dec 2019), 2.50M ev |\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n************** Initing Converter *****************\n*************** Initing PROTEUS ******************\n\n\nA small function that allows inline plotting of ROOT histograms\n\ndef dc(): get_last_canvas().Draw()\n\nLet’s plot a signal distribution\n\nrun4.draw_charge_distribution()\ndc()\n\nINFO:     10:34:18 --&gt; Creating directory: /Users/hits/Documents/GitHub/HighResAnalysis/HighResAnalysis/results/201912\nINFO:     10:34:18 --&gt; saving plot: SignalDist\nWARNING:  10:34:19 --&gt; Diamond server is not mounted in /Users/hits/mounts/high-rate"
+  },
+  {
+    "objectID": "index.html#run-logs",
+    "href": "index.html#run-logs",
+    "title": "HighResAnalysis",
+    "section": "Run logs",
+    "text": "Run logs\nThere are three beam tests with high resolution data:\n\nCERN 09/2018\nCERN 10/2018\nDESY 12/2019\n\n\nConversion to json files\n\nrequires client_secret.json file which is stored on ipp group share in ~/HighResAnalysis/\nconvert online runlogs to a runlog.json file with HighResAnalysis/src/spreadsheet.py:\n\n    make_runlog &lt;YYYYMM&gt;\n\nrunlogs are stored in the data directory which may be set in the config"
+  },
+  {
+    "objectID": "mod.resolution.html",
+    "href": "mod.resolution.html",
+    "title": "Resolution",
+    "section": "",
+    "text": "mean_sigma?\n\n\nSignature: mean_sigma(values, weights=None, err=True)\nDocstring: Return the weighted average and standard deviation. values, weights -- Numpy ndarrays with the same shape. \nFile:      ~/Documents/GitHub/HighResAnalysis/HighResAnalysis/plotting/utils.py\nType:      function\n\n\n\n\n\nsource\n\nreso_analysis\n\n reso_analysis (cls)"
+  },
+  {
+    "objectID": "mod.residuals.html",
+    "href": "mod.residuals.html",
+    "title": "Residuals",
+    "section": "",
+    "text": "source\n\nres_analysis\n\n res_analysis (cls)"
+  },
+  {
+    "objectID": "src.analysis.html",
+    "href": "src.analysis.html",
+    "title": "Analysis",
+    "section": "",
+    "text": "source\n\nBeamTest\n\n BeamTest (p:pathlib.Path)\n\nstructure containing information about a beam test: - Path to the data Dir - Location - T - date as a datetime - Year - Tag and Name - same as T but in string formats\n\n\n\n\nType\nDetails\n\n\n\n\np\nPath\npath to the data dir\n\n\n\n\ndef load_config():\n    \"\"\"A utility function that loads config file\n    it expects main.ini file in the config directory under the root analyis directory\n    Returns the instance of `Config` class\"\"\"\n    config_file_path = Dir.joinpath('config', 'main.ini')\n    if not isfile(config_file_path):\n        warning('The main config file \"config/main.ini\" does not exist! Using the default!')\n        copyfile(Dir.joinpath('config', 'default.ini'), config_file_path)\n    return Config(config_file_path)\n\n\nsource\n\n\nload_config\n\n load_config ()\n\nA utility function that loads config file it expects main.ini file in the config directory under the root analyis directory Returns the instance of Config class\n\nsource\n\n\nAnalysis\n\n Analysis (beamtest:str=None, meta_sub_dir:str='', verbose:bool=False)\n\nThe analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. The main part\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nbeamtest\nstr\nNone\nA year and a month of the beam test, for example ‘201912’ for DESY and ‘201810’ for CERN\n\n\nmeta_sub_dir\nstr\n\nSubdirectory for storing meta files\n\n\nverbose\nbool\nFalse\nVerbosity\n\n\n\n\nsource\n\n\nAnalysis.create_run_config\n\n Analysis.create_run_config ()\n\nCreates a runlog.json from Google spreadsheet\n\nsource\n\n\nmain\n\n main ()\n\n\nsource\n\n\nAnalysis.init_locations\n\n Analysis.init_locations ()\n\ncreates folders for each beamtest organizing them by location then by date, in order to store there raw and processed data storing raw and processed data\n\nsource\n\n\nAnalysis.find_testcampaign\n\n Analysis.find_testcampaign ()\n\nDetermine the Tag of the test beam, either from the current path or from config file\n\nAnalysis.find_testcampaign()\n\n'201912'\n\n\n\nsource\n\n\nAnalysis.print_testcampaign\n\n Analysis.print_testcampaign ()\n\nPrints current timestamp and the location and date of the beam test\n\nz = Analysis('201912', verbose=True)\nz.print_testcampaign()\n\nINFO:     14:47:47 --&gt; Beam Test in Dec 2019 at DESY\n\n\n\nAnalysis.Locations\n\n{'CERN': [201809, 201810], 'DESY': [201912]}"
+  },
+  {
+    "objectID": "plotting.binning.html",
+    "href": "plotting.binning.html",
+    "title": "Plot bins",
+    "section": "",
+    "text": "source\n\nfreedman_diaconis\n\n freedman_diaconis (x)\n\n\nsource\n\n\nwidth\n\n width (x)\n\n\nsource\n\n\nn\n\n n (x)\n\n\nsource\n\n\nincrease_range\n\n increase_range (low, high, fl, fh, to_int=False)\n\nincreases the range [low, high] by the given factors [fl] on the low end and [fh] on the high end.\n\nsource\n\n\nentries\n\n entries (h)\n\n\nsource\n\n\nsingle_entries_2d\n\n single_entries_2d (h, ix, iy, nx)\n\n\nsource\n\n\nentries_2d\n\n entries_2d (h, flat=False)\n\n\nsource\n\n\nfrom_uvec\n\n from_uvec (x)\n\n\nsource\n\n\nfrom_vec\n\n from_vec (x, centre=False)\n\n\nsource\n\n\nfrom_p\n\n from_p (x)\n\n\nsource\n\n\nmake\n\n make (xmin, xmax=None, w=1, last=False, nb=None, off=0)\n\n\nsource\n\n\nmake2d\n\n make2d (x, y, wx=1, wy=1, nx=None, ny=None, last=True)\n\n\nsource\n\n\nfind_range\n\n find_range (values, lfac=0.2, rfac=0.2, q=0.02, lq=None)\n\n\nsource\n\n\nfind\n\n find (values, lfac=0.2, rfac=0.2, q=0.02, nbins=1, lq=None, w=None,\n       x0=None, x1=None, r=None)\n\n\nsource\n\n\nfind_2d\n\n find_2d (x, y, lfac=0.2, rfac=0.2, q=0.02, nb=1, lq=None, w=None,\n          x0=None)\n\n\nsource\n\n\nhn\n\n hn (h, axis='X')\n\n\nsource\n\n\nfrom_hist\n\n from_hist (h, err=True, raw=False, axis='X')\n\n\nsource\n\n\nhx\n\n hx (h, err=True)\n\n\nsource\n\n\nhy\n\n hy (h, err=True)\n\n\nsource\n\n\nh2d\n\n h2d (h, arr=False)\n\n\nsource\n\n\nh2dgrid\n\n h2dgrid (h)\n\n\nsource\n\n\nset_2d_values\n\n set_2d_values (h, arr)\n\n\nsource\n\n\nset_2d_entries\n\n set_2d_entries (h, arr)"
+  },
+  {
+    "objectID": "src.batch_analysis.html",
+    "href": "src.batch_analysis.html",
+    "title": "Batch Analysis",
+    "section": "",
+    "text": "source\n\nBatchAnalysis\n\n BatchAnalysis (batch_name, dut_number, test_campaign, verbose=True,\n                test=False)\n\nThe analysis class provides default behaviour objects in the analysis framework and is the parent of all other analysis objects. The main part"
+  },
+  {
+    "objectID": "plotting.utils.html",
+    "href": "plotting.utils.html",
+    "title": "PLOTTING UTILITY FUNCTIONS",
+    "section": "",
+    "text": "Base Directory\nThe analysis and conversion scripts need to know out where the config files (i.e. main.ini) are located and where to store the process data. For the pip installed packages an ANALYSIS_DIR variable should be set before starting the script.\n\n\nGlobal External Variables\n\n\nGlobal Internal Variables\n\n\nCurrently Unused Global Variable\n\nprint(f'{GREEN}green {RED} red {ENDC}no color {CYAN} cyan {ENDC} no color {WHITE} white {ENDC} no color {UP1} up1 {ERASE} erase {ENDC} no color {YELLOW} yellow')\n\ngreen  red no color  cyan  no color  white  no color  up1  erase  no color  yellow\n\n\n\nsource\n\n\nget_t_str\n\n get_t_str ()\n\nreturns current hour:minute:second\n\nExample:\n\nget_t_str()\n\n'09:05:31'\n\n\n\nsource\n\n\n\ncolored\n\n colored (txt, color=None)\n\nreturns colored text for printing, resetting the color at the end\n\nExamples:\n\nprint(colored('I am red', RED))\nprint(colored('I am green', GREEN))\nprint(colored('I am cyan', CYAN))\n\nI am red\nI am green\nI am cyan\n\n\n\nsource\n\n\n\nprnt_msg\n\n prnt_msg (txt:str, head:str='', color=None, blank_lines:int=0,\n           endl:bool=True, prnt:bool=True)\n\nprints the message with a header of a certain color and a current time stamp\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ntxt\nstr\n\nmessage to print\n\n\nhead\nstr\n\nHeader to the message\n\n\ncolor\nNoneType\nNone\nColor of the header\n\n\nblank_lines\nint\n0\nnumber of blank lines before the message\n\n\nendl\nbool\nTrue\nadd end line charachter\n\n\nprnt\nbool\nTrue\nprint the message?\n\n\n\n\nprnt_msg(\"No news is a good news\", 'NEWS', GREEN, 1 )\n\n\nNEWS:     16:43:40 --&gt; No news is a good news\n\n\n\nsource\n\n\ninfo\n\n info (txt:str, blank_lines:int=0, endl:bool=True, prnt:bool=True)\n\nprints out message with a green INFO heading and a current time stamp.\nReturns current time\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ntxt\nstr\n\nmessage to print\n\n\nblank_lines\nint\n0\nnumber of blank lines to follow\n\n\nendl\nbool\nTrue\nadd end line charachter\n\n\nprnt\nbool\nTrue\nprint the message?\n\n\n\n\ninfo(\"No info at this time\")\n\nINFO:     16:43:40 --&gt; No info at this time\n\n\n1686667420.451434\n\n\n\nsource\n\n\nadd_to_info\n\n add_to_info (t:float, msg:str='Done', color=None, prnt:bool=True)\n\nPrints colored message and a time difference between the inputed time and current time\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nt\nfloat\n\ntime in float point format since the Epoch\n\n\nmsg\nstr\nDone\nMessage to print\n\n\ncolor\nNoneType\nNone\n\n\n\nprnt\nbool\nTrue\n\n\n\n\n\nadd_to_info(1686581447, 'Done', GREEN)\n\nDone (85973.46 s)\n\n\n\nsource\n\n\nwarning\n\n warning (txt:str, blank_lines:int=0, prnt=True)\n\nPrints yellow colored warning message with a timestamp\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ntxt\nstr\n\nwarning to print\n\n\nblank_lines\nint\n0\nnumber of bank lines to follow\n\n\nprnt\nbool\nTrue\nprint?\n\n\n\n\nwarning(\"This is the last warning!\")\n\nWARNING:  16:43:40 --&gt; This is the last warning!\n\n\n\nsource\n\n\ncritical\n\n critical (txt)\n\n\nsource\n\n\nget_stat\n\n get_stat (status)\n\nreturns the state of Draw class options\n\nsource\n\n\nchoose\n\n choose (v, default, decider='None', *args, **kwargs)\n\nReturns the first object if the decider not None and the object itself is not None, otherwise returns the second default element, optionally passes arguments if the returned object is a function\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nv\n\n\nfirst object\n\n\ndefault\n\n\ndefault object\n\n\ndecider\nstr\nNone\nDecider\n\n\nargs\n\n\n\n\n\nkwargs\n\n\n\n\n\n\n\nusage examples:\nFirst object not None so choose it\n\nchoose('2018', '2019')\n\n'2018'\n\n\nThe first object is None so choose the default second object, since the decider is None\n\nchoose(None, '2018')\n\n'2018'\n\n\nThe first object is None but the decider is not so choose the first object\n\nprint(choose(None, '2018', 1))\n\nNone\n\n\n\nsource\n\n\n\nround_up_to\n\n round_up_to (num, val:int=1)\n\nrounds up an int or float to a digit indicacted by val\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nnum\n\n\nnumber to round up\n\n\nval\nint\n1\nthe order to which round up 1, 10, 100, …\n\n\n\nexample:\n\nround_up_to(44334.444, 100)\n\n44400\n\n\n\nsource\n\n\ndo\n\n do (fs, pars, exe=-1)\n\n\nsource\n\n\ndo_nothing\n\n do_nothing ()\n\n\nsource\n\n\nis_iter\n\n is_iter (v)\n\n\nsource\n\n\nis_ufloat\n\n is_ufloat (value)\n\n\nsource\n\n\nuarr2n\n\n uarr2n (x)\n\n\nsource\n\n\nuarr2s\n\n uarr2s (arr)\n\n\nsource\n\n\narr2u\n\n arr2u (x, ex)\n\n\nsource\n\n\nadd_err\n\n add_err (u, e)\n\n\nsource\n\n\nadd_perr\n\n add_perr (u, e)\n\n\nsource\n\n\neff2u\n\n eff2u (eff)\n\n\nsource\n\n\nmake_ufloat\n\n make_ufloat (n, s=0)\n\n\nsource\n\n\nmake_list\n\n make_list (value)\n\n\nsource\n\n\nprep_kw\n\n prep_kw (dic, **default)\n\n\nsource\n\n\nget_kw\n\n get_kw (kw, kwargs, default=None)\n\n\nsource\n\n\nrm_key\n\n rm_key (d, *key)\n\n\nsource\n\n\nmean_sigma\n\n mean_sigma (values, weights=None, err=True)\n\nReturn the weighted average and standard deviation. values, weights – Numpy ndarrays with the same shape.\n\nsource\n\n\ncalc_eff\n\n calc_eff (k=0, n=0, values=None)\n\n\nsource\n\n\ncart2pol\n\n cart2pol (x, y)\n\n\nsource\n\n\npol2cart\n\n pol2cart (rho, phi)\n\n\nsource\n\n\nget_x\n\n get_x (x1, x2, y1, y2, y)\n\n\nsource\n\n\nget_y\n\n get_y (x1, x2, y1, y2, x)\n\n\nsource\n\n\nensure_dir\n\n ensure_dir (path)\n\n\nsource\n\n\nremove_file\n\n remove_file (*file_path, string=None, warn=True)\n\n\nsource\n\n\ncorrelate\n\n correlate (l1, l2)\n\n\nsource\n\n\nadd_spaces\n\n add_spaces (s)\n\n\nsource\n\n\nprint_check\n\n print_check (reset=False)\n\n\nsource\n\n\nsum_times\n\n sum_times (t, fmt='%H:%M:%S')\n\n\nsource\n\n\nload_json\n\n load_json (filename)\n\n\nsource\n\n\nConfig\n\n Config (file_name:str, section:str=None, from_json:bool=False,\n         required:bool=False, **kwargs)\n\nConfigParser implementing interpolation.\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nfile_name\nstr\n\nPath to the config file\n\n\nsection\nstr\nNone\nsection in the config file\n\n\nfrom_json\nbool\nFalse\nload config from a json file\n\n\nrequired\nbool\nFalse\nIf the config file is required then throw an error if the file doesn’t exist\n\n\nkwargs\n\n\n\n\n\n\n\nsource\n\n\nAsymVar\n\n AsymVar (value, err_down, err_up, fmt='.2f')\n\nInitialize self. See help(type(self)) for accurate signature.\n\nsource\n\n\naufloat\n\n aufloat (n, s0=0, s1=0)\n\n\nsource\n\n\nadd_asym_error\n\n add_asym_error (v, s0=0, s1=0)\n\n\nsource\n\n\ndownload_file\n\n download_file (server:str, loc:str, target:str, out:bool=True)\n\nDownloads a file using rsync in archive mode a, transforming symlinks into referent file L keeping partialy transfered files and displaying the progress P. Increased verbosity v\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nserver\nstr\n\nremote_host/server address where the file is located\n\n\nloc\nstr\n\npath/to/remote_file on the server\n\n\ntarget\nstr\n\npath/to/local_directory\n\n\nout\nbool\nTrue\nprint out the progress is True"
+  },
+  {
+    "objectID": "mod.telescope.html",
+    "href": "mod.telescope.html",
+    "title": "Telescope Analysis",
+    "section": "",
+    "text": "source\n\ntel_analysis\n\n tel_analysis (cls)"
+  },
+  {
+    "objectID": "mod.reference.html",
+    "href": "mod.reference.html",
+    "title": "Reference Plane Analysis",
+    "section": "",
+    "text": "source\n\nref_analysis\n\n ref_analysis (cls)"
+  },
+  {
+    "objectID": "src.scan.html",
+    "href": "src.scan.html",
+    "title": "Scan",
+    "section": "",
+    "text": "Dir\n\nPath('/Users/hits/Documents/GitHub/HighResAnalysis')\n\n\n\nsource\n\nScan\n\n Scan (name, verbose=False, test=False)\n\nBase class defining actions on several runs or batches\n\nsource\n\n\nVScan\n\n VScan (name, verbose=False, test=False)\n\nBase class defining actions on several runs or batches\n\nsource\n\n\nTScan\n\n TScan (name, verbose=False, test=False)\n\nBase class defining actions on several runs or batches\n\n@call_parse\ndef main():\n    z = VScan('v-b2')"
+  }
+]

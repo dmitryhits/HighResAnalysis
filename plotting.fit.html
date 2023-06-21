@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.361">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Function and classes for fitting histograms">
+
+<title>HighResAnalysis - Fit</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="HighResAnalysis - Fit">
+<meta property="og:description" content="Function and classes for fitting histograms">
+<meta property="og:site-name" content="HighResAnalysis">
+<meta name="twitter:title" content="HighResAnalysis - Fit">
+<meta name="twitter:description" content="Function and classes for fitting histograms">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HighResAnalysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./blog/index.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./plotting.save.html">Plotting</a></li><li class="breadcrumb-item"><a href="./plotting.fit.html">Fit</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HighResAnalysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">CLI</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis script</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convert.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Convert</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">Main sources</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.spreadsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Google Spreadsheet Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT and Device Classes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Conversion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.cut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.proteus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Proteus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.currents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Currents Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.scan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scan</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.batch_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.bins.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pulse Height Calibration CMS Pixel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Efficiency module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.track_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.dut_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tel_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.residuals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Residuals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reso_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Plane Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.telescope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.resolution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resolution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.ref_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">CERN</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Processer (CERN)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.event_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Event Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.ref.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter for FE-IV reference plane</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.adc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ADC Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Pulse Height Calibration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Plotting</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.save.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Save plots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.binning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.fit.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.html.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HTML UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PLOTTING UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot Info Legend Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.latex.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LATEX UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.draw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Draw</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text">Utilities</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.affine_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Affine transforms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#base-fit-class" id="toc-base-fit-class" class="nav-link active" data-scroll-target="#base-fit-class">Base Fit class</a>
+  <ul>
+  <li><a href="#fit" id="toc-fit" class="nav-link" data-scroll-target="#fit">Fit</a></li>
+  <li><a href="#fit.init_fit" id="toc-fit.init_fit" class="nav-link" data-scroll-target="#fit.init_fit">Fit.init_fit</a></li>
+  <li><a href="#placeholders" id="toc-placeholders" class="nav-link" data-scroll-target="#placeholders">Placeholders</a>
+  <ul class="collapse">
+  <li><a href="#fit.find_fit_range" id="toc-fit.find_fit_range" class="nav-link" data-scroll-target="#fit.find_fit_range">Fit.find_fit_range</a></li>
+  <li><a href="#fit.get_par_names" id="toc-fit.get_par_names" class="nav-link" data-scroll-target="#fit.get_par_names">Fit.get_par_names</a></li>
+  </ul></li>
+  <li><a href="#setters" id="toc-setters" class="nav-link" data-scroll-target="#setters">Setters</a>
+  <ul class="collapse">
+  <li><a href="#fit.set_par_names" id="toc-fit.set_par_names" class="nav-link" data-scroll-target="#fit.set_par_names">Fit.set_par_names</a></li>
+  <li><a href="#fit.set_par_limits" id="toc-fit.set_par_limits" class="nav-link" data-scroll-target="#fit.set_par_limits">Fit.set_par_limits</a></li>
+  <li><a href="#fit.set_start_values" id="toc-fit.set_start_values" class="nav-link" data-scroll-target="#fit.set_start_values">Fit.set_start_values</a></li>
+  <li><a href="#fit.set_parameters" id="toc-fit.set_parameters" class="nav-link" data-scroll-target="#fit.set_parameters">Fit.set_parameters</a></li>
+  <li><a href="#fit.clear_old" id="toc-fit.clear_old" class="nav-link" data-scroll-target="#fit.clear_old">Fit.clear_old</a></li>
+  </ul></li>
+  <li><a href="#getters" id="toc-getters" class="nav-link" data-scroll-target="#getters">Getters</a>
+  <ul class="collapse">
+  <li><a href="#fit.get_parameter" id="toc-fit.get_parameter" class="nav-link" data-scroll-target="#fit.get_parameter">Fit.get_parameter</a></li>
+  <li><a href="#fit.get_parameters" id="toc-fit.get_parameters" class="nav-link" data-scroll-target="#fit.get_parameters">Fit.get_parameters</a></li>
+  <li><a href="#fit.from_hist" id="toc-fit.from_hist" class="nav-link" data-scroll-target="#fit.from_hist">Fit.from_hist</a></li>
+  <li><a href="#fit.get_chi2" id="toc-fit.get_chi2" class="nav-link" data-scroll-target="#fit.get_chi2">Fit.get_chi2</a></li>
+  <li><a href="#fit.formula" id="toc-fit.formula" class="nav-link" data-scroll-target="#fit.formula">Fit.formula</a></li>
+  </ul></li>
+  <li><a href="#info-functions" id="toc-info-functions" class="nav-link" data-scroll-target="#info-functions">Info functions</a>
+  <ul class="collapse">
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example:</a></li>
+  <li><a href="#fit.print_parameters" id="toc-fit.print_parameters" class="nav-link" data-scroll-target="#fit.print_parameters">Fit.print_parameters</a></li>
+  </ul></li>
+  <li><a href="#worker-function" id="toc-worker-function" class="nav-link" data-scroll-target="#worker-function">Worker function</a>
+  <ul class="collapse">
+  <li><a href="#fit.fit" id="toc-fit.fit" class="nav-link" data-scroll-target="#fit.fit">Fit.fit</a></li>
+  </ul></li>
+  <li><a href="#display-function" id="toc-display-function" class="nav-link" data-scroll-target="#display-function">Display function</a>
+  <ul class="collapse">
+  <li><a href="#fit.draw" id="toc-fit.draw" class="nav-link" data-scroll-target="#fit.draw">Fit.draw</a></li>
+  <li><a href="#make_fit" id="toc-make_fit" class="nav-link" data-scroll-target="#make_fit">make_fit</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#specific-fit-classes" id="toc-specific-fit-classes" class="nav-link" data-scroll-target="#specific-fit-classes">Specific fit classes</a>
+  <ul>
+  <li><a href="#poissoni" id="toc-poissoni" class="nav-link" data-scroll-target="#poissoni">PoissonI</a></li>
+  <li><a href="#expo" id="toc-expo" class="nav-link" data-scroll-target="#expo">Expo</a></li>
+  <li><a href="#gauss" id="toc-gauss" class="nav-link" data-scroll-target="#gauss">gauss</a></li>
+  <li><a href="#gauss-1" id="toc-gauss-1" class="nav-link" data-scroll-target="#gauss-1">Gauss</a></li>
+  <li><a href="#landau" id="toc-landau" class="nav-link" data-scroll-target="#landau">Landau</a></li>
+  <li><a href="#erf" id="toc-erf" class="nav-link" data-scroll-target="#erf">Erf</a></li>
+  <li><a href="#crystalball" id="toc-crystalball" class="nav-link" data-scroll-target="#crystalball">crystalball</a></li>
+  <li><a href="#crystalball-1" id="toc-crystalball-1" class="nav-link" data-scroll-target="#crystalball-1">Crystalball</a></li>
+  <li><a href="#erfland" id="toc-erfland" class="nav-link" data-scroll-target="#erfland">erfland</a></li>
+  <li><a href="#erfland-1" id="toc-erfland-1" class="nav-link" data-scroll-target="#erfland-1">ErfLand</a></li>
+  <li><a href="#langau" id="toc-langau" class="nav-link" data-scroll-target="#langau">Langau</a></li>
+  <li><a href="#nlandau" id="toc-nlandau" class="nav-link" data-scroll-target="#nlandau">NLandau</a></li>
+  <li><a href="#langau-1" id="toc-langau-1" class="nav-link" data-scroll-target="#langau-1">langau</a></li>
+  <li><a href="#langaupro" id="toc-langaupro" class="nav-link" data-scroll-target="#langaupro">langaupro</a></li>
+  <li><a href="#main" id="toc-main" class="nav-link" data-scroll-target="#main">main</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/dmitryhits/HighResAnalysis/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Fit</h1>
+</div>
+
+<div>
+  <div class="description">
+    Function and classes for fitting histograms
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="base-fit-class" class="level1">
+<h1>Base Fit class</h1>
+<p>This class define generic methods</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L22" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit" class="level3">
+<h3 class="anchored" data-anchor-id="fit">Fit</h3>
+<blockquote class="blockquote">
+<pre><code> Fit (name='fit', h=None, fit_range=None, npx:int=1000, invert:bool=False,
+      par_names=None)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>str</td>
+<td>fit</td>
+<td>Name of the fitting function</td>
+</tr>
+<tr class="even">
+<td>h</td>
+<td>NoneType</td>
+<td>None</td>
+<td>histogram to fit</td>
+</tr>
+<tr class="odd">
+<td>fit_range</td>
+<td>NoneType</td>
+<td>None</td>
+<td>list or tuple of fit range borders</td>
+</tr>
+<tr class="even">
+<td>npx</td>
+<td>int</td>
+<td>1000</td>
+<td>Number of points used to draw the fit function</td>
+</tr>
+<tr class="odd">
+<td>invert</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>par_names</td>
+<td>NoneType</td>
+<td>None</td>
+<td>List of parameter names of the fitting function</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L55" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.init_fit" class="level3">
+<h3 class="anchored" data-anchor-id="fit.init_fit">Fit.init_fit</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.init_fit ()</code></pre>
+</blockquote>
+<p>returns root TF1 fit function</p>
+</section>
+<section id="placeholders" class="level2">
+<h2 class="anchored" data-anchor-id="placeholders">Placeholders</h2>
+<p>Place holder functions, will be overwritten in the child classes</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L61" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit.find_fit_range" class="level3">
+<h3 class="anchored" data-anchor-id="fit.find_fit_range">Fit.find_fit_range</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.find_fit_range ()</code></pre>
+</blockquote>
+<p>placeholder to be overwritten in child classes, here is simply returns [0, 1000]</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.get_par_names" class="level3">
+<h3 class="anchored" data-anchor-id="fit.get_par_names">Fit.get_par_names</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.get_par_names ()</code></pre>
+</blockquote>
+<p>placeholder to be overwritten in child classes, here is simply returns []</p>
+</section>
+</section>
+<section id="setters" class="level2">
+<h2 class="anchored" data-anchor-id="setters">Setters</h2>
+<p>functions that set parameter name, limits, start values, as well as clears previous fit functions</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L73" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit.set_par_names" class="level3">
+<h3 class="anchored" data-anchor-id="fit.set_par_names">Fit.set_par_names</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.set_par_names ()</code></pre>
+</blockquote>
+<p>Sets fit function parameter names by passing a list of parameter names to the TF1.SetParNames() method</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L79" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.set_par_limits" class="level3">
+<h3 class="anchored" data-anchor-id="fit.set_par_limits">Fit.set_par_limits</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.set_par_limits ()</code></pre>
+</blockquote>
+<p>placeholder to be overwritten in child classes</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L85" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.set_start_values" class="level3">
+<h3 class="anchored" data-anchor-id="fit.set_start_values">Fit.set_start_values</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.set_start_values ()</code></pre>
+</blockquote>
+<p>placeholder to be overwritten in child classes</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L91" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.set_parameters" class="level3">
+<h3 class="anchored" data-anchor-id="fit.set_parameters">Fit.set_parameters</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.set_parameters (*pars)</code></pre>
+</blockquote>
+<p>Sets fit function parameters by passing a parameter list to the TF1.SetParameters() method</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L97" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.clear_old" class="level3">
+<h3 class="anchored" data-anchor-id="fit.clear_old">Fit.clear_old</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.clear_old ()</code></pre>
+</blockquote>
+<p>deletes the previous fit function</p>
+</section>
+</section>
+<section id="getters" class="level2">
+<h2 class="anchored" data-anchor-id="getters">Getters</h2>
+<p>functions that access internal state of the fit class such as parameters and the results of the fit</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L105" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit.get_parameter" class="level3">
+<h3 class="anchored" data-anchor-id="fit.get_parameter">Fit.get_parameter</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.get_parameter (i:int)</code></pre>
+</blockquote>
+<p>returns the value and the error of a parameter</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>i</td>
+<td>int</td>
+<td>index of the parameter to get</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L111" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.get_parameters" class="level3">
+<h3 class="anchored" data-anchor-id="fit.get_parameters">Fit.get_parameters</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.get_parameters ()</code></pre>
+</blockquote>
+<p>returns a list of parameter values</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L117" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.from_hist" class="level3">
+<h3 class="anchored" data-anchor-id="fit.from_hist">Fit.from_hist</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.from_hist (h)</code></pre>
+</blockquote>
+<p>When Fit (TH1:Fit) is invoked, the fitted function is added to the list of function associated with this histogram. Given an histogram h, one can retrieve an associated function</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td>histogram</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L130" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.get_chi2" class="level3">
+<h3 class="anchored" data-anchor-id="fit.get_chi2">Fit.get_chi2</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.get_chi2 ()</code></pre>
+</blockquote>
+<p>returns chi2 of the fit divided by the number of degrees of freedom</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L136" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.formula" class="level3">
+<h3 class="anchored" data-anchor-id="fit.formula">Fit.formula</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.formula ()</code></pre>
+</blockquote>
+<p>return the formula of the fit function</p>
+</section>
+</section>
+<section id="info-functions" class="level2">
+<h2 class="anchored" data-anchor-id="info-functions">Info functions</h2>
+<section id="example" class="level4">
+<h4 class="anchored" data-anchor-id="example">Example:</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> Fit()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>f</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Fit Fit: fit with 0 parameters</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L160" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit.print_parameters" class="level3">
+<h3 class="anchored" data-anchor-id="fit.print_parameters">Fit.print_parameters</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.print_parameters ()</code></pre>
+</blockquote>
+<p>prints parameters names and values</p>
+</section>
+</section>
+<section id="worker-function" class="level2">
+<h2 class="anchored" data-anchor-id="worker-function">Worker function</h2>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L167" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit.fit" class="level3">
+<h3 class="anchored" data-anchor-id="fit.fit">Fit.fit</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.fit (n:int=1, draw=True, minuit=True, fl=0, fh=0)</code></pre>
+</blockquote>
+<p>The method performs the fit and optionally draws fit function overlayed on the histogram</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n</td>
+<td>int</td>
+<td>1</td>
+<td>number of iterations</td>
+</tr>
+<tr class="even">
+<td>draw</td>
+<td>bool</td>
+<td>True</td>
+<td>Overlay the fitting function on histogram</td>
+</tr>
+<tr class="odd">
+<td>minuit</td>
+<td>bool</td>
+<td>True</td>
+<td>Use Minuit2 and Migrad for minimization</td>
+</tr>
+<tr class="even">
+<td>fl</td>
+<td>int</td>
+<td>0</td>
+<td>lower fitting range</td>
+</tr>
+<tr class="odd">
+<td>fh</td>
+<td>int</td>
+<td>0</td>
+<td>upper fitting range</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="display-function" class="level2">
+<h2 class="anchored" data-anchor-id="display-function">Display function</h2>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L187" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit.draw" class="level3">
+<h3 class="anchored" data-anchor-id="fit.draw">Fit.draw</h3>
+<blockquote class="blockquote">
+<pre><code> Fit.draw (*args, **kwargs)</code></pre>
+</blockquote>
+<p>plots the fit functions</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L192" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_fit" class="level3">
+<h3 class="anchored" data-anchor-id="make_fit">make_fit</h3>
+<blockquote class="blockquote">
+<pre><code> make_fit (h, f, xmin=0, xmax=1, start_values=None, par_names=None,
+           name=None, npx=1000)</code></pre>
+</blockquote>
+<p>factory method for making NewFit classes that are inherit from the <a href="https://dmitryhits.github.io/HighResAnalysis/plotting.fit.html#fit"><code>Fit</code></a> class</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td></td>
+<td></td>
+<td>histogram to fit</td>
+</tr>
+<tr class="even">
+<td>f</td>
+<td></td>
+<td></td>
+<td>fitting function</td>
+</tr>
+<tr class="odd">
+<td>xmin</td>
+<td>int</td>
+<td>0</td>
+<td>lower fitting range</td>
+</tr>
+<tr class="even">
+<td>xmax</td>
+<td>int</td>
+<td>1</td>
+<td>upper fitting range</td>
+</tr>
+<tr class="odd">
+<td>start_values</td>
+<td>NoneType</td>
+<td>None</td>
+<td>list initial values</td>
+</tr>
+<tr class="even">
+<td>par_names</td>
+<td>NoneType</td>
+<td>None</td>
+<td>list of parameter names</td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td>NoneType</td>
+<td>None</td>
+<td>name of the fitting function</td>
+</tr>
+<tr class="even">
+<td>npx</td>
+<td>int</td>
+<td>1000</td>
+<td>number of points used to draw the fitting function</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="specific-fit-classes" class="level1">
+<h1>Specific fit classes</h1>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L213" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="poissoni" class="level3">
+<h3 class="anchored" data-anchor-id="poissoni">PoissonI</h3>
+<blockquote class="blockquote">
+<pre><code> PoissonI (h=None, fit_range=None, npx:int=1000, p0:float=None,
+           p1:float=None)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td>NoneType</td>
+<td>None</td>
+<td>histogram to fit</td>
+</tr>
+<tr class="even">
+<td>fit_range</td>
+<td>NoneType</td>
+<td>None</td>
+<td>list with the low and high values of the fitting range</td>
+</tr>
+<tr class="odd">
+<td>npx</td>
+<td>int</td>
+<td>1000</td>
+<td>number of points to use when drawing the fitting function</td>
+</tr>
+<tr class="even">
+<td>p0</td>
+<td>float</td>
+<td>None</td>
+<td>initial value for constant parameter</td>
+</tr>
+<tr class="odd">
+<td>p1</td>
+<td>float</td>
+<td>None</td>
+<td>initial value for lambda parameter</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L227" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="expo" class="level3">
+<h3 class="anchored" data-anchor-id="expo">Expo</h3>
+<blockquote class="blockquote">
+<pre><code> Expo (h=None, xmin=None, xmax=None, npx=100)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/utility/utils.py#L290" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="gauss" class="level3">
+<h3 class="anchored" data-anchor-id="gauss">gauss</h3>
+<blockquote class="blockquote">
+<pre><code> gauss (x, scale, mean_, sigma, off=0)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L253" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="gauss-1" class="level3">
+<h3 class="anchored" data-anchor-id="gauss-1">Gauss</h3>
+<blockquote class="blockquote">
+<pre><code> Gauss (h=None, fit_range=None, npx=100, fl=3, fh=3, thresh=0.01, **fkw)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L277" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="landau" class="level3">
+<h3 class="anchored" data-anchor-id="landau">Landau</h3>
+<blockquote class="blockquote">
+<pre><code> Landau (h=None, fit_range=None, npx=100)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td>NoneType</td>
+<td>None</td>
+<td>histogram to fit</td>
+</tr>
+<tr class="even">
+<td>fit_range</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>npx</td>
+<td>int</td>
+<td>100</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L294" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="erf" class="level3">
+<h3 class="anchored" data-anchor-id="erf">Erf</h3>
+<blockquote class="blockquote">
+<pre><code> Erf (h=None, fit_range=None, pars=None, npx=100)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L316" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="crystalball" class="level3">
+<h3 class="anchored" data-anchor-id="crystalball">crystalball</h3>
+<blockquote class="blockquote">
+<pre><code> crystalball (x, pars, inv=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L328" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="crystalball-1" class="level3">
+<h3 class="anchored" data-anchor-id="crystalball-1">Crystalball</h3>
+<blockquote class="blockquote">
+<pre><code> Crystalball (h=None, fit_range=None, inv=False, npx=1000)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># crystal_ball = Crystalball(fit_range=[-10, 10])</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># crystal_ball.draw()</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># a = get_last_canvas()</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># a.draw()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L360" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="erfland" class="level3">
+<h3 class="anchored" data-anchor-id="erfland">erfland</h3>
+<blockquote class="blockquote">
+<pre><code> erfland (x, pars)</code></pre>
+</blockquote>
+<p>retruns error function merged with Landau</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from ROOT import TCanvas, TFormula, TF1</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># from ROOT import gROOT, gObjectTable</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># %jsroot on</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># c = TCanvas( 'c', 'Example with Formula', 200, 10, 700, 500 )</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># fun1 = TF1( 'fun1', erfland, 0, 10, 8)</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># c0, mpv, sigma, c1, xoff, w, yoff = 1, 7, 2, 1, 3, 2, 0</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># fun1.SetParameters(c0, mpv, sigma, c1, xoff, w, yoff)</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># fun1 = TF1( 'fun1', 'abs(sin(x)/x)', 0, 10 )</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># c.SetGridx()</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># c.SetGridy()</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co"># fun1.Draw()</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># c.Update()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L366" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="erfland-1" class="level3">
+<h3 class="anchored" data-anchor-id="erfland-1">ErfLand</h3>
+<blockquote class="blockquote">
+<pre><code> ErfLand (h=None, fit_range=None, npx=1000)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L404" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="langau" class="level3">
+<h3 class="anchored" data-anchor-id="langau">Langau</h3>
+<blockquote class="blockquote">
+<pre><code> Langau (h=None, nconv:int=100, fit_range=None, npx:int=1000)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td>NoneType</td>
+<td>None</td>
+<td>histogram to fit</td>
+</tr>
+<tr class="even">
+<td>nconv</td>
+<td>int</td>
+<td>100</td>
+<td>number of convolutions within the range</td>
+</tr>
+<tr class="odd">
+<td>fit_range</td>
+<td>NoneType</td>
+<td>None</td>
+<td>fitting range</td>
+</tr>
+<tr class="even">
+<td>npx</td>
+<td>int</td>
+<td>1000</td>
+<td>number of points to draw the function</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L441" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="nlandau" class="level3">
+<h3 class="anchored" data-anchor-id="nlandau">NLandau</h3>
+<blockquote class="blockquote">
+<pre><code> NLandau (h=None, fit_range=None, npx:int=100, n:int=3)</code></pre>
+</blockquote>
+<p>general class for fitting histograms</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>h</td>
+<td>NoneType</td>
+<td>None</td>
+<td>histogram to fit</td>
+</tr>
+<tr class="even">
+<td>fit_range</td>
+<td>NoneType</td>
+<td>None</td>
+<td>fitting range</td>
+</tr>
+<tr class="odd">
+<td>npx</td>
+<td>int</td>
+<td>100</td>
+<td>number of points to draw the fitting function</td>
+</tr>
+<tr class="even">
+<td>n</td>
+<td>int</td>
+<td>3</td>
+<td>number of Landaus</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L475" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="langau-1" class="level3">
+<h3 class="anchored" data-anchor-id="langau-1">langau</h3>
+<blockquote class="blockquote">
+<pre><code> langau (x:float, pars, nconv:int, nsigma:int=5)</code></pre>
+</blockquote>
+<p>Convoluted Landau and Gaussian Fitting Function (using ROOT’s Landau and Gauss functions)</p>
+<p>Fit parameters: par[0]=Width (scale) parameter of Landau density par[1]=Most Probable (MP, location) parameter of Landau density par[2]=Total area (integral -inf to inf, normalization constant) par[3]=Width (sigma) of convoluted Gaussian function</p>
+<p>In the Landau distribution (represented by the CERNLIB approximation), the maximum is located at x=-0.22278298 with the location parameter=0. This shift is corrected within this function, so that the actual maximum is identical to the MP parameter.</p>
+<p>The code is literally converted to python from the original C at https://root.cern.ch/root/html404/examples/langaus.C.html</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>x</td>
+<td>float</td>
+<td></td>
+<td>independent variable</td>
+</tr>
+<tr class="even">
+<td>pars</td>
+<td></td>
+<td></td>
+<td>list of langau fit parameters</td>
+</tr>
+<tr class="odd">
+<td>nconv</td>
+<td>int</td>
+<td></td>
+<td>number of convolutions</td>
+</tr>
+<tr class="even">
+<td>nsigma</td>
+<td>int</td>
+<td>5</td>
+<td>number of sigmas, extent of the convolution intergral</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/fit.py#L524" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="langaupro" class="level3">
+<h3 class="anchored" data-anchor-id="langaupro">langaupro</h3>
+<blockquote class="blockquote">
+<pre><code> langaupro (params, maxx, FWHM)</code></pre>
+</blockquote>
+<p>Seaches for the location (x value) at the maximum of the Landau-Gaussian convolute and its full width at half-maximum.</p>
+<p>The search is probably not very efficient, but it’s a first try.</p>
+<p>The code is literally converted to python from the original C at https://root.cern.ch/root/html404/examples/langaus.C.html</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/src/run.py#L298" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="main" class="level3">
+<h3 class="anchored" data-anchor-id="main">main</h3>
+<blockquote class="blockquote">
+<pre><code> main ()</code></pre>
+</blockquote>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

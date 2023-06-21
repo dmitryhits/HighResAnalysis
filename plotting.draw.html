@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.361">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Class for all the ROOT drawing stuff">
+
+<title>HighResAnalysis - Draw</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="HighResAnalysis - Draw">
+<meta property="og:description" content="Class for all the ROOT drawing stuff">
+<meta property="og:site-name" content="HighResAnalysis">
+<meta name="twitter:title" content="HighResAnalysis - Draw">
+<meta name="twitter:description" content="Class for all the ROOT drawing stuff">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HighResAnalysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./blog/index.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./plotting.save.html">Plotting</a></li><li class="breadcrumb-item"><a href="./plotting.draw.html">Draw</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HighResAnalysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">CLI</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis script</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convert.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Convert</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">Main sources</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.spreadsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Google Spreadsheet Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT and Device Classes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Conversion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.cut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.proteus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Proteus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.currents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Currents Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.scan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scan</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.batch_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.bins.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pulse Height Calibration CMS Pixel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Efficiency module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.track_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.dut_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tel_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.residuals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Residuals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reso_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Plane Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.telescope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.resolution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resolution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.ref_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">CERN</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Processer (CERN)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.event_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Event Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.ref.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter for FE-IV reference plane</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.adc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ADC Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Pulse Height Calibration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Plotting</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.save.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Save plots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.binning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.html.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HTML UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PLOTTING UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot Info Legend Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.latex.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LATEX UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.draw.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Draw</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text">Utilities</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.affine_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Affine transforms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#fitres" id="toc-fitres" class="nav-link active" data-scroll-target="#fitres">FitRes</a></li>
+  <li><a href="#get_color_gradient" id="toc-get_color_gradient" class="nav-link" data-scroll-target="#get_color_gradient">get_color_gradient</a></li>
+  <li><a href="#draw" id="toc-draw" class="nav-link" data-scroll-target="#draw">Draw</a></li>
+  <li><a href="#format_histo" id="toc-format_histo" class="nav-link" data-scroll-target="#format_histo">format_histo</a></li>
+  <li><a href="#set_statbox" id="toc-set_statbox" class="nav-link" data-scroll-target="#set_statbox">set_statbox</a></li>
+  <li><a href="#set_entries" id="toc-set_entries" class="nav-link" data-scroll-target="#set_entries">set_entries</a></li>
+  <li><a href="#get_window_ratio" id="toc-get_window_ratio" class="nav-link" data-scroll-target="#get_window_ratio">get_window_ratio</a></li>
+  <li><a href="#get_stat_margins" id="toc-get_stat_margins" class="nav-link" data-scroll-target="#get_stat_margins">get_stat_margins</a></li>
+  <li><a href="#get_stat_pos" id="toc-get_stat_pos" class="nav-link" data-scroll-target="#get_stat_pos">get_stat_pos</a></li>
+  <li><a href="#format_statbox" id="toc-format_statbox" class="nav-link" data-scroll-target="#format_statbox">format_statbox</a></li>
+  <li><a href="#format_axis" id="toc-format_axis" class="nav-link" data-scroll-target="#format_axis">format_axis</a></li>
+  <li><a href="#format_pie" id="toc-format_pie" class="nav-link" data-scroll-target="#format_pie">format_pie</a></li>
+  <li><a href="#format_text" id="toc-format_text" class="nav-link" data-scroll-target="#format_text">format_text</a></li>
+  <li><a href="#format_frame" id="toc-format_frame" class="nav-link" data-scroll-target="#format_frame">format_frame</a></li>
+  <li><a href="#fill_hist" id="toc-fill_hist" class="nav-link" data-scroll-target="#fill_hist">fill_hist</a></li>
+  <li><a href="#set_2d_ranges" id="toc-set_2d_ranges" class="nav-link" data-scroll-target="#set_2d_ranges">set_2d_ranges</a></li>
+  <li><a href="#arr2coods" id="toc-arr2coods" class="nav-link" data-scroll-target="#arr2coods">arr2coods</a></li>
+  <li><a href="#fix_chi2" id="toc-fix_chi2" class="nav-link" data-scroll-target="#fix_chi2">fix_chi2</a></li>
+  <li><a href="#make_darray" id="toc-make_darray" class="nav-link" data-scroll-target="#make_darray">make_darray</a></li>
+  <li><a href="#graph_values" id="toc-graph_values" class="nav-link" data-scroll-target="#graph_values">graph_values</a></li>
+  <li><a href="#graph_xy" id="toc-graph_xy" class="nav-link" data-scroll-target="#graph_xy">graph_xy</a></li>
+  <li><a href="#graph_x" id="toc-graph_x" class="nav-link" data-scroll-target="#graph_x">graph_x</a></li>
+  <li><a href="#graph_y" id="toc-graph_y" class="nav-link" data-scroll-target="#graph_y">graph_y</a></li>
+  <li><a href="#hist_values" id="toc-hist_values" class="nav-link" data-scroll-target="#hist_values">hist_values</a></li>
+  <li><a href="#hist_xy" id="toc-hist_xy" class="nav-link" data-scroll-target="#hist_xy">hist_xy</a></li>
+  <li><a href="#hist_values_2d" id="toc-hist_values_2d" class="nav-link" data-scroll-target="#hist_values_2d">hist_values_2d</a></li>
+  <li><a href="#hist_xyz" id="toc-hist_xyz" class="nav-link" data-scroll-target="#hist_xyz">hist_xyz</a></li>
+  <li><a href="#h_y" id="toc-h_y" class="nav-link" data-scroll-target="#h_y">h_y</a></li>
+  <li><a href="#h_x" id="toc-h_x" class="nav-link" data-scroll-target="#h_x">h_x</a></li>
+  <li><a href="#h_xy" id="toc-h_xy" class="nav-link" data-scroll-target="#h_xy">h_xy</a></li>
+  <li><a href="#set_bin_labels" id="toc-set_bin_labels" class="nav-link" data-scroll-target="#set_bin_labels">set_bin_labels</a></li>
+  <li><a href="#make_box_args" id="toc-make_box_args" class="nav-link" data-scroll-target="#make_box_args">make_box_args</a></li>
+  <li><a href="#make_poly_args" id="toc-make_poly_args" class="nav-link" data-scroll-target="#make_poly_args">make_poly_args</a></li>
+  <li><a href="#make_star" id="toc-make_star" class="nav-link" data-scroll-target="#make_star">make_star</a></li>
+  <li><a href="#set_titles" id="toc-set_titles" class="nav-link" data-scroll-target="#set_titles">set_titles</a></li>
+  <li><a href="#shift_graph" id="toc-shift_graph" class="nav-link" data-scroll-target="#shift_graph">shift_graph</a></li>
+  <li><a href="#get_3d_profiles" id="toc-get_3d_profiles" class="nav-link" data-scroll-target="#get_3d_profiles">get_3d_profiles</a></li>
+  <li><a href="#get_3d_correlations" id="toc-get_3d_correlations" class="nav-link" data-scroll-target="#get_3d_correlations">get_3d_correlations</a></li>
+  <li><a href="#scale_graph" id="toc-scale_graph" class="nav-link" data-scroll-target="#scale_graph">scale_graph</a></li>
+  <li><a href="#get_quantile" id="toc-get_quantile" class="nav-link" data-scroll-target="#get_quantile">get_quantile</a></li>
+  <li><a href="#markers" id="toc-markers" class="nav-link" data-scroll-target="#markers">markers</a></li>
+  <li><a href="#duo_markers" id="toc-duo_markers" class="nav-link" data-scroll-target="#duo_markers">duo_markers</a></li>
+  <li><a href="#set_palette" id="toc-set_palette" class="nav-link" data-scroll-target="#set_palette">set_palette</a></li>
+  <li><a href="#n_pal" id="toc-n_pal" class="nav-link" data-scroll-target="#n_pal">n_pal</a></li>
+  <li><a href="#set_n_palette" id="toc-set_n_palette" class="nav-link" data-scroll-target="#set_n_palette">set_n_palette</a></li>
+  <li><a href="#is_graph" id="toc-is_graph" class="nav-link" data-scroll-target="#is_graph">is_graph</a></li>
+  <li><a href="#update_canvas" id="toc-update_canvas" class="nav-link" data-scroll-target="#update_canvas">update_canvas</a></li>
+  <li><a href="#show_colors" id="toc-show_colors" class="nav-link" data-scroll-target="#show_colors">show_colors</a></li>
+  <li><a href="#show_wheel" id="toc-show_wheel" class="nav-link" data-scroll-target="#show_wheel">show_wheel</a></li>
+  <li><a href="#show_line_styles" id="toc-show_line_styles" class="nav-link" data-scroll-target="#show_line_styles">show_line_styles</a></li>
+  <li><a href="#ax_range" id="toc-ax_range" class="nav-link" data-scroll-target="#ax_range">ax_range</a></li>
+  <li><a href="#find_z_range" id="toc-find_z_range" class="nav-link" data-scroll-target="#find_z_range">find_z_range</a></li>
+  <li><a href="#set_drawing_range" id="toc-set_drawing_range" class="nav-link" data-scroll-target="#set_drawing_range">set_drawing_range</a></li>
+  <li><a href="#normalise_histo" id="toc-normalise_histo" class="nav-link" data-scroll-target="#normalise_histo">normalise_histo</a></li>
+  <li><a href="#normalise_bins" id="toc-normalise_bins" class="nav-link" data-scroll-target="#normalise_bins">normalise_bins</a></li>
+  <li><a href="#set_z_range" id="toc-set_z_range" class="nav-link" data-scroll-target="#set_z_range">set_z_range</a></li>
+  <li><a href="#set_axes_range" id="toc-set_axes_range" class="nav-link" data-scroll-target="#set_axes_range">set_axes_range</a></li>
+  <li><a href="#get_ax_range" id="toc-get_ax_range" class="nav-link" data-scroll-target="#get_ax_range">get_ax_range</a></li>
+  <li><a href="#get_dax" id="toc-get_dax" class="nav-link" data-scroll-target="#get_dax">get_dax</a></li>
+  <li><a href="#set_x_range" id="toc-set_x_range" class="nav-link" data-scroll-target="#set_x_range">set_x_range</a></li>
+  <li><a href="#set_y_range" id="toc-set_y_range" class="nav-link" data-scroll-target="#set_y_range">set_y_range</a></li>
+  <li><a href="#get_last_canvas" id="toc-get_last_canvas" class="nav-link" data-scroll-target="#get_last_canvas">get_last_canvas</a></li>
+  <li><a href="#close_last_canvas" id="toc-close_last_canvas" class="nav-link" data-scroll-target="#close_last_canvas">close_last_canvas</a></li>
+  <li><a href="#get_object" id="toc-get_object" class="nav-link" data-scroll-target="#get_object">get_object</a></li>
+  <li><a href="#set_time_axis" id="toc-set_time_axis" class="nav-link" data-scroll-target="#set_time_axis">set_time_axis</a></li>
+  <li><a href="#find_mpv_fwhm" id="toc-find_mpv_fwhm" class="nav-link" data-scroll-target="#find_mpv_fwhm">find_mpv_fwhm</a></li>
+  <li><a href="#get_fw_center" id="toc-get_fw_center" class="nav-link" data-scroll-target="#get_fw_center">get_fw_center</a></li>
+  <li><a href="#find_mpv" id="toc-find_mpv" class="nav-link" data-scroll-target="#find_mpv">find_mpv</a></li>
+  <li><a href="#get_fwhm" id="toc-get_fwhm" class="nav-link" data-scroll-target="#get_fwhm">get_fwhm</a></li>
+  <li><a href="#fit_fwhm" id="toc-fit_fwhm" class="nav-link" data-scroll-target="#fit_fwhm">fit_fwhm</a></li>
+  <li><a href="#get_f_fwhm" id="toc-get_f_fwhm" class="nav-link" data-scroll-target="#get_f_fwhm">get_f_fwhm</a></li>
+  <li><a href="#scale_histo" id="toc-scale_histo" class="nav-link" data-scroll-target="#scale_histo">scale_histo</a></li>
+  <li><a href="#find_2d_centre" id="toc-find_2d_centre" class="nav-link" data-scroll-target="#find_2d_centre">find_2d_centre</a></li>
+  <li><a href="#get_2d_centre_ranges" id="toc-get_2d_centre_ranges" class="nav-link" data-scroll-target="#get_2d_centre_ranges">get_2d_centre_ranges</a></li>
+  <li><a href="#centre_2d" id="toc-centre_2d" class="nav-link" data-scroll-target="#centre_2d">centre_2d</a></li>
+  <li><a href="#make_transparent" id="toc-make_transparent" class="nav-link" data-scroll-target="#make_transparent">make_transparent</a></li>
+  <li><a href="#hide_axis" id="toc-hide_axis" class="nav-link" data-scroll-target="#hide_axis">hide_axis</a></li>
+  <li><a href="#remove_low_stat_bins" id="toc-remove_low_stat_bins" class="nav-link" data-scroll-target="#remove_low_stat_bins">remove_low_stat_bins</a></li>
+  <li><a href="#get_correlation_arrays" id="toc-get_correlation_arrays" class="nav-link" data-scroll-target="#get_correlation_arrays">get_correlation_arrays</a></li>
+  <li><a href="#correlate_maps" id="toc-correlate_maps" class="nav-link" data-scroll-target="#correlate_maps">correlate_maps</a></li>
+  <li><a href="#correlate_all_maps" id="toc-correlate_all_maps" class="nav-link" data-scroll-target="#correlate_all_maps">correlate_all_maps</a></li>
+  <li><a href="#set_root_warnings" id="toc-set_root_warnings" class="nav-link" data-scroll-target="#set_root_warnings">set_root_warnings</a></li>
+  <li><a href="#set_root_output" id="toc-set_root_output" class="nav-link" data-scroll-target="#set_root_output">set_root_output</a></li>
+  <li><a href="#is_root_object" id="toc-is_root_object" class="nav-link" data-scroll-target="#is_root_object">is_root_object</a></li>
+  <li><a href="#np_profile" id="toc-np_profile" class="nav-link" data-scroll-target="#np_profile">np_profile</a></li>
+  <li><a href="#main" id="toc-main" class="nav-link" data-scroll-target="#main">main</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/dmitryhits/HighResAnalysis/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Draw</h1>
+</div>
+
+<div>
+  <div class="description">
+    Class for all the ROOT drawing stuff
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<pre><code>/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Attributes
+  else: warn(msg)
+/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section See Also
+  else: warn(msg)
+/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Notes
+  else: warn(msg)
+/home/runner/micromamba-root/envs/testenv/lib/python3.10/site-packages/fastcore/docscrape.py:225: UserWarning: Unknown section Examples
+  else: warn(msg)</code></pre>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L47" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fitres" class="level3">
+<h3 class="anchored" data-anchor-id="fitres">FitRes</h3>
+<blockquote class="blockquote">
+<pre><code> FitRes (f)</code></pre>
+</blockquote>
+<p>An array object represents a multidimensional, homogeneous array of fixed-size items. An associated data-type object describes the format of each element in the array (its byte-order, how many bytes it occupies in memory, whether it is an integer, a floating point number, or something else, etc.)</p>
+<p>Arrays should be constructed using <code>array</code>, <code>zeros</code> or <code>empty</code> (refer to the See Also section below). The parameters given here refer to a low-level method (<code>ndarray(...)</code>) for instantiating an array.</p>
+<p>For more information, refer to the <code>numpy</code> module and examine the methods and attributes of an array.</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L114" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_color_gradient" class="level3">
+<h3 class="anchored" data-anchor-id="get_color_gradient">get_color_gradient</h3>
+<blockquote class="blockquote">
+<pre><code> get_color_gradient ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L123" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="draw" class="level3">
+<h3 class="anchored" data-anchor-id="draw">Draw</h3>
+<blockquote class="blockquote">
+<pre><code> Draw (config:str=None, verbose:bool=True)</code></pre>
+</blockquote>
+<p>Main class for drawing histograms and functions</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>config</td>
+<td>str</td>
+<td>None</td>
+<td>Path to the config file</td>
+</tr>
+<tr class="even">
+<td>verbose</td>
+<td>bool</td>
+<td>True</td>
+<td>verbosity</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>draw <span class="op">=</span> Draw()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>draw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>ROOT Draw instance: Title = OFF, Show = ON, Info = ON</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L876" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_histo" class="level3">
+<h3 class="anchored" data-anchor-id="format_histo">format_histo</h3>
+<blockquote class="blockquote">
+<pre><code> format_histo (histo, name=None, title=None, x_tit=None, y_tit=None,
+               z_tit=None, marker=None, color=None, line_color=None,
+               line_style=None, markersize=None, x_off=None, y_off=None,
+               z_off=None, lw=None, fill_color=None, fill_style=None,
+               stats=None, tit_size=None, lab_size=None, xls=None,
+               yls=None, l_off_y=None, l_off_x=None, draw_first=False,
+               x_range=None, xr=None, y_range=None, yr=None, z_range=None,
+               zr=None, sumw2=None, do_marker=True, style=None,
+               ndivx=None, ndivy=None, ncont=None, tick_size=None,
+               t_ax_off=None, tform='%H:%M', center_y=False,
+               center_x=False, yax_col=None, normalise=None, pal=None,
+               rebin=None, y_ticks=None, x_ticks=None, z_ticks=None,
+               opacity=None, center_tit=None, **kwargs)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L934" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_statbox" class="level3">
+<h3 class="anchored" data-anchor-id="set_statbox">set_statbox</h3>
+<blockquote class="blockquote">
+<pre><code> set_statbox (x2=None, y2=None, h=None, w=0.3, entries=False, m=False,
+              rms=False, all_stat=False, fit=False, center_x=False,
+              center_y=False, form=None, stats=True, **kw)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L939" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_entries" class="level3">
+<h3 class="anchored" data-anchor-id="set_entries">set_entries</h3>
+<blockquote class="blockquote">
+<pre><code> set_entries ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L944" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_window_ratio" class="level3">
+<h3 class="anchored" data-anchor-id="get_window_ratio">get_window_ratio</h3>
+<blockquote class="blockquote">
+<pre><code> get_window_ratio (c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L949" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_stat_margins" class="level3">
+<h3 class="anchored" data-anchor-id="get_stat_margins">get_stat_margins</h3>
+<blockquote class="blockquote">
+<pre><code> get_stat_margins (c=None, x2=None, y2=None, d=0.01, bottom=False,
+                   left=False, h=0.0, w=0.0)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L957" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_stat_pos" class="level3">
+<h3 class="anchored" data-anchor-id="get_stat_pos">get_stat_pos</h3>
+<blockquote class="blockquote">
+<pre><code> get_stat_pos (c, nentries, x2=None, y2=None, d=0.01, h=None, w=0.3,
+               center_x=False, center_y=False, bottom=False, left=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L967" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_statbox" class="level3">
+<h3 class="anchored" data-anchor-id="format_statbox">format_statbox</h3>
+<blockquote class="blockquote">
+<pre><code> format_statbox (th, x2=None, y2=None, d=0.01, h=None, w=0.3,
+                 entries=False, m=False, rms=False, all_stat=False,
+                 fit=False, fit_opt=None, stat_opt=None, center_x=False,
+                 center_y=False, bottom=False, left=False, form=None,
+                 c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L987" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_axis" class="level3">
+<h3 class="anchored" data-anchor-id="format_axis">format_axis</h3>
+<blockquote class="blockquote">
+<pre><code> format_axis (axis, h, title, tit_offset, tit_size, centre_title,
+              lab_size, label_offset, limits, ndiv, tick_size, color=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1003" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_pie" class="level3">
+<h3 class="anchored" data-anchor-id="format_pie">format_pie</h3>
+<blockquote class="blockquote">
+<pre><code> format_pie (pie, h=None, r=None, text_size=None, angle3d=None,
+             angle_off=None, label_format=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1011" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_text" class="level3">
+<h3 class="anchored" data-anchor-id="format_text">format_text</h3>
+<blockquote class="blockquote">
+<pre><code> format_text (t, name='text', align=20, color=1, size=0.05, angle=None,
+              ndc=None, font=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1022" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="format_frame" class="level3">
+<h3 class="anchored" data-anchor-id="format_frame">format_frame</h3>
+<blockquote class="blockquote">
+<pre><code> format_frame (frame)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1036" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fill_hist" class="level3">
+<h3 class="anchored" data-anchor-id="fill_hist">fill_hist</h3>
+<blockquote class="blockquote">
+<pre><code> fill_hist (h, x, y=None, zz=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1062" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_2d_ranges" class="level3">
+<h3 class="anchored" data-anchor-id="set_2d_ranges">set_2d_ranges</h3>
+<blockquote class="blockquote">
+<pre><code> set_2d_ranges (h, dx, dy)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1068" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="arr2coods" class="level3">
+<h3 class="anchored" data-anchor-id="arr2coods">arr2coods</h3>
+<blockquote class="blockquote">
+<pre><code> arr2coods (a)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1074" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fix_chi2" class="level3">
+<h3 class="anchored" data-anchor-id="fix_chi2">fix_chi2</h3>
+<blockquote class="blockquote">
+<pre><code> fix_chi2 (g, prec=0.01, show=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1089" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_darray" class="level3">
+<h3 class="anchored" data-anchor-id="make_darray">make_darray</h3>
+<blockquote class="blockquote">
+<pre><code> make_darray (values)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1097" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="graph_values" class="level3">
+<h3 class="anchored" data-anchor-id="graph_values">graph_values</h3>
+<blockquote class="blockquote">
+<pre><code> graph_values (g, m, err=False, as_u=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1110" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="graph_xy" class="level3">
+<h3 class="anchored" data-anchor-id="graph_xy">graph_xy</h3>
+<blockquote class="blockquote">
+<pre><code> graph_xy (g, err=True, as_u=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1114" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="graph_x" class="level3">
+<h3 class="anchored" data-anchor-id="graph_x">graph_x</h3>
+<blockquote class="blockquote">
+<pre><code> graph_x (g, err=True, as_u=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1118" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="graph_y" class="level3">
+<h3 class="anchored" data-anchor-id="graph_y">graph_y</h3>
+<blockquote class="blockquote">
+<pre><code> graph_y (g, err=True, as_u=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1128" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hist_values" class="level3">
+<h3 class="anchored" data-anchor-id="hist_values">hist_values</h3>
+<blockquote class="blockquote">
+<pre><code> hist_values (h, err=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1132" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hist_xy" class="level3">
+<h3 class="anchored" data-anchor-id="hist_xy">hist_xy</h3>
+<blockquote class="blockquote">
+<pre><code> hist_xy (h, err=True, raw=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1138" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hist_values_2d" class="level3">
+<h3 class="anchored" data-anchor-id="hist_values_2d">hist_values_2d</h3>
+<blockquote class="blockquote">
+<pre><code> hist_values_2d (h, err=True, flat=True, z_sup=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1145" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hist_xyz" class="level3">
+<h3 class="anchored" data-anchor-id="hist_xyz">hist_xyz</h3>
+<blockquote class="blockquote">
+<pre><code> hist_xyz (h, err=True, flat=False, z_sup=True, grid=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1156" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="h_y" class="level3">
+<h3 class="anchored" data-anchor-id="h_y">h_y</h3>
+<blockquote class="blockquote">
+<pre><code> h_y (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1160" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="h_x" class="level3">
+<h3 class="anchored" data-anchor-id="h_x">h_x</h3>
+<blockquote class="blockquote">
+<pre><code> h_x (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1164" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="h_xy" class="level3">
+<h3 class="anchored" data-anchor-id="h_xy">h_xy</h3>
+<blockquote class="blockquote">
+<pre><code> h_xy (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1168" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_bin_labels" class="level3">
+<h3 class="anchored" data-anchor-id="set_bin_labels">set_bin_labels</h3>
+<blockquote class="blockquote">
+<pre><code> set_bin_labels (g, labels)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1175" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_box_args" class="level3">
+<h3 class="anchored" data-anchor-id="make_box_args">make_box_args</h3>
+<blockquote class="blockquote">
+<pre><code> make_box_args (x1, y1, x2, y2)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1179" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_poly_args" class="level3">
+<h3 class="anchored" data-anchor-id="make_poly_args">make_poly_args</h3>
+<blockquote class="blockquote">
+<pre><code> make_poly_args (x, y, last_x=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1183" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_star" class="level3">
+<h3 class="anchored" data-anchor-id="make_star">make_star</h3>
+<blockquote class="blockquote">
+<pre><code> make_star (cx=0, cy=0, r=1, n=5)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1188" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_titles" class="level3">
+<h3 class="anchored" data-anchor-id="set_titles">set_titles</h3>
+<blockquote class="blockquote">
+<pre><code> set_titles (status=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1192" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="shift_graph" class="level3">
+<h3 class="anchored" data-anchor-id="shift_graph">shift_graph</h3>
+<blockquote class="blockquote">
+<pre><code> shift_graph (g, ox=0, oy=0)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1208" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_3d_profiles" class="level3">
+<h3 class="anchored" data-anchor-id="get_3d_profiles">get_3d_profiles</h3>
+<blockquote class="blockquote">
+<pre><code> get_3d_profiles (h, opt, err=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1218" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_3d_correlations" class="level3">
+<h3 class="anchored" data-anchor-id="get_3d_correlations">get_3d_correlations</h3>
+<blockquote class="blockquote">
+<pre><code> get_3d_correlations (h, opt='yz', thresh=0.25, err=True, z_supp=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1227" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="scale_graph" class="level3">
+<h3 class="anchored" data-anchor-id="scale_graph">scale_graph</h3>
+<blockquote class="blockquote">
+<pre><code> scale_graph (gr, scale=None, val=1, to_low_flux=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1238" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_quantile" class="level3">
+<h3 class="anchored" data-anchor-id="get_quantile">get_quantile</h3>
+<blockquote class="blockquote">
+<pre><code> get_quantile (h, q)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1245" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="markers" class="level3">
+<h3 class="anchored" data-anchor-id="markers">markers</h3>
+<blockquote class="blockquote">
+<pre><code> markers (i, duo=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1249" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="duo_markers" class="level3">
+<h3 class="anchored" data-anchor-id="duo_markers">duo_markers</h3>
+<blockquote class="blockquote">
+<pre><code> duo_markers (i)</code></pre>
+</blockquote>
+<p>:returns full and open marker</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1255" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_palette" class="level3">
+<h3 class="anchored" data-anchor-id="set_palette">set_palette</h3>
+<blockquote class="blockquote">
+<pre><code> set_palette (pal)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1260" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="n_pal" class="level3">
+<h3 class="anchored" data-anchor-id="n_pal">n_pal</h3>
+<blockquote class="blockquote">
+<pre><code> n_pal (n)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1264" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_n_palette" class="level3">
+<h3 class="anchored" data-anchor-id="set_n_palette">set_n_palette</h3>
+<blockquote class="blockquote">
+<pre><code> set_n_palette (n)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1268" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="is_graph" class="level3">
+<h3 class="anchored" data-anchor-id="is_graph">is_graph</h3>
+<blockquote class="blockquote">
+<pre><code> is_graph (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1272" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="update_canvas" class="level3">
+<h3 class="anchored" data-anchor-id="update_canvas">update_canvas</h3>
+<blockquote class="blockquote">
+<pre><code> update_canvas (c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1280" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="show_colors" class="level3">
+<h3 class="anchored" data-anchor-id="show_colors">show_colors</h3>
+<blockquote class="blockquote">
+<pre><code> show_colors (colors)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1289" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="show_wheel" class="level3">
+<h3 class="anchored" data-anchor-id="show_wheel">show_wheel</h3>
+<blockquote class="blockquote">
+<pre><code> show_wheel ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1296" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="show_line_styles" class="level3">
+<h3 class="anchored" data-anchor-id="show_line_styles">show_line_styles</h3>
+<blockquote class="blockquote">
+<pre><code> show_line_styles ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1303" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="ax_range" class="level3">
+<h3 class="anchored" data-anchor-id="ax_range">ax_range</h3>
+<blockquote class="blockquote">
+<pre><code> ax_range (low:Any=None, high=None, fl=0.0, fh=0.0, h=None, to_int=False,
+           thresh=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1320" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_z_range" class="level3">
+<h3 class="anchored" data-anchor-id="find_z_range">find_z_range</h3>
+<blockquote class="blockquote">
+<pre><code> find_z_range (h, q=None, z0=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1327" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_drawing_range" class="level3">
+<h3 class="anchored" data-anchor-id="set_drawing_range">set_drawing_range</h3>
+<blockquote class="blockquote">
+<pre><code> set_drawing_range (h, legend=True, lfac=None, rfac=None, thresh=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1337" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="normalise_histo" class="level3">
+<h3 class="anchored" data-anchor-id="normalise_histo">normalise_histo</h3>
+<blockquote class="blockquote">
+<pre><code> normalise_histo (histo, x_range=None, from_min=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1346" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="normalise_bins" class="level3">
+<h3 class="anchored" data-anchor-id="normalise_bins">normalise_bins</h3>
+<blockquote class="blockquote">
+<pre><code> normalise_bins (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1354" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_z_range" class="level3">
+<h3 class="anchored" data-anchor-id="set_z_range">set_z_range</h3>
+<blockquote class="blockquote">
+<pre><code> set_z_range (zmin, zmax)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1360" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_axes_range" class="level3">
+<h3 class="anchored" data-anchor-id="set_axes_range">set_axes_range</h3>
+<blockquote class="blockquote">
+<pre><code> set_axes_range (xmin, xmax, ymin, ymax, c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1366" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_ax_range" class="level3">
+<h3 class="anchored" data-anchor-id="get_ax_range">get_ax_range</h3>
+<blockquote class="blockquote">
+<pre><code> get_ax_range (h, d='x')</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1371" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_dax" class="level3">
+<h3 class="anchored" data-anchor-id="get_dax">get_dax</h3>
+<blockquote class="blockquote">
+<pre><code> get_dax (h, d='x')</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1375" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_x_range" class="level3">
+<h3 class="anchored" data-anchor-id="set_x_range">set_x_range</h3>
+<blockquote class="blockquote">
+<pre><code> set_x_range (xmin, xmax, c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1381" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_y_range" class="level3">
+<h3 class="anchored" data-anchor-id="set_y_range">set_y_range</h3>
+<blockquote class="blockquote">
+<pre><code> set_y_range (ymin, ymax, c=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1387" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_last_canvas" class="level3">
+<h3 class="anchored" data-anchor-id="get_last_canvas">get_last_canvas</h3>
+<blockquote class="blockquote">
+<pre><code> get_last_canvas (warn=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1394" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="close_last_canvas" class="level3">
+<h3 class="anchored" data-anchor-id="close_last_canvas">close_last_canvas</h3>
+<blockquote class="blockquote">
+<pre><code> close_last_canvas ()</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1398" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_object" class="level3">
+<h3 class="anchored" data-anchor-id="get_object">get_object</h3>
+<blockquote class="blockquote">
+<pre><code> get_object (name)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1404" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_time_axis" class="level3">
+<h3 class="anchored" data-anchor-id="set_time_axis">set_time_axis</h3>
+<blockquote class="blockquote">
+<pre><code> set_time_axis (histo, form='%H:%M', off=0, axis='X')</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1412" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_mpv_fwhm" class="level3">
+<h3 class="anchored" data-anchor-id="find_mpv_fwhm">find_mpv_fwhm</h3>
+<blockquote class="blockquote">
+<pre><code> find_mpv_fwhm (histo, nbins=15)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1421" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_fw_center" class="level3">
+<h3 class="anchored" data-anchor-id="get_fw_center">get_fw_center</h3>
+<blockquote class="blockquote">
+<pre><code> get_fw_center (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1426" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_mpv" class="level3">
+<h3 class="anchored" data-anchor-id="find_mpv">find_mpv</h3>
+<blockquote class="blockquote">
+<pre><code> find_mpv (h, r=0.8, show_fit=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1435" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_fwhm" class="level3">
+<h3 class="anchored" data-anchor-id="get_fwhm">get_fwhm</h3>
+<blockquote class="blockquote">
+<pre><code> get_fwhm (h, fit_range=0.8, ret_edges=False, err=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1448" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="fit_fwhm" class="level3">
+<h3 class="anchored" data-anchor-id="fit_fwhm">fit_fwhm</h3>
+<blockquote class="blockquote">
+<pre><code> fit_fwhm (h, fitfunc='gaus', show=False, fit_range=0.8)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1453" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_f_fwhm" class="level3">
+<h3 class="anchored" data-anchor-id="get_f_fwhm">get_f_fwhm</h3>
+<blockquote class="blockquote">
+<pre><code> get_f_fwhm (f:cppyy.gbl.TF1)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1458" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="scale_histo" class="level3">
+<h3 class="anchored" data-anchor-id="scale_histo">scale_histo</h3>
+<blockquote class="blockquote">
+<pre><code> scale_histo (histo, value=None, to_max=False, x_range=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1471" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_2d_centre" class="level3">
+<h3 class="anchored" data-anchor-id="find_2d_centre">find_2d_centre</h3>
+<blockquote class="blockquote">
+<pre><code> find_2d_centre (h, thresh=0.5)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1476" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_2d_centre_ranges" class="level3">
+<h3 class="anchored" data-anchor-id="get_2d_centre_ranges">get_2d_centre_ranges</h3>
+<blockquote class="blockquote">
+<pre><code> get_2d_centre_ranges (h, dx, dy=None, thresh=0.5)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1484" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="centre_2d" class="level3">
+<h3 class="anchored" data-anchor-id="centre_2d">centre_2d</h3>
+<blockquote class="blockquote">
+<pre><code> centre_2d (h, dx, dy=None, thresh=0.5)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1489" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make_transparent" class="level3">
+<h3 class="anchored" data-anchor-id="make_transparent">make_transparent</h3>
+<blockquote class="blockquote">
+<pre><code> make_transparent (pad)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1495" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hide_axis" class="level3">
+<h3 class="anchored" data-anchor-id="hide_axis">hide_axis</h3>
+<blockquote class="blockquote">
+<pre><code> hide_axis (axis)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1501" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="remove_low_stat_bins" class="level3">
+<h3 class="anchored" data-anchor-id="remove_low_stat_bins">remove_low_stat_bins</h3>
+<blockquote class="blockquote">
+<pre><code> remove_low_stat_bins (h, q=0.9, thresh=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1512" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_correlation_arrays" class="level3">
+<h3 class="anchored" data-anchor-id="get_correlation_arrays">get_correlation_arrays</h3>
+<blockquote class="blockquote">
+<pre><code> get_correlation_arrays (m1, m2, sx=0, sy=0, thresh=0.1, flat=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1521" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="correlate_maps" class="level3">
+<h3 class="anchored" data-anchor-id="correlate_maps">correlate_maps</h3>
+<blockquote class="blockquote">
+<pre><code> correlate_maps (m1, m2, sx=0, sy=0, thresh=0.1)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1526" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="correlate_all_maps" class="level3">
+<h3 class="anchored" data-anchor-id="correlate_all_maps">correlate_all_maps</h3>
+<blockquote class="blockquote">
+<pre><code> correlate_all_maps (m1, m2, thresh=0.1)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1531" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_root_warnings" class="level3">
+<h3 class="anchored" data-anchor-id="set_root_warnings">set_root_warnings</h3>
+<blockquote class="blockquote">
+<pre><code> set_root_warnings (status, fatal=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1535" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_root_output" class="level3">
+<h3 class="anchored" data-anchor-id="set_root_output">set_root_output</h3>
+<blockquote class="blockquote">
+<pre><code> set_root_output (status=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1540" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="is_root_object" class="level3">
+<h3 class="anchored" data-anchor-id="is_root_object">is_root_object</h3>
+<blockquote class="blockquote">
+<pre><code> is_root_object (o)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/draw.py#L1544" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="np_profile" class="level3">
+<h3 class="anchored" data-anchor-id="np_profile">np_profile</h3>
+<blockquote class="blockquote">
+<pre><code> np_profile (x, y, u=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/src/run.py#L298" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="main" class="level3">
+<h3 class="anchored" data-anchor-id="main">main</h3>
+<blockquote class="blockquote">
+<pre><code> main ()</code></pre>
+</blockquote>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

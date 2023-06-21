@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.361">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Functions for binning histograms (created on January 12th 2023 by M. Reichmann)">
+
+<title>HighResAnalysis - Plot bins</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="HighResAnalysis - Plot bins">
+<meta property="og:description" content="Functions for binning histograms (created on January 12th 2023 by M. Reichmann)">
+<meta property="og:site-name" content="HighResAnalysis">
+<meta name="twitter:title" content="HighResAnalysis - Plot bins">
+<meta name="twitter:description" content="Functions for binning histograms (created on January 12th 2023 by M. Reichmann)">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HighResAnalysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./blog/index.html" rel="" target="">
+ <span class="menu-text">Blog</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./plotting.save.html">Plotting</a></li><li class="breadcrumb-item"><a href="./plotting.binning.html">Plot bins</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HighResAnalysis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false">
+ <span class="menu-text">CLI</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./analyse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis script</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./convert.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Convert</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false">
+ <span class="menu-text">Main sources</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Run</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.spreadsheet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Google Spreadsheet Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.dut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT and Device Classes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Conversion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.cut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analysis Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.proteus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Proteus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.currents.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Currents Reader</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.scan.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Scan</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.batch_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.bins.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./src.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Pulse Height Calibration CMS Pixel</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false">
+ <span class="menu-text">Modules</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Efficiency module</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.track_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tracks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Track Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.dut_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DUT Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.tel_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.residuals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Residuals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reso_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.reference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Plane Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.telescope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Telescope Analysis</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.resolution.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resolution</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./mod.ref_cuts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Reference Detector Cuts</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false">
+ <span class="menu-text">CERN</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.raw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Raw Data Processer (CERN)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.event_alignment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Event Alignment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.converter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.ref.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Converter for FE-IV reference plane</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.adc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ADC Converter</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cern.calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">CERN Pulse Height Calibration</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Plotting</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.save.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Save plots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.binning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Plot bins</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Fit</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.html.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">HTML UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PLOTTING UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.info.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Plot Info Legend Utils</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.latex.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LATEX UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./plotting.draw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Draw</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false">
+ <span class="menu-text">Utilities</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.affine_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Affine transforms</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./utility.utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">UTILITY FUNCTIONS</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#freedman_diaconis" id="toc-freedman_diaconis" class="nav-link active" data-scroll-target="#freedman_diaconis">freedman_diaconis</a></li>
+  <li><a href="#width" id="toc-width" class="nav-link" data-scroll-target="#width">width</a></li>
+  <li><a href="#n" id="toc-n" class="nav-link" data-scroll-target="#n">n</a></li>
+  <li><a href="#increase_range" id="toc-increase_range" class="nav-link" data-scroll-target="#increase_range">increase_range</a></li>
+  <li><a href="#entries" id="toc-entries" class="nav-link" data-scroll-target="#entries">entries</a></li>
+  <li><a href="#single_entries_2d" id="toc-single_entries_2d" class="nav-link" data-scroll-target="#single_entries_2d">single_entries_2d</a></li>
+  <li><a href="#entries_2d" id="toc-entries_2d" class="nav-link" data-scroll-target="#entries_2d">entries_2d</a></li>
+  <li><a href="#from_uvec" id="toc-from_uvec" class="nav-link" data-scroll-target="#from_uvec">from_uvec</a></li>
+  <li><a href="#from_vec" id="toc-from_vec" class="nav-link" data-scroll-target="#from_vec">from_vec</a></li>
+  <li><a href="#from_p" id="toc-from_p" class="nav-link" data-scroll-target="#from_p">from_p</a></li>
+  <li><a href="#make" id="toc-make" class="nav-link" data-scroll-target="#make">make</a></li>
+  <li><a href="#make2d" id="toc-make2d" class="nav-link" data-scroll-target="#make2d">make2d</a></li>
+  <li><a href="#find_range" id="toc-find_range" class="nav-link" data-scroll-target="#find_range">find_range</a></li>
+  <li><a href="#find" id="toc-find" class="nav-link" data-scroll-target="#find">find</a></li>
+  <li><a href="#find_2d" id="toc-find_2d" class="nav-link" data-scroll-target="#find_2d">find_2d</a></li>
+  <li><a href="#hn" id="toc-hn" class="nav-link" data-scroll-target="#hn">hn</a></li>
+  <li><a href="#from_hist" id="toc-from_hist" class="nav-link" data-scroll-target="#from_hist">from_hist</a></li>
+  <li><a href="#hx" id="toc-hx" class="nav-link" data-scroll-target="#hx">hx</a></li>
+  <li><a href="#hy" id="toc-hy" class="nav-link" data-scroll-target="#hy">hy</a></li>
+  <li><a href="#h2d" id="toc-h2d" class="nav-link" data-scroll-target="#h2d">h2d</a></li>
+  <li><a href="#h2dgrid" id="toc-h2dgrid" class="nav-link" data-scroll-target="#h2dgrid">h2dgrid</a></li>
+  <li><a href="#set_2d_values" id="toc-set_2d_values" class="nav-link" data-scroll-target="#set_2d_values">set_2d_values</a></li>
+  <li><a href="#set_2d_entries" id="toc-set_2d_entries" class="nav-link" data-scroll-target="#set_2d_entries">set_2d_entries</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/dmitryhits/HighResAnalysis/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Plot bins</h1>
+</div>
+
+<div>
+  <div class="description">
+    Functions for binning histograms (created on January 12th 2023 by M. Reichmann)
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L14" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="freedman_diaconis" class="level3">
+<h3 class="anchored" data-anchor-id="freedman_diaconis">freedman_diaconis</h3>
+<blockquote class="blockquote">
+<pre><code> freedman_diaconis (x)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="width" class="level3">
+<h3 class="anchored" data-anchor-id="width">width</h3>
+<blockquote class="blockquote">
+<pre><code> width (x)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L23" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="n" class="level3">
+<h3 class="anchored" data-anchor-id="n">n</h3>
+<blockquote class="blockquote">
+<pre><code> n (x)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L27" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="increase_range" class="level3">
+<h3 class="anchored" data-anchor-id="increase_range">increase_range</h3>
+<blockquote class="blockquote">
+<pre><code> increase_range (low, high, fl, fh, to_int=False)</code></pre>
+</blockquote>
+<p>increases the range [low, high] by the given factors [fl] on the low end and [fh] on the high end.</p>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L34" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="entries" class="level3">
+<h3 class="anchored" data-anchor-id="entries">entries</h3>
+<blockquote class="blockquote">
+<pre><code> entries (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L38" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="single_entries_2d" class="level3">
+<h3 class="anchored" data-anchor-id="single_entries_2d">single_entries_2d</h3>
+<blockquote class="blockquote">
+<pre><code> single_entries_2d (h, ix, iy, nx)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L42" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="entries_2d" class="level3">
+<h3 class="anchored" data-anchor-id="entries_2d">entries_2d</h3>
+<blockquote class="blockquote">
+<pre><code> entries_2d (h, flat=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L48" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="from_uvec" class="level3">
+<h3 class="anchored" data-anchor-id="from_uvec">from_uvec</h3>
+<blockquote class="blockquote">
+<pre><code> from_uvec (x)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L52" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="from_vec" class="level3">
+<h3 class="anchored" data-anchor-id="from_vec">from_vec</h3>
+<blockquote class="blockquote">
+<pre><code> from_vec (x, centre=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L60" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="from_p" class="level3">
+<h3 class="anchored" data-anchor-id="from_p">from_p</h3>
+<blockquote class="blockquote">
+<pre><code> from_p (x)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/src/spreadsheet.py#L118" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make" class="level3">
+<h3 class="anchored" data-anchor-id="make">make</h3>
+<blockquote class="blockquote">
+<pre><code> make (xmin, xmax=None, w=1, last=False, nb=None, off=0)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L74" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="make2d" class="level3">
+<h3 class="anchored" data-anchor-id="make2d">make2d</h3>
+<blockquote class="blockquote">
+<pre><code> make2d (x, y, wx=1, wy=1, nx=None, ny=None, last=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L83" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_range" class="level3">
+<h3 class="anchored" data-anchor-id="find_range">find_range</h3>
+<blockquote class="blockquote">
+<pre><code> find_range (values, lfac=0.2, rfac=0.2, q=0.02, lq=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L88" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find" class="level3">
+<h3 class="anchored" data-anchor-id="find">find</h3>
+<blockquote class="blockquote">
+<pre><code> find (values, lfac=0.2, rfac=0.2, q=0.02, nbins=1, lq=None, w=None,
+       x0=None, x1=None, r=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L96" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_2d" class="level3">
+<h3 class="anchored" data-anchor-id="find_2d">find_2d</h3>
+<blockquote class="blockquote">
+<pre><code> find_2d (x, y, lfac=0.2, rfac=0.2, q=0.02, nb=1, lq=None, w=None,
+          x0=None)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L106" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hn" class="level3">
+<h3 class="anchored" data-anchor-id="hn">hn</h3>
+<blockquote class="blockquote">
+<pre><code> hn (h, axis='X')</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L110" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="from_hist" class="level3">
+<h3 class="anchored" data-anchor-id="from_hist">from_hist</h3>
+<blockquote class="blockquote">
+<pre><code> from_hist (h, err=True, raw=False, axis='X')</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L117" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hx" class="level3">
+<h3 class="anchored" data-anchor-id="hx">hx</h3>
+<blockquote class="blockquote">
+<pre><code> hx (h, err=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L121" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="hy" class="level3">
+<h3 class="anchored" data-anchor-id="hy">hy</h3>
+<blockquote class="blockquote">
+<pre><code> hy (h, err=True)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L125" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="h2d" class="level3">
+<h3 class="anchored" data-anchor-id="h2d">h2d</h3>
+<blockquote class="blockquote">
+<pre><code> h2d (h, arr=False)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L130" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="h2dgrid" class="level3">
+<h3 class="anchored" data-anchor-id="h2dgrid">h2dgrid</h3>
+<blockquote class="blockquote">
+<pre><code> h2dgrid (h)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L135" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_2d_values" class="level3">
+<h3 class="anchored" data-anchor-id="set_2d_values">set_2d_values</h3>
+<blockquote class="blockquote">
+<pre><code> set_2d_values (h, arr)</code></pre>
+</blockquote>
+<hr>
+<p><a href="https://github.com/dmitryhits/HighResAnalysis/blob/master/HighResAnalysis/plotting/binning.py#L139" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="set_2d_entries" class="level3">
+<h3 class="anchored" data-anchor-id="set_2d_entries">set_2d_entries</h3>
+<blockquote class="blockquote">
+<pre><code> set_2d_entries (h, arr)</code></pre>
+</blockquote>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
